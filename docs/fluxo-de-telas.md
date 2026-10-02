@@ -43,52 +43,52 @@
 
 ---
 
-## 2. Detalhamento das Telas por Módulo
+## 2. Detalhamento das Telas e Componentes
 
 ### 🥗 A. Fachada: Pratô (Camuflagem)
 1. **`PratoHomeScreen` (Diário Alimentar):**
-   * Exibe resumo diário de calorias consumidas vs meta.
-   * Lista de refeições cadastradas (dados locais).
-   * **Gatilho 1:** Campo de busca ou meta de calorias onde a digitação do PIN (`7390` / `1900`) e clique em "Salvar" abre o SAFE.
-   * **Gatilho 2:** Toque longo de 2s na logo do pratinho no cabeçalho.
+   * Exibe resumo diário de calorias consumidas vs meta diária.
+   * Lista de refeições cadastradas (Café da manhã, Almoço, Jantar).
+   * **Gatilho Principal:** Campo de busca/meta de calorias onde a digitação do código numérico secreto (`7390` / `1900`) e clique em "Salvar" transiciona para o SAFE.
+   * **Gatilho Secundário:** Toque longo (*long-press* de 2 segundos) no logotipo do pratinho no cabeçalho.
 2. **`PratoReceitasScreen`:**
-   * Lista de receitas saudáveis com fotos e modo de preparo para garantir verossimilhança.
+   * Catálogo de receitas saudáveis com ingredientes e modo de preparo para garantir verossimilhança da fachada.
 
 ---
 
 ### 🛡️ B. Área Secreta: SAFE (5 CRUDs e Telas Integradas)
 
 #### 1. Módulo de Perfil e Acesso Camuflado *(Responsável: Alana Caled)*
-* **`PerfilConfigScreen`:** Formulário para alteração de nome fictício, e-mail e redefinição de PIN secreto.
-* **`ConfigCamuflagemScreen`:** Opções de disfarce ativo, configuração do **PIN de Coação (*Duress PIN*)** e modo de gatilho.
+* **`PerfilConfigScreen`:** Formulário de perfil para alteração de nome fictício de teste, e-mail e redefinição do PIN secreto.
+* **`ConfigCamuflagemScreen`:** Opções de camuflagem ativa, configuração do **PIN de Coação (*Duress PIN*)** e ajuste de sensibilidade de gatilhos.
 
 #### 2. Módulo Círculo de Confiança *(Responsável: Felipe Trindade)*
 * **`ContatosListScreen`:** Lista de contatos de emergência cadastrados, exibindo nome, telefone, relação e badge de prioridade (Alta, Média, Baixa).
-* **`ContatoFormScreen`:** Tela para **Criar e Editar** contato (campos: Nome, Telefone/WhatsApp, Grau de Parentesco/Relação, Notificação SMS/Zap).
-* **Ação de Exclusão:** Modal de confirmação para remoção do contato da lista.
+* **`ContatoFormScreen`:** Tela de formulário para **Criar e Editar** contato (campos: Nome, Telefone/WhatsApp, Grau de Parentesco/Relação, Notificação SMS/WhatsApp).
+* **Ação de Exclusão:** Modal de confirmação com exclusão física no banco de dados.
 
 #### 3. Módulo Viagem Segura & Check-in *(Responsável: Higor Bueno)*
-* **`ViagemNovaScreen`:** Formulário para iniciar viagem (Origem, Destino, Tempo estimado de trajeto e seleção de contatos a notificar).
-* **`ViagemEmAndamentoScreen`:** Exibe cronômetro regressivo, status atual e botões de ação:
-  * Botão grande: **"🟢 Cheguei Segura"** (Finaliza a viagem com sucesso).
-  * Botão discreto: **"⏱️ Preciso de mais 10 minutos"** (Estende o prazo).
-  * Falta de resposta ao término: Disparo automático de alerta para a rede.
+* **`ViagemNovaScreen`:** Formulário para iniciar trajeto (Origem, Destino, Tempo estimado em minutos e seleção de contatos da rede a notificar).
+* **`ViagemEmAndamentoScreen`:** Exibe cronômetro regressivo com contagem ativa, status da viagem e botões de ação:
+  * Botão em destaque: **"🟢 Cheguei Segura"** (Finaliza a viagem com status de sucesso).
+  * Botão discreto: **"⏱️ Preciso de mais 10 minutos"** (Estende o prazo estimado).
+  * Falta de resposta/estouro do tempo: Disparo automático de alerta preventivo para o Círculo de Confiança.
 
 #### 4. Módulo Alertas SOS & Painel em Tempo Real *(Responsável: Higor Domingos)*
-* **`BotaoSosComponent`:** Botão de emergência 1-toque com confirmação háptica/vibração discreta. Captura imediata da latitude/longitude via GPS.
-* **`AlertasHistoricoScreen`:** Listagem de todos os acionamentos de SOS gerados (data, hora, coordenadas e status do atendimento).
-* **Painel Web da Delegacia:** Dashboard web separado em tela cheia que monitora e apita a cada novo registro deste CRUD.
+* **`BotaoSosComponent`:** Botão de emergência de 1 toque com confirmação discreta via vibração e captura imediata da latitude/longitude via GPS (`expo-location`).
+* **`AlertasHistoricoScreen`:** Listagem de todos os acionamentos de SOS gerados pela usuária (data, hora, coordenadas e status do atendimento policial).
+* **`Painel Delegacia (Web)`:** Dashboard web separado em tela cheia voltado para centrais de atendimento, listando alertas em tempo real com indicador sonoro/visual, mapa e alteração de status (*Novo*, *Em Atendimento*, *Concluído*).
 
 #### 5. Módulo Cofre de Incidentes & Evidências *(Responsável: João Pedro)*
-* **`IncidentesListScreen`:** Linha do tempo confidencial com os relatos arquivados ordenados por data.
-* **`IncidenteFormScreen`:** Formulário de registro (Data/hora do fato, Tipo de violência: Verbal, Física, Patrimonial ou Perseguição, Local e Relato detalhado).
-* **`IncidenteDetalheScreen`:** Visualização completa do registro, com opção de edição, exclusão e exportação rápida.
+* **`IncidentesListScreen`:** Linha do tempo confidencial e cronológica com os relatos arquivados ordenados por data.
+* **`IncidenteFormScreen`:** Formulário de registro (Data/hora do fato, Tipo de violência: Verbal/Psicológica, Física, Patrimonial ou Perseguição, Local e Relato detalhado).
+* **`IncidenteDetalheScreen`:** Visualização completa do registro, com suporte a edição, exclusão e exportação segura.
 
 ---
 
 ### 🚨 C. Componentes Transversais Obrigatórios
 
 1. **Botão Flutuante de Saída Rápida (*Quick Exit*):**
-   * Fixado em todas as telas confidenciais. Ao ser tocado, executa reset da pilha de navegação diretamente para `PratoHomeScreen`.
-2. **Banner Informativo & Canais Oficiais:**
-   * Rodapé de apoio com discagem rápida para **Ligue 180** e **190 (Polícia Militar)**, além do aviso legal de protótipo acadêmico.
+   * Componente flutuante fixado em todas as telas confidenciais. Ao ser tocado, executa o reset imediato da pilha de navegação diretamente para `PratoHomeScreen`, sem deixar rastros no histórico recente.
+2. **Banner Informativo & Canais Oficiais de Socorro:**
+   * Rodapé de apoio com discagem rápida em 1 clique para **Ligue 180** e **190 (Polícia Militar)**, além do aviso legal obrigatório de protótipo acadêmico.
