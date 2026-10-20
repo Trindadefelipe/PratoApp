@@ -60,34 +60,41 @@ O **Pratô** apresenta-se à primeira vista como um aplicativo inofensivo e func
 ## 🗂️ Estrutura do Repositório
 
 ```text
-WorkFemaleApp/
-├── app/               # Aplicativo Mobile em React Native (Expo)
-│   ├── src/telas/
-│   ├── src/componentes/
-│   └── src/servicos/  # Chamadas à API HTTP
-├── api/               # Back-end Node.js / Express
-│   ├── src/rotas/
-│   ├── src/modelos/
-│   └── src/controladores/
-├── painel/            # Dashboard Web em tempo real para a Delegacia
-├── data-science/      # Pipeline de Ciência de Dados
-│   ├── dados/         # Bases públicas (Atlas da Violência / IPEA)
-│   └── notebook.ipynb # Notebook com EDA, modelagem e validação
-├── docs/              # Documentação acadêmica
-│   ├── matriz-papeis.md
-│   ├── justificativa-disfarce.md
-│   ├── modelagem-der.md
-│   └── kanban-backlog.md
-├── USO_IA.md          # Registro oficial de uso de Inteligência Artificial
-└── README.md          # Este arquivo
+PratoApp/
+├── app/                      # Aplicativo Mobile em React Native (Expo)
+│   └── src/
+│       ├── pages/
+│       │   ├── prato/        # Fachada: Diário, Metas, Receitas
+│       │   └── safe/
+│       │       ├── inicio/   # Início/SOS, Alertas, Guia, Autoavaliação, Resultado
+│       │       ├── circulo/  # Círculo de Confiança
+│       │       ├── viagem/   # Viagem Segura
+│       │       ├── cofre/    # Cofre de Incidentes
+│       │       └── ajustes/  # Perfil e Camuflagem
+│       ├── components/       # Componentes reutilizáveis (botões, chips, saída rápida)
+│       ├── routes/           # RootStack, PratoTabs, SafeTabs e Stacks de cada aba
+│       ├── assets/           # Logo, imagens e fontes
+│       ├── theme/            # Cores e tipografia
+│       ├── data/             # Dados simulados (campos do DER), um arquivo por módulo
+│       └── services/         # Chamadas HTTP à API (Entrega 4)
+├── api/                      # Back-end Node.js / Express
+├── painel/                   # Dashboard Web em tempo real para a Delegacia
+├── data-science/             # Pipeline de Ciência de Dados
+│   ├── dados/                # Bases públicas (Atlas da Violência / IPEA)
+│   └── notebook.ipynb        # Notebook com EDA, modelagem e validação
+├── docs/                     # Documentação acadêmica
+├── USO_IA.md                 # Registro oficial de uso de Inteligência Artificial
+└── README.md                 # Este arquivo
 ```
 
 ---
 
 ## 📄 Documentos da Entrega 1
 
-1. [Matriz de Papéis e Responsabilidades](file:///c:/_git/WorkFemaleApp/docs/matriz-papeis.md)
-2. [Justificativa e Especificação do Disfarce Pratô](file:///c:/_git/WorkFemaleApp/docs/justificativa-disfarce.md)
-3. [Modelagem do Banco de Dados & DER](file:///c:/_git/WorkFemaleApp/docs/modelagem-der.md)
-4. [Backlog e Quadro Kanban](file:///c:/_git/WorkFemaleApp/docs/kanban-backlog.md)
-5. [Registro de Uso de IA](file:///c:/_git/WorkFemaleApp/USO_IA.md)
+1. [Matriz de Papéis e Responsabilidades](docs/matriz-papeis.md)
+2. [Justificativa e Especificação do Disfarce Pratô](docs/justificativa-disfarce.md)
+3. [Modelagem do Banco de Dados & DER](docs/modelagem-der.md)
+4. [Fluxo de Telas e Navegação](docs/fluxo-de-telas.md)
+5. [Base de Dados Pública (Data Science)](docs/base-dados-ds.md)
+6. [Backlog e Quadro Kanban](docs/kanban-backlog.md)
+7. [Registro de Uso de IA](USO_IA.md)
