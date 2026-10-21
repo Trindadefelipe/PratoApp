@@ -10,3 +10,11 @@
 //   * Chips de filtro: Todas, Café da manhã, Almoço, Jantar
 //   * Lista de receitas com tempo de preparo, kcal e botão de favoritar
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function PratoReceitasScreen(){
+    return(
+        <Text>PratoReceitasScreen</Text>
+    )
+}

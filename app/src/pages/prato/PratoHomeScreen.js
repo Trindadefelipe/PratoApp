@@ -13,3 +13,11 @@
 //   * Lista de refeições: café da manhã, almoço, lanche e jantar
 //   * Contador de copos de água
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function PratoHomeScreen(){
+    return(
+        <Text>PratoHomeScreen</Text>
+    )
+}

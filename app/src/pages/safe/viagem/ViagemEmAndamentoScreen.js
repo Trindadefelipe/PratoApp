@@ -11,3 +11,11 @@
 //   * Contador regressivo do tempo restante
 //   * Botões Cheguei segura (Stack.replace para ViagemNova) e Preciso de mais 10 minutos
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function ViagemEmAndamentoScreen(){
+    return(
+        <Text>ViagemEmAndamentoScreen</Text>
+    )
+}

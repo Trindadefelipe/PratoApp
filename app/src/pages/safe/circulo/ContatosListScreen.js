@@ -11,3 +11,11 @@
 //   * Lista de contatos com relação, telefone, prioridade e canais (SMS, WhatsApp)
 //   * Botão flutuante + para criar contato
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function ContatosListScreen(){
+    return(
+        <Text>ContatosListScreen</Text>
+    )
+}

@@ -11,3 +11,11 @@
 //   * Evidências: foto, áudio, captura
 //   * Botão Salvar no cofre
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function IncidenteFormScreen(){
+    return(
+        <Text>IncidenteFormScreen</Text>
+    )
+}

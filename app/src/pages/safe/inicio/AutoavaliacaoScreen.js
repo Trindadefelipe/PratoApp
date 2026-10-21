@@ -11,3 +11,11 @@
 //   * Pergunta com opções de resposta: Nunca, Às vezes, Com frequência, Quase sempre
 //   * Botões Voltar e Próxima, aviso de estimativa acadêmica
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function AutoavaliacaoScreen(){
+    return(
+        <Text>AutoavaliacaoScreen</Text>
+    )
+}

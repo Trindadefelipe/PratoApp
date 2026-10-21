@@ -12,3 +12,11 @@
 //   * Links Redefinir PIN secreto e Camuflagem e gatilhos
 //   * Botão Sair da conta
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function PerfilConfigScreen(){
+    return(
+        <Text>PerfilConfigScreen</Text>
+    )
+}

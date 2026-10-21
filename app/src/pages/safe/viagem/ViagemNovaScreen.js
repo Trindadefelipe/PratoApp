@@ -12,3 +12,11 @@
 //   * Quem será avisada (contatos do Círculo com checkbox)
 //   * Botão Iniciar viagem (Stack.replace para ViagemEmAndamento)
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function ViagemNovaScreen(){
+    return(
+        <Text>ViagemNovaScreen</Text>
+    )
+}

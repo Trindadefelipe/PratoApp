@@ -11,3 +11,11 @@
 //   * Seus direitos: Lei Maria da Penha e medidas protetivas
 //   * Onde buscar ajuda: Delegacia da Mulher e Casa da Mulher Brasileira
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function GuiaDireitosScreen(){
+    return(
+        <Text>GuiaDireitosScreen</Text>
+    )
+}

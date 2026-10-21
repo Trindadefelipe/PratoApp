@@ -11,3 +11,11 @@
 //   * Relato, notas adicionais e evidências
 //   * Ícones de editar e excluir, botão Exportar com segurança
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function IncidenteDetalheScreen(){
+    return(
+        <Text>IncidenteDetalheScreen</Text>
+    )
+}

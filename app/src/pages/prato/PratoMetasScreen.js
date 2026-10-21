@@ -12,3 +12,11 @@
 //   * Gráfico de calorias da semana com a linha da meta
 //   * Tela 03: estado de erro "Não foi possível carregar seus dados nutricionais"
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function PratoMetasScreen(){
+    return(
+        <Text>PratoMetasScreen</Text>
+    )
+}

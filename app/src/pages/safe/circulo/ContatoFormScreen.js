@@ -12,3 +12,11 @@
 //   * Switches: avisar por SMS e por WhatsApp
 //   * Botões Salvar contato e Excluir contato
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function ContatoFormScreen(){
+    return(
+        <Text>ContatoFormScreen</Text>
+    )
+}

@@ -12,3 +12,11 @@
 //   * Atalhos: Viagem segura, Registrar incidente, Autoavaliação de risco, Guia de direitos
 //   * Link para Histórico de alertas e botões Ligue 180 e 190
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function SafeHomeScreen(){
+    return(
+        <Text>SafeHomeScreen</Text>
+    )
+}

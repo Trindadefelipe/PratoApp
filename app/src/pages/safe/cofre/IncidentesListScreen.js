@@ -11,3 +11,11 @@
 //   * Linha do tempo com data, título, resumo e quantidade de evidências
 //   * Botão flutuante + para novo registro
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function IncidentesListScreen(){
+    return(
+        <Text>IncidentesListScreen</Text>
+    )
+}

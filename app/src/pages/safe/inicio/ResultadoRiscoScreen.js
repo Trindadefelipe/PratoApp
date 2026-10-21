@@ -11,3 +11,11 @@
 //   * Botões Falar com o Círculo, Ver guia de direitos e Ligar para o 180
 //   * Aviso de estimativa acadêmica
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function ResultadoRiscoScreen(){
+    return(
+        <Text>ResultadoRiscoScreen</Text>
+    )
+}

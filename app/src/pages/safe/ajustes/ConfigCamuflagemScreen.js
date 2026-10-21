@@ -12,3 +12,11 @@
 //   * Aviso sobre o PIN de coação
 //   * Sensibilidade do gesto: Baixa, Média, Alta
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function ConfigCamuflagemScreen(){
+    return(
+        <Text>ConfigCamuflagemScreen</Text>
+    )
+}

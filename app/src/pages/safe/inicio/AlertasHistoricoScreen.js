@@ -10,3 +10,11 @@
 //   * Lista de alertas com data, gatilho (botão SOS, falta de check-in, PIN de coação, agitar)
 //   * Localização aproximada e status na delegacia (Em atendimento, Concluído)
 // ============================================================
+
+import { Text } from "react-native";
+
+export default function AlertasHistoricoScreen(){
+    return(
+        <Text>AlertasHistoricoScreen</Text>
+    )
+}
