@@ -14,10 +14,18 @@
 //   * Contador de copos de água
 // ============================================================
 
-import { Text } from "react-native";
+import { Text, View } from "react-native";
+import BotaoPrimario from '../../components/BotaoPrimario';
 
-export default function PratoHomeScreen(){
+export default function PratoHomeScreen({navigation}){
     return(
-        <Text>PratoHomeScreen</Text>
+        <View style={{ flex: 1, justifyContent: 'center', padding: 24, gap: 16 }}>
+            <Text>PratoHomeScreen</Text>
+            <BotaoPrimario
+                titulo="Entrar no SAFE (teste)"
+                onPress={() => navigation.reset({ index: 0, routes: [{ name: 'SafeTabs' }] })}
+            />
+        </View>
+        
     )
 }

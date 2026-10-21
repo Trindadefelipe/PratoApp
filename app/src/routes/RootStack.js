@@ -10,6 +10,7 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PratoTabs from './PratoTabs';
+import SafeTabs from './SafeTabs';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function RootStack(){
         >
 
             <Stack.Screen name='PratoTabs' component={PratoTabs}/>
+            <Stack.Screen name='SafeTabs' component={SafeTabs}/>
 
         </Stack.Navigator>
     )
