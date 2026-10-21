@@ -26,13 +26,17 @@
 ---
 
 ### 🔹 Sprint 2: Estrutura Mobile, Fachada Pratô & Análise Exploratória (15/10/2026) — *Entrega 2*
-* [ ] **[Mobile]** Setup do projeto React Native com Expo e React Navigation (Stack + BottomTabs). *(Resp: Felipe / Alana)* — [#7](https://github.com/Trindadefelipe/PratoApp/issues/7)
-* [ ] **[Mobile]** Construção da interface visual de fachada do **Pratô** (Diário alimentar e metas). *(Resp: Alana)* — [#8](https://github.com/Trindadefelipe/PratoApp/issues/8)
-* [ ] **[Mobile]** Implementação do primeiro gatilho de transição secreta (PIN no Pratô $\rightarrow$ SAFE). *(Resp: Alana / Higor D.)* — [#9](https://github.com/Trindadefelipe/PratoApp/issues/9)
-* [ ] **[Mobile]** Telas navegáveis dos 5 módulos com dados estáticos/visuais prontos. *(Resp: Todos nos seus CRUDs)* — [#10](https://github.com/Trindadefelipe/PratoApp/issues/10)
+**Painel geral:** [#26](https://github.com/Trindadefelipe/PratoApp/issues/26)
+
+* [ ] **[Mobile]** Setup do projeto React Native com Expo e React Navigation (Stack + BottomTabs). *(Resp: Felipe / Alana)* — [#29](https://github.com/Trindadefelipe/PratoApp/issues/29), [#30](https://github.com/Trindadefelipe/PratoApp/issues/30), [#31](https://github.com/Trindadefelipe/PratoApp/issues/31), [#32](https://github.com/Trindadefelipe/PratoApp/issues/32)
+* [ ] **[Mobile]** Construção da interface visual de fachada do **Pratô** (Diário alimentar e metas). *(Resp: Alana)* — [#33](https://github.com/Trindadefelipe/PratoApp/issues/33), [#34](https://github.com/Trindadefelipe/PratoApp/issues/34), [#35](https://github.com/Trindadefelipe/PratoApp/issues/35), [#36](https://github.com/Trindadefelipe/PratoApp/issues/36)
+* [ ] **[Mobile]** Implementação do primeiro gatilho de transição secreta (PIN no Pratô $\rightarrow$ SAFE). *(Resp: Alana / Higor D.)* — [#37](https://github.com/Trindadefelipe/PratoApp/issues/37), [#38](https://github.com/Trindadefelipe/PratoApp/issues/38), [#57](https://github.com/Trindadefelipe/PratoApp/issues/57)
+* [ ] **[Mobile]** Telas navegáveis dos 5 módulos com dados estáticos/visuais prontos. *(Resp: Todos nos seus CRUDs)* — Início: [#54](https://github.com/Trindadefelipe/PratoApp/issues/54), [#55](https://github.com/Trindadefelipe/PratoApp/issues/55), [#56](https://github.com/Trindadefelipe/PratoApp/issues/56), [#41](https://github.com/Trindadefelipe/PratoApp/issues/41), [#42](https://github.com/Trindadefelipe/PratoApp/issues/42), [#43](https://github.com/Trindadefelipe/PratoApp/issues/43); Círculo: [#44](https://github.com/Trindadefelipe/PratoApp/issues/44), [#45](https://github.com/Trindadefelipe/PratoApp/issues/45), [#46](https://github.com/Trindadefelipe/PratoApp/issues/46); Viagem: [#49](https://github.com/Trindadefelipe/PratoApp/issues/49), [#50](https://github.com/Trindadefelipe/PratoApp/issues/50), [#51](https://github.com/Trindadefelipe/PratoApp/issues/51); Cofre: [#58](https://github.com/Trindadefelipe/PratoApp/issues/58), [#59](https://github.com/Trindadefelipe/PratoApp/issues/59), [#60](https://github.com/Trindadefelipe/PratoApp/issues/60), [#61](https://github.com/Trindadefelipe/PratoApp/issues/61); Ajustes: [#39](https://github.com/Trindadefelipe/PratoApp/issues/39), [#40](https://github.com/Trindadefelipe/PratoApp/issues/40)
 * [ ] **[Data Science]** Download, carga da base pública no Jupyter Notebook e documentação de Governança (LGPD). *(Resp: Alana)* — [#11](https://github.com/Trindadefelipe/PratoApp/issues/11)
-* [ ] **[Data Science]** Análise Exploratória de Dados (EDA) completa com estatísticas descritivas e histogramas/gráficos. *(Resp: Felipe)* — [#12](https://github.com/Trindadefelipe/PratoApp/issues/12)
-* [ ] **[Data Science]** Limpeza, tratamento de nulos e normalização de variáveis. *(Resp: Higor Bueno)* — [#13](https://github.com/Trindadefelipe/PratoApp/issues/13)
+* [ ] **[Data Science]** Análise Exploratória de Dados (EDA) completa com estatísticas descritivas e histogramas/gráficos. *(Resp: Felipe)* — [#47](https://github.com/Trindadefelipe/PratoApp/issues/47), [#48](https://github.com/Trindadefelipe/PratoApp/issues/48)
+* [ ] **[Data Science]** Limpeza, tratamento de nulos e normalização de variáveis. *(Resp: Higor Bueno)* — [#52](https://github.com/Trindadefelipe/PratoApp/issues/52), [#53](https://github.com/Trindadefelipe/PratoApp/issues/53)
+* [ ] **[Doc]** Atualização do `USO_IA.md` e do quadro Kanban. *(Resp: Equipe)* — [#27](https://github.com/Trindadefelipe/PratoApp/issues/27)
+* [ ] **[Geral]** Teste final de ponta a ponta. *(Resp: Equipe)* — [#28](https://github.com/Trindadefelipe/PratoApp/issues/28)
 
 ---
 
