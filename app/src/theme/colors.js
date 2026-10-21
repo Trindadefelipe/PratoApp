@@ -11,4 +11,5 @@ export const colors = {
     amarelo      :   '#FAC333', // alertas moderados
     coral        :   '#E2674D', // SOS e exclusão
     grafite      :   '#26343A', // textos
+    cinza        :   '#9AA3A6', // tab inativo
 }

@@ -7,3 +7,20 @@
 //
 // Responsáveis: Felipe Trindade e Alana Caled (cartão "Setup do Expo e React Navigation")
 // ============================================================
+
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import PratoTabs from './PratoTabs';
+
+const Stack = createNativeStackNavigator();
+
+export default function RootStack(){
+    return(
+        <Stack.Navigator
+            screenOptions={{headerShown: false}}
+        >
+
+            <Stack.Screen name='PratoTabs' component={PratoTabs}/>
+
+        </Stack.Navigator>
+    )
+}
