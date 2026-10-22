@@ -8,10 +8,12 @@
 // Responsável: Higor Domingos (Issue #56)
 // ============================================================
 
+import { usuaria } from './usuaria';
+
 export const alertas = [
   {
     id: 'a1b2c3d4-0001-4000-8000-000000000001',
-    usuaria_id: 'u1a2b3c4-0001-4000-8000-000000000001',
+    usuaria_id: usuaria.id,
     viagem_id: null,
     latitude: -23.3045,
     longitude: -51.1696,
@@ -23,7 +25,7 @@ export const alertas = [
   },
   {
     id: 'a1b2c3d4-0002-4000-8000-000000000002',
-    usuaria_id: 'u1a2b3c4-0001-4000-8000-000000000001',
+    usuaria_id: usuaria.id,
     viagem_id: 'v1a2b3c4-0001-4000-8000-000000000012',
     latitude: -23.2760,
     longitude: -51.2790,
@@ -35,7 +37,7 @@ export const alertas = [
   },
   {
     id: 'a1b2c3d4-0003-4000-8000-000000000003',
-    usuaria_id: 'u1a2b3c4-0001-4000-8000-000000000001',
+    usuaria_id: usuaria.id,
     viagem_id: null,
     latitude: -23.3110,
     longitude: -51.1620,
@@ -47,7 +49,7 @@ export const alertas = [
   },
   {
     id: 'a1b2c3d4-0004-4000-8000-000000000004',
-    usuaria_id: 'u1a2b3c4-0001-4000-8000-000000000001',
+    usuaria_id: usuaria.id,
     viagem_id: null,
     latitude: -23.3200,
     longitude: -51.1500,

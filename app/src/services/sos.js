@@ -21,6 +21,8 @@
 //   await dispararSos({ tipoGatilho: 'duress_pin' });
 // ============================================================
 
+import { usuaria } from '../data/usuaria';
+
 export const TIPOS_GATILHO = {
   BOTAO: 'botao',
   DURESS_PIN: 'duress_pin',
@@ -48,7 +50,7 @@ export async function dispararSos({ tipoGatilho = TIPOS_GATILHO.BOTAO, detalhes 
 
   const alertaCriado = {
     id: Date.now(),
-    usuaria_id: 1,
+    usuaria_id: usuaria.id,
     viagem_id: detalhes.viagem_id || null,
     latitude: detalhes.latitude || -23.3045,
     longitude: detalhes.longitude || -51.1696,
