@@ -53,9 +53,13 @@ export default function PratoHomeScreen({navigation}){
             <ScrollView contentContainerStyle={estilos.conteudo}>
 
                 <View style={estilos.cabecalho}>
-                    <View style = {estilos.logo}>
+                    <Pressable 
+                        style = {estilos.logo}
+                        delayLongPress={2000}
+                        onLongPress={() => navigation.reset({index: 0, routes: [{ name: 'SafeTabs' }]})}
+                    >
                         <Image source={require('../../assets/Logo/logo.png')} style = {estilos.logoImagem}/>
-                    </View>
+                    </Pressable>
                     <View>
                         <Text style={estilos.data}>{dataDeHoje()}</Text>
                         <Text style={estilos.titulo}>Diário de hoje</Text>
