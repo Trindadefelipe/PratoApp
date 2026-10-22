@@ -18,8 +18,8 @@ import { useState } from 'react';
 import { View, Text, TextInput, Image, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Circle } from 'react-native-svg';
 import BotaoPrimario from '../../components/BotaoPrimario';
+import AnelCalorias from '../../components/prato/AnelCalorias';
 import { refeicoes, metas } from '../../data/prato';
 import { colors } from '../../theme/colors';
 import { fonts } from '../../theme/fonts';
@@ -40,65 +40,12 @@ function dataDeHoje(){
     return `${DIAS[hoje.getDay()]}, ${hoje.getDate()} de ${MESES[hoje.getMonth()]}`;
 }
 
-function formataNumero(numero){
-    return String(numero).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
-
-function AnelCalorias({consumidas, restantes}){
-    const tamanho        = 200;
-    const espessura      = 22;
-    const raio           = (tamanho - espessura)/2;
-    const circunferencia = 2 * Math.PI * raio;
-
-    let inicio   = 0
-    const fatias = refeicoes
-          .filter((r) => r.registrada)
-          .map((r) => {
-            const fatia = {cor: corRefeicao[r.id].fundo, inicio, parte: r.kcal / metas.calorias};
-            inicio += fatia.parte;
-
-            return fatia;
-        });
-    
-    fatias.push({cor: colors.pessegoClaro, inicio, parte: Math.max(0, 1 - inicio) });
-
-    return(
-        <View style = {estilos.anel}>
-
-            <Svg width={tamanho} height={tamanho} style={{transform: [{ rotate: '-90deg' }]}}>
-
-                {fatias.map((fatia, i) => (
-                    <Circle
-                        key={i}
-                        cx={tamanho / 2}
-                        cy={tamanho / 2}
-                        r={raio}
-                        fill="none"
-                        stroke={fatia.cor}
-                        strokeWidth={espessura}
-                        strokeLinecap="round"
-                        strokeDasharray={`${Math.max(0.1, fatia.parte * circunferencia - espessura)} ${circunferencia}`}
-                        strokeDashoffset={-(fatia.inicio * circunferencia + espessura / 2)}
-                    />
-                ))}
-            </Svg> 
-
-            <View style={estilos.anelTexto}>
-                <Text style={estilos.anelNumero}>{formataNumero(restantes)}</Text>
-                <Text style={estilos.anelLegenda}>kcal restantes</Text>
-                <Text style={estilos.anelDetalhe}>{formataNumero(consumidas)} de {formataNumero(metas.calorias)}</Text>
-            </View>
-
-        </View>
-    )
-        
-}
-
 export default function PratoHomeScreen({navigation}){
     const [copos, setCopos] = useState(metas.aguaCopos);
 
-    const consumidas = refeicoes.reduce((soma, r) => soma + r.kcal, 0);
-    const restantes  = Math.max(0, metas.calorias - consumidas);
+    const fatias = refeicoes
+        .filter((r) => r.registrada)
+        .map((r) => ({kcal: r.kcal, cor: corRefeicao[r.id].fundo}));
 
     return(
         <SafeAreaView style={estilos.tela} edges={['top']}>
@@ -124,7 +71,7 @@ export default function PratoHomeScreen({navigation}){
                     />
                 </View>
 
-                <AnelCalorias consumidas={consumidas} restantes={restantes}/>
+                <AnelCalorias fatias={fatias} meta={metas.calorias}/>
                 {refeicoes.map((refeicao) => (
                     <View key={refeicao.id} style={estilos.refeicao}>
                         <View style={[estilos.refeicaoIcone, { backgroundColor: corRefeicao[refeicao.id].fundo }]}>
@@ -245,37 +192,6 @@ const estilos = StyleSheet.create({
         fontFamily: fonts.regular,
         fontSize: 15,
         color: colors.grafite,
-    },
-
-    anel: {
-        alignSelf: 'center',
-        marginVertical: 22,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
-    anelTexto: {
-        position: 'absolute',
-        alignItems: 'center',
-    },
-
-    anelLegenda: {
-        fontFamily: fonts.regular,
-        fontSize: 14,
-        color: colors.grafite,
-    },
-
-    anelDetalhe: {
-        fontFamily: fonts.regular,
-        fontSize: 12,
-        color: colors.cinza,
-    },
-
-    anelNumero: {
-        fontFamily: fonts.bold,
-        fontSize: 40,
-        color: colors.grafite,
-        lineHeight: 46
     },
 
     refeicao: {
