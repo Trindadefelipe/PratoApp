@@ -35,22 +35,22 @@ const CONFIG_GATILHOS = {
   falta_checkin: {
     label: 'Falta de check-in',
     icone: 'time-outline',
-    corIcone: '#D97706',
+    corIcone: colors.laranja,
   },
   deslocamento: {
     label: 'Falta de check-in',
     icone: 'time-outline',
-    corIcone: '#D97706',
+    corIcone: colors.laranja,
   },
   duress_pin: {
     label: 'PIN de coação',
     icone: 'lock-closed-outline',
-    corIcone: '#D97706',
+    corIcone: colors.laranja,
   },
   agitar_celular: {
     label: 'Agitar o celular',
     icone: 'phone-portrait-outline',
-    corIcone: '#D97706',
+    corIcone: colors.laranja,
   },
 };
 
@@ -163,13 +163,13 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.branco,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#EFE6DC',
-    shadowColor: '#000',
+    borderColor: colors.begeCard,
+    shadowColor: colors.preto,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
@@ -192,17 +192,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   badgeEmAtendimento: {
-    backgroundColor: '#FFF4D9',
+    backgroundColor: colors.amareloClaro,
   },
   badgeConcluido: {
-    backgroundColor: '#EAF5E9',
+    backgroundColor: colors.verdeClaro,
   },
   badgeStatusTexto: {
     fontFamily: fonts.semibold,
     fontSize: 12,
   },
   badgeTextoEmAtendimento: {
-    color: '#9A6700',
+    color: colors.amareloEscuro,
   },
   badgeTextoConcluido: {
     color: colors.verdeProfundo,
