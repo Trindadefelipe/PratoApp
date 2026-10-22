@@ -98,3 +98,7 @@ PratoApp/
 5. [Base de Dados Pública (Data Science)](docs/base-dados-ds.md)
 6. [Backlog e Quadro Kanban](docs/kanban-backlog.md)
 7. [Registro de Uso de IA](USO_IA.md)
+
+## 🧭 Guia para quem desenvolve
+
+* [Padrões de Código do App Mobile](docs/padroes-de-codigo.md): pastas, nomes, cores, dados simulados, rotas e mensagens de commit. Leia antes de começar uma tela.

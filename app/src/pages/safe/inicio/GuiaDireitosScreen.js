@@ -3,7 +3,7 @@
 //
 // Componente: GuiaDireitosScreen
 // Navegação: Stack (push a partir do Início)
-// Responsável: A definir pelo grupo (não consta na matriz de papéis)
+// Responsável: Felipe Trindade
 // Entrega: 2 (24/10)
 //
 // O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
