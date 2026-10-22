@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.pessegoClaro,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.branco,
     marginRight: 8,
   },
   chipAtivo: {

@@ -55,10 +55,10 @@ export const caloriasSemana = [
 ];
 
 export const receitas = [
-  { id: 1, nome: 'Panqueca de banana e aveia', tempoMin: 10, kcal: 280, categoria: 'Café da manhã', favorita: true },
-  { id: 2, nome: 'Omelete de espinafre',       tempoMin: 8,  kcal: 210, categoria: 'Café da manhã', favorita: false },
-  { id: 3, nome: 'Frango grelhado com legumes', tempoMin: 25, kcal: 430, categoria: 'Almoço',        favorita: false },
-  { id: 4, nome: 'Salada de grão-de-bico',     tempoMin: 15, kcal: 350, categoria: 'Almoço',        favorita: true },
-  { id: 5, nome: 'Sopa de abóbora',            tempoMin: 30, kcal: 260, categoria: 'Jantar',        favorita: false },
-  { id: 6, nome: 'Wrap integral de atum',      tempoMin: 12, kcal: 320, categoria: 'Jantar',        favorita: false },
+  { id: 1, nome: 'Omelete de espinafre com tomate', tempoMin: 15, kcal: 220, categoria: 'Café da manhã', favorita: false },
+  { id: 2, nome: 'Salada morna de grão-de-bico',    tempoMin: 10, kcal: 310, categoria: 'Almoço',        favorita: false },
+  { id: 3, nome: 'Sopa cremosa de abóbora',         tempoMin: 30, kcal: 180, categoria: 'Jantar',        favorita: false },
+  { id: 4, nome: 'Panqueca de banana e aveia',      tempoMin: 15, kcal: 260, categoria: 'Café da manhã', favorita: false },
+  { id: 5, nome: 'Frango grelhado com legumes',     tempoMin: 25, kcal: 340, categoria: 'Almoço',        favorita: false },
+  { id: 6, nome: 'Wrap integral de atum',           tempoMin: 12, kcal: 320, categoria: 'Jantar',        favorita: false },
 ];
