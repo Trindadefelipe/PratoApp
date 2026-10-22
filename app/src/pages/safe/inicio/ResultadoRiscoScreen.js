@@ -3,7 +3,7 @@
 //
 // Componente: ResultadoRiscoScreen
 // Navegação: Stack (push após a última pergunta)
-// Responsável: A definir pelo grupo (mesmo responsável da Tela 16)
+// Responsável: Felipe Trindade
 // Entrega: 2 (24/10)
 //
 // O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
