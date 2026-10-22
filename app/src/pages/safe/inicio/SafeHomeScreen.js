@@ -31,6 +31,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 import { dispararSos, TIPOS_GATILHO } from '../../../services/sos';
+import { usuaria } from '../../../data/usuaria';
 
 export default function SafeHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -65,7 +66,7 @@ export default function SafeHomeScreen({ navigation }) {
       {/* Cabeçalho */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.saudacao}>Olá, Ana</Text>
+          <Text style={styles.saudacao}>Olá, {usuaria.nome_ficticio.split(' ')[0]}</Text>
           <Text style={styles.titulo}>Espaço seguro</Text>
         </View>
 
@@ -117,8 +118,8 @@ export default function SafeHomeScreen({ navigation }) {
           style={[styles.cardAtalho, styles.cardIncidente]}
           onPress={() => navigation.navigate('Cofre')}
         >
-          <Ionicons name="lock-closed-outline" size={24} color="#8A4A28" />
-          <Text style={[styles.cardTitulo, { color: '#6B381E' }]}>
+          <Ionicons name="lock-closed-outline" size={24} color={colors.marrom} />
+          <Text style={[styles.cardTitulo, { color: colors.marromEscuro }]}>
             Registrar incidente
           </Text>
         </Pressable>
@@ -128,8 +129,8 @@ export default function SafeHomeScreen({ navigation }) {
           style={[styles.cardAtalho, styles.cardAutoavaliacao]}
           onPress={() => navigation.navigate('Autoavaliacao')}
         >
-          <Ionicons name="heart-outline" size={24} color="#9A6700" />
-          <Text style={[styles.cardTitulo, { color: '#7A5200' }]}>
+          <Ionicons name="heart-outline" size={24} color={colors.amareloEscuro} />
+          <Text style={[styles.cardTitulo, { color: colors.amareloProfundo }]}>
             Autoavaliação de risco
           </Text>
         </Pressable>
@@ -215,9 +216,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
-    backgroundColor: '#EAF5E9',
+    backgroundColor: colors.verdeClaro,
     borderWidth: 1,
-    borderColor: '#CDE5CC',
+    borderColor: colors.verdeBorda,
   },
   badgeSafeTexto: {
     fontFamily: fonts.semibold,
@@ -265,13 +266,13 @@ const styles = StyleSheet.create({
   sosTexto: {
     fontFamily: fonts.bold,
     fontSize: 32,
-    color: '#FFFFFF',
+    color: colors.branco,
     letterSpacing: 1,
   },
   sosSubtexto: {
     fontFamily: fonts.medium,
     fontSize: 12,
-    color: '#FFFFFF',
+    color: colors.branco,
     marginTop: -2,
     opacity: 0.95,
   },
@@ -299,16 +300,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardViagem: {
-    backgroundColor: '#EAF5E9',
+    backgroundColor: colors.verdeClaro,
   },
   cardIncidente: {
     backgroundColor: colors.pessegoClaro,
   },
   cardAutoavaliacao: {
-    backgroundColor: '#FFF4D9',
+    backgroundColor: colors.amareloClaro,
   },
   cardGuia: {
-    backgroundColor: '#EAF5E9',
+    backgroundColor: colors.verdeClaro,
   },
   cardTitulo: {
     fontFamily: fonts.semibold,
@@ -318,7 +319,7 @@ const styles = StyleSheet.create({
   },
   divisor: {
     height: 1,
-    backgroundColor: '#EAE0D5',
+    backgroundColor: colors.begeDivisor,
     marginVertical: 16,
   },
   linhaHistorico: {
@@ -350,10 +351,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     height: 48,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.branco,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#EAE0D5',
+    borderColor: colors.begeDivisor,
   },
   botaoEmergenciaTexto: {
     fontFamily: fonts.semibold,
