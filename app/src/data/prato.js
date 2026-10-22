@@ -38,8 +38,8 @@ export const refeicoes = [
 
 export const metas = {
   calorias: 1800,
-  pesoAtual: 68,
-  pesoDesejado: 63,
+  pesoAtual: 62.4,
+  pesoDesejado: 60,
   aguaMetaCopos: 8,
   aguaCopos: 5,
 };

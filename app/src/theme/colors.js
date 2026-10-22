@@ -14,4 +14,5 @@ export const colors = {
     cinza        :   '#9AA3A6', // tab inativo
     agua         :   '#7DB9E8', // copos de água
     branco       :   '#FFFFFF', // branco
+    verdeClaro   :   '#EAF4E0', // fundo dos ícones de objetivos
 }
