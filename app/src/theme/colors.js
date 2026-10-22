@@ -12,4 +12,6 @@ export const colors = {
     coral        :   '#E2674D', // SOS e exclusão
     grafite      :   '#26343A', // textos
     cinza        :   '#9AA3A6', // tab inativo
+    agua         :   '#7DB9E8', // copos de água
+    branco       :   '#FFFFFF', // branco
 }
