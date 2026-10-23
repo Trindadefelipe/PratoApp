@@ -88,3 +88,45 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 
 * Toda sugestão de código foi lida, testada no navegador e no Expo Go e, em várias telas, digitada e adaptada por mim antes do commit.
 * As decisões de produto foram minhas e do grupo, como esperar a correção do PR do Higor antes do merge e escolher a estratégia de primeiro acesso (indicação pela rede de proteção mais configuração disfarçada).
+
+
+## Entrega 2: Felipe Trindade
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Telas do Círculo de Confiança (06 e 07) | Gemini / Antigravity | Implementação da listagem e do formulário de criação/edição de contatos com validações e prioridades | Felipe Trindade |
+| Dados simulados dos contatos | Gemini / Antigravity | Estruturação de `contatos.js` conforme entidades e campos do DER | Felipe Trindade |
+| Tela 17: Resultado da autoavaliação | Gemini / Antigravity | Lógica de cálculo dinâmico da pontuação (0 a 24), classificação em 3 níveis (Baixo, Moderado, Alto), barra segmentada de destaque e links de ação | Felipe Trindade |
+| Tela 18: Guia de direitos e canais | Gemini / Antigravity | Estruturação dos atalhos de ligação rápida (180 e 190 via `Linking`), orientações da Lei Maria da Penha e locais de acolhimento | Felipe Trindade |
+| Análise Exploratória: Medidas descritivas (DS) | Gemini / Antigravity | Cálculo de média, mediana, moda, desvio padrão, variância e amplitude no `notebook.ipynb` com interpretação crítica | Felipe Trindade |
+| Análise Exploratória: Frequências e correlação (DS) | Gemini / Antigravity | Elaboração de tabelas de frequência por classes, histogramas com KDE, gráfico de evolução histórica com marco da Lei Maria da Penha, ranking de capitais e heatmap de correlação | Felipe Trindade |
+| Auditoria e Governança Técnica de Código | Antigravity (`issue-closer` / `pr-code-reviewer`) | Execução de auditoria automatizada em 4 dimensões (requisitos da issue, aderência aos padrões do projeto, integridade/quebras e veredicto conclusivo) antes de cada commit | Felipe Trindade |
+
+### Prompts testados
+
+#### Telas 17 e 18 do SAFE (Gemini / Antigravity)
+
+**Prompt:** "implemente a Tela 17 (ResultadoRiscoScreen) e a Tela 18 (GuiaDireitosScreen) seguindo as diretrizes de docs/padroes-de-codigo.md, tema com theme/colors.js e theme/fonts.js, garantindo o cálculo de nível por soma e discadores nativos"
+
+**Resultado:** Telas completas e integradas ao `InicioStack`, respeitando a identidade visual, acessibilidade, proteção por sigilo e aviso acadêmico obrigatório.
+
+#### Análise Exploratória no Jupyter Notebook (Gemini / Antigravity)
+
+**Prompt:** "crie a seção da Etapa 2 de EDA no notebook.ipynb respeitando a Etapa 1 já existente, com cálculos descritivos, histogramas de distribuição, série histórica destacando a Lei Maria da Penha e correlação com heatmap"
+
+**Resultado:** Inclusão de células executáveis em Python (pandas, matplotlib, seaborn) e blocos em markdown interpretando a assimetria positiva dos dados absolutos versus a robustez da taxa por 100 mil habitantes.
+
+#### Auditoria com Skill /pr-code-reviewer
+
+**Prompt:** "audite o diff do arquivo implementado validando o atendimento aos critérios da issue, ausência de quebras, sanitização e conformidade com os padrões do repositório"
+
+**Resultado:** Parecer técnico formal garantindo que nenhum segredo vazou, que a navegação não quebra estados anteriores e que todos os critérios de aceite foram integralmente atendidos antes do commit.
+
+### O que eu aprendi e decidi
+
+* A utilização da taxa padronizada por 100 mil mulheres é fundamental em comparação aos números absolutos, pois mitiga a distorção gerada por metrópoles como São Paulo e Rio de Janeiro na modelagem estatística.
+* No desenvolvimento mobile para segurança de vítimas, a integração de canais de socorro (180 e 190) precisa ser nativa e rápida através do protocolo `tel:` do `Linking`, sem intermediações complexas que retardem o pedido de ajuda.
+* A automação do fluxo com a disciplina do `issue-closer` e do `pr-code-reviewer` garante que cada entrega possua rastreabilidade, commit atômico e fechamento com conformidade rigorosa.
+
