@@ -99,6 +99,10 @@ PratoApp/
 6. [Backlog e Quadro Kanban](docs/kanban-backlog.md)
 7. [Registro de Uso de IA](USO_IA.md)
 
+## 🗂️ Quadro Kanban
+
+* [Quadro do projeto no GitHub Projects](https://github.com/users/alanakaled10/projects/1): as issues de cada entrega, nas colunas A Fazer, Em Andamento, Em Revisão e Concluído.
+
 ## 🧭 Guia para quem desenvolve
 
 * [Padrões de Código do App Mobile](docs/padroes-de-codigo.md): pastas, nomes, cores, dados simulados, rotas e mensagens de commit. Leia antes de começar uma tela.

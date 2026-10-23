@@ -1,7 +1,8 @@
 # 📊 Backlog Inicial e Quadro Kanban do Projeto
 
 **Metodologia:** Kanban com sprints quinzenais alinhadas às datas de entrega oficiais do Projeto Integrador.  
-**Ferramenta Sugerida:** GitHub Projects / Trello / Notion  
+**Ferramenta:** [GitHub Projects](https://github.com/users/alanakaled10/projects/1) (a partir da Entrega 2; na Entrega 1 o quadro estava no Trello)  
+**Como funciona:** cada cartão é uma issue do repositório. Issue fechada vai para **Concluído** automaticamente.  
 
 ---
 
