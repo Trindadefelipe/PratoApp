@@ -29,6 +29,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 import BotaoPrimario from '../../../components/BotaoPrimario';
+import { PRIORIDADES } from '../../../data/contatos';
 
 export default function ContatoFormScreen({ navigation, route }) {
   const contatoExistente = route.params?.contato;
@@ -38,7 +39,8 @@ export default function ContatoFormScreen({ navigation, route }) {
   const [nome, setNome] = useState(contatoExistente?.nome || '');
   const [telefone, setTelefone] = useState(contatoExistente?.telefone || '');
   const [relacao, setRelacao] = useState(contatoExistente?.parentesco_relacao || '');
-  const [prioridade, setPrioridade] = useState(contatoExistente?.nivel_prioridade || 'Alta');
+  // nivel_prioridade: 1 = Alta, 2 = Média, 3 = Baixa (contato novo começa em Alta)
+  const [prioridade, setPrioridade] = useState(contatoExistente?.nivel_prioridade || 1);
   const [notificarSms, setNotificarSms] = useState(
     contatoExistente ? Boolean(contatoExistente.notificar_sms) : true
   );
@@ -161,16 +163,16 @@ export default function ContatoFormScreen({ navigation, route }) {
           <View style={styles.campoGrupo}>
             <Text style={styles.rotulo}>Prioridade</Text>
             <View style={styles.prioridadeContainer}>
-              {['Alta', 'Média', 'Baixa'].map((opcao) => {
-                const ativo = prioridade === opcao;
+              {[1, 2, 3].map((nivel) => {
+                const ativo = prioridade === nivel;
                 return (
                   <Pressable
-                    key={opcao}
+                    key={nivel}
                     style={[
                       styles.opcaoPrioridade,
                       ativo && styles.opcaoPrioridadeAtiva,
                     ]}
-                    onPress={() => setPrioridade(opcao)}
+                    onPress={() => setPrioridade(nivel)}
                   >
                     <Text
                       style={[
@@ -178,7 +180,7 @@ export default function ContatoFormScreen({ navigation, route }) {
                         ativo && styles.textoPrioridadeAtivo,
                       ]}
                     >
-                      {opcao}
+                      {PRIORIDADES[nivel]}
                     </Text>
                   </Pressable>
                 );
@@ -201,7 +203,7 @@ export default function ContatoFormScreen({ navigation, route }) {
               <Switch
                 value={notificarSms}
                 onValueChange={setNotificarSms}
-                trackColor={{ false: '#E5E7EB', true: colors.verdeProfundo }}
+                trackColor={{ false: colors.begeDivisor, true: colors.verdeProfundo }}
                 thumbColor={colors.branco}
               />
             </View>
@@ -221,7 +223,7 @@ export default function ContatoFormScreen({ navigation, route }) {
               <Switch
                 value={notificarWhatsapp}
                 onValueChange={setNotificarWhatsapp}
-                trackColor={{ false: '#E5E7EB', true: colors.verdeProfundo }}
+                trackColor={{ false: colors.begeDivisor, true: colors.verdeProfundo }}
                 thumbColor={colors.branco}
               />
             </View>
@@ -272,7 +274,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.begeDivisor,
     backgroundColor: colors.branco,
     alignItems: 'center',
     justifyContent: 'center',
@@ -319,7 +321,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.branco,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.begeDivisor,
     paddingHorizontal: 16,
     height: 52,
     fontFamily: fonts.medium,
@@ -332,7 +334,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.branco,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.begeDivisor,
     paddingHorizontal: 16,
     height: 52,
   },
@@ -350,7 +352,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.branco,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.begeDivisor,
     padding: 4,
     height: 52,
   },
@@ -395,7 +397,7 @@ const styles = StyleSheet.create({
   },
   divisorSwitch: {
     height: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.begeCard,
   },
   botaoSalvar: {
     marginTop: 20,

@@ -25,4 +25,6 @@ export const colors = {
     begeDivisor    : '#EAE0D5', // divisores e bordas de botões de emergência
     begeCard       : '#EFE6DC', // borda de cards do histórico
     preto          : '#000000', // sombras
+    pessegoSuave   : '#FEEEDE', // fundo do aviso de prioridade no Círculo
+    coralClaro     : '#FCE4DE', // fundo de avatar no Círculo
 }

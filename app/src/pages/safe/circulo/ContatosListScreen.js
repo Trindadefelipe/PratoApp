@@ -25,7 +25,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
-import { contatos as contatosIniciais } from '../../../data/contatos';
+import { contatos as contatosIniciais, PRIORIDADES } from '../../../data/contatos';
 
 export default function ContatosListScreen({ navigation }) {
   const [busca, setBusca] = useState('');
@@ -44,28 +44,28 @@ export default function ContatosListScreen({ navigation }) {
     const paletaAvatares = [
       { bg: colors.pessegoClaro, text: colors.coral },
       { bg: colors.verdeClaro, text: colors.verdeProfundo },
-      { bg: '#FEF3C7', text: '#B45309' },
-      { bg: '#FEE2E2', text: colors.coral },
+      { bg: colors.amareloClaro, text: colors.amareloEscuro },
+      { bg: colors.coralClaro, text: colors.coral },
     ];
     return paletaAvatares[index % paletaAvatares.length];
   };
 
-  // Badge de prioridade
-  const renderBadgePrioridade = (prioridade) => {
+  // Badge de prioridade (nivel_prioridade: 1 = Alta, 2 = Média, 3 = Baixa)
+  const renderBadgePrioridade = (nivel) => {
     let estiloBadge = styles.badgeAlta;
     let estiloTexto = styles.badgeTextoAlta;
 
-    if (prioridade === 'Média') {
+    if (nivel === 2) {
       estiloBadge = styles.badgeMedia;
       estiloTexto = styles.badgeTextoMedia;
-    } else if (prioridade === 'Baixa') {
+    } else if (nivel === 3) {
       estiloBadge = styles.badgeBaixa;
       estiloTexto = styles.badgeTextoBaixa;
     }
 
     return (
       <View style={[styles.badgeBase, estiloBadge]}>
-        <Text style={[styles.badgeTextoBase, estiloTexto]}>{prioridade}</Text>
+        <Text style={[styles.badgeTextoBase, estiloTexto]}>{PRIORIDADES[nivel]}</Text>
       </View>
     );
   };
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.branco,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.begeDivisor,
     paddingHorizontal: 14,
     height: 48,
     marginBottom: 14,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   avisoCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FDE3CC80',
+    backgroundColor: colors.pessegoSuave,
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -319,16 +319,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   badgeAlta: {
-    backgroundColor: '#FDE3CC',
+    backgroundColor: colors.pessegoClaro,
   },
   badgeTextoAlta: {
     color: colors.coral,
   },
   badgeMedia: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.amareloClaro,
   },
   badgeTextoMedia: {
-    color: '#B45309',
+    color: colors.amareloEscuro,
   },
   badgeBaixa: {
     backgroundColor: colors.verdeClaro,
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
   },
   separador: {
     height: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.begeCard,
     marginVertical: 4,
   },
   vazioContainer: {
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: colors.preto,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,

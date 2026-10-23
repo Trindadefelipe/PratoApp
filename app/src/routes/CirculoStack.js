@@ -29,7 +29,7 @@ export default function CirculoStack(){
             <Stack.Screen 
                 name="ContatoForm"
                 component={ContatoFormScreen}
-                options={{ title: 'Contato' }}
+                options={{ headerShown: false }}
             />
 
         </Stack.Navigator>
