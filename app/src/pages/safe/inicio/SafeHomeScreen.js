@@ -30,7 +30,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
-import { dispararSos, TIPOS_GATILHO } from '../../../services/sos';
+import {dispararSos, TIPOS_GATILHO } from '../../../services/sos';
 import { usuaria } from '../../../data/usuaria';
 
 export default function SafeHomeScreen({ navigation }) {
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   saudacao: {
     fontFamily: fonts.regular,
     fontSize: 14,
-    color: colors.grafite,
+    color: colors.cinza,
     marginBottom: 2,
   },
   titulo: {
