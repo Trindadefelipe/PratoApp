@@ -42,7 +42,7 @@ export default function InicioStack(){
             <Stack.Screen
                 name="Autoavaliacao"
                 component={AutoavaliacaoScreen}
-                options={{ title: 'Autoavaliação' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="ResultadoRisco"
