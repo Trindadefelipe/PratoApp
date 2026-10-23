@@ -18,7 +18,6 @@ import { useState } from 'react';
 import { View, Text, TextInput, Image, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import BotaoPrimario from '../../components/BotaoPrimario';
 import AnelCalorias from '../../components/prato/AnelCalorias';
 import { refeicoes, metas } from '../../data/prato';
 import { colors } from '../../theme/colors';
@@ -119,14 +118,6 @@ export default function PratoHomeScreen({navigation}){
                         ))}
                     </View>
                 </View>
-
-                {/* Provisório: removido quando o gatilho do PIN ficar pronto (#37) */}
-                <BotaoPrimario
-                titulo="Entrar no SAFE (teste)"
-                variante="secundario"
-                style={{ marginTop: 24 }}
-                onPress={() => navigation.reset({ index: 0, routes: [{ name: 'SafeTabs' }] })}
-                />
 
             </ScrollView>
 

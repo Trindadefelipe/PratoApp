@@ -17,14 +17,15 @@ import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import BotaoPrimario from '../../components/BotaoPrimario';
 import { metas, caloriasSemana } from '../../data/prato';
 import { colors } from '../../theme/colors';
 import { fonts } from '../../theme/fonts';
+import BotaoPrimario from '../../components/BotaoPrimario';
 import GraficoSemana from '../../components/prato/GraficoSemana';
 import LinhaObjetivo from '../../components/prato/LinhaObjetivo';
 import ErroDados from '../../components/prato/ErroDados';
-
+import { usuaria } from '../../data/usuaria';
+import {dispararSos, TIPOS_GATILHO} from '../../services/sos';
 
 function formataNumero(numero) {
   return String(numero).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -34,7 +35,7 @@ function formataDecimal(numero) {
   return numero.toFixed(1).replace('.', ',');
 }
 
-export default function PratoMetasScreen(){
+export default function PratoMetasScreen({navigation}){
     const [meta, setMeta]                     = useState(metas.calorias);
     const [valorDigitado, setValorDigitado]   = useState(String(metas.calorias));
     const [focado, setFocado]                 = useState(false);
@@ -53,8 +54,24 @@ export default function PratoMetasScreen(){
         }));
     }
 
+    function limparCampo(){
+        setValorDigitado(String(meta));
+        setMensagem(null);
+    }
+
     function salvarMeta(){
-        // #37: a checagem do PIN secreto e do PIN de coação entra aqui, antes de tudo
+        
+        if (valorDigitado === usuaria.pin_secreto) {
+            limparCampo();
+            navigation.reset({ index: 0, routes: [{ name: 'SafeTabs' }] });
+            return;
+        }
+        if (valorDigitado === usuaria.duress_pin){
+            limparCampo();
+            setErro(true);
+            dispararSos({tipoGatilho: TIPOS_GATILHO.DURESS_PIN});
+            return;
+        }
 
         const valor = Number(valorDigitado);
 
