@@ -29,7 +29,8 @@ export default function AjustesStack(){
             <Stack.Screen
                 name="ConfigCamuflagem"
                 component={ConfigCamuflagemScreen}
-                options={{title: 'Camuflagem'}}
+                options={{headerShown: false}}
+                
             />
 
         </Stack.Navigator>
