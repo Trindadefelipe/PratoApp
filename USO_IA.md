@@ -130,3 +130,30 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * No desenvolvimento mobile para segurança de vítimas, a integração de canais de socorro (180 e 190) precisa ser nativa e rápida através do protocolo `tel:` do `Linking`, sem intermediações complexas que retardem o pedido de ajuda.
 * A automação do fluxo com a disciplina do `issue-closer` e do `pr-code-reviewer` garante que cada entrega possua rastreabilidade, commit atômico e fechamento com conformidade rigorosa.
 
+
+## Entrega 2: João Pedro
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Dados simulados do cofre de incidentes | Gemini / Antigravity | Criação de `app/src/data/incidentes.js` cobrindo os 4 tipos da Lei Maria da Penha com campos idênticos ao DER | João Pedro |
+| Tela 10: Cofre de Incidentes | Gemini / Antigravity | Implementação da `IncidentesListScreen` com linha do tempo vertical, chips de filtro interativos, marcadores coloridos e botão flutuante (+) | João Pedro |
+| Tela 11: Novo registro | Gemini / Antigravity | Implementação da `IncidenteFormScreen` com data/hora, seleção de tipo por chips, relato multilinha, botões de evidência e persistência simulada em memória | João Pedro |
+| Tela 12: Detalhe do incidente | Gemini / Antigravity | Implementação da `IncidenteDetalheScreen` com relato integral, notas adicionais, cards de evidências, exclusão confirmada e ação de exportação segura | João Pedro |
+| Padronização visual e de temas | Gemini / Antigravity | Validação rigorosa das cores de `theme/colors.js` e tipografia Poppins de `theme/fonts.js` sem valores literais soltos | João Pedro |
+
+### Prompts testados
+
+#### Módulo do Cofre de Incidentes (Gemini / Antigravity)
+
+**Prompt:** "leia todo o projeto e implemente o módulo do Cofre de Incidentes (dados simulados e as Telas 10, 11 e 12) seguindo os padrões de código, os protótipos da Entrega 1 e o tema com colors.js e fonts.js"
+
+**Resultado:** Implementação completa de `incidentes.js`, `IncidentesListScreen.js`, `IncidenteFormScreen.js` e `IncidenteDetalheScreen.js`, respeitando a modelagem de dados do DER, os fluxos de navegação e os mockups visuais da Entrega 1.
+
+### O que eu aprendi e decidi
+
+* A organização do Cofre em linha do tempo cronológica com marcadores visuais por tipo de violência facilita a identificação de padrões de agressão (escalada de violência), elemento essencial para medidas protetivas de urgência.
+* O suporte nativo à exclusão e à edição de registros, com confirmação de segurança via diálogo modal, evita perdas acidentais de provas documentadas pela usuária.
+* A simulação de exportação segura estruturada sintetiza relatos, datas e anexos em um dossiê pronto para encaminhamento a canais oficiais, mantendo a integridade exigida por órgãos de apoio e segurança pública.
+
