@@ -99,6 +99,26 @@ PratoApp/
 6. [Backlog e Quadro Kanban](docs/kanban-backlog.md)
 7. [Registro de Uso de IA](USO_IA.md)
 
+## 📊 Data Science: Entrega 2
+
+O pipeline está em [`data-science/notebook.ipynb`](data-science/notebook.ipynb), com uma seção por etapa e o responsável de cada uma.
+
+**Base escolhida:** [Atlas da Violência](https://www.ipea.gov.br/atlasviolencia/tema/61/) (IPEA e FBSP, a partir do SIM/Ministério da Saúde), séries "Homicídios Mulheres" e "Taxa de Homicídios Mulheres", 27 capitais, 1989 a 2022 (918 linhas: capital × ano). Dados públicos, agregados e sem informação pessoal; acesso em 18/10/2026. Serve ao app porque mostra onde e quando a violência letal contra a mulher é maior e permite um indicador de contexto por capital para a tela de Autoavaliação.
+
+**Limitações:** subnotificação e mortes registradas como "causa indeterminada"; troca da CID-9 pela CID-10 em 1996; só capitais; só homicídios.
+
+| Etapa | Responsável | O que tem no notebook |
+|---|---|---|
+| 1 e 2. Governança, aquisição e dicionário | Alana Caled | Ficha da base, LGPD, limitações, carga e dicionário com tipo estatístico e unidade |
+| 3 e 4. Qualidade e tratamento | Higor Bueno | Diagnóstico nas 5 dimensões, tratamento na ordem da Aula 9, tabela de decisões e antes × depois |
+| 5. Análise exploratória | Felipe Trindade | Medidas, frequências (absoluta, relativa e acumulada), série no tempo, relações e 3 perguntas |
+| 6. Plano de modelagem | Higor Domingos | Objetivo, alvo, variáveis, técnicas |
+| 6. Plano de avaliação | João Pedro | Métricas, pisos, validação temporal e riscos |
+
+**Decisões de tratamento (resumo):** a base não tinha valores vazios, inválidos nem duplicados. Os 6 zeros (Palmas nos primeiros anos e Natal em 2004) foram **mantidos e sinalizados**, e os 16 outliers da taxa foram **mantidos e sinalizados** (são anos reais de violência mais alta). Foram criadas as colunas `regiao` e `faixa_risco`. O escalonamento aparece só como demonstração.
+
+**Dados:** a base bruta fica intocada em `data-science/dados/` (os dois CSVs originais); a base unificada é `capitais_homicidios_mulheres.csv` e a tratada é `capitais_dados_processados.csv`.
+
 ## 🗂️ Quadro Kanban
 
 * [Quadro do projeto no GitHub Projects](https://github.com/users/alanakaled10/projects/1): as issues de cada entrega, nas colunas A Fazer, Em Andamento, Em Revisão e Concluído.
