@@ -31,12 +31,12 @@ export default function CofreStack(){
             <Stack.Screen
                 name="IncidenteForm"
                 component={IncidenteFormScreen}
-                options={{title: 'Registro'}}
+                options={{headerShown: false}}
             />
             <Stack.Screen
                 name="IncidenteDetalhe"
                 component={IncidenteDetalheScreen}
-                options={{title: 'Incidente'}}
+                options={{headerShown: false}}
             />
 
         </Stack.Navigator>

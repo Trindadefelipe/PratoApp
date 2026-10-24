@@ -37,7 +37,7 @@ export default function InicioStack(){
             <Stack.Screen
                 name="GuiaDireitos"
                 component={GuiaDireitosScreen}
-                options={{ title: 'Guia de direitos' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="Autoavaliacao"
@@ -47,7 +47,7 @@ export default function InicioStack(){
             <Stack.Screen
                 name="ResultadoRisco"
                 component={ResultadoRiscoScreen}
-                options={{ title: 'Resultado' }}
+                options={{ headerShown: false }}
             />
         </Stack.Navigator>
     )
