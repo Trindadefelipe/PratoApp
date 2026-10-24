@@ -157,3 +157,36 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * O suporte nativo à exclusão e à edição de registros, com confirmação de segurança via diálogo modal, evita perdas acidentais de provas documentadas pela usuária.
 * A simulação de exportação segura estruturada sintetiza relatos, datas e anexos em um dossiê pronto para encaminhamento a canais oficiais, mantendo a integridade exigida por órgãos de apoio e segurança pública.
 
+
+## Entrega 2: Higor Bueno
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Dados simulados de viagens e check-ins | Gemini / Antigravity | Criação de `app/src/data/viagens.js` com modelagem idêntica ao DER e chaves estrangeiras vinculadas à usuária | Higor Bueno |
+| Tela 08: Nova viagem | Gemini / Antigravity | Implementação da `ViagemNovaScreen` com De/Para, chips de tempo com cálculo automático de chegada e rede de apoio selecionável | Higor Bueno |
+| Tela 09: Viagem em andamento | Gemini / Antigravity | Implementação da `ViagemEmAndamentoScreen` com anel circular de contagem regressiva em SVG, botões de ação e legenda dinâmica de acompanhantes | Higor Bueno |
+| Qualidade e limpeza de dados (DS) | Gemini / Antigravity | Auditoria de integridade e nulos, validação de tipos primitivos e análise estatística de outliers por IQR (Critério de Tukey) no `notebook.ipynb` | Higor Bueno |
+| Engenharia de atributos e normalização (DS) | Gemini / Antigravity | Derivação de macrorregião pelo código IBGE, categorização em 4 faixas de risco e escalonamento numérico via MinMaxScaler e StandardScaler para preparar o dataset para Machine Learning | Higor Bueno |
+
+### Prompts testados
+
+#### Módulo de Viagem Segura (Gemini / Antigravity)
+
+**Prompt:** "implemente o módulo de Viagem Segura (dados simulados de viagens e as Telas 08 e 09) seguindo os padrões de código, os protótipos da Entrega 1, cores de colors.js, fontes de fonts.js e anel regressivo em SVG"
+
+**Resultado:** Implementação de `viagens.js`, `ViagemNovaScreen.js` e `ViagemEmAndamentoScreen.js` com transição de tela via `navigation.replace`, anel regressivo em SVG e conexão com os contatos do Círculo de Confiança.
+
+#### Qualidade, Limpeza e Pré-processamento no Jupyter Notebook (Gemini / Antigravity)
+
+**Prompt:** "crie a seção da Etapa 3 de Qualidade, Limpeza e Pré-processamento no notebook.ipynb respeitando as Etapas 1 e 2 já existentes, com checagem de nulos, detecção de outliers pelo IQR, mapeamento de macrorregiões pelo código IBGE, faixas de risco por quartis e normalização Min-Max e StandardScaler para o modelo de ML"
+
+**Resultado:** Inclusão das células executáveis da Etapa 3 e blocos de markdown fundamentando a decisão metodológica de não excluir outliers sociodemográficos reais e preparando a base para os algoritmos da Etapa 4.
+
+### O que eu aprendi e decidi
+
+* Na arquitetura de segurança pessoal do SAFE, o estado de uma viagem ativa exige `navigation.replace` para evitar retorno acidental a um formulário em branco pelo botão nativo do sistema operacional.
+* Em Ciência de Dados para segurança pública, outliers em taxas de homicídio não devem ser descartados como simples "ruído", pois representam momentos críticos de violência real cuja exclusão criaria um viés perigoso nos modelos de predição de risco.
+* A criação de features estruturadas (como Macrorregião e faixas ordinais de risco) e a normalização padronizada são etapas indispensáveis para que os algoritmos de Machine Learning (como K-Means ou Random Forest) convirjam sem serem distorcidos pelas disparidades populacionais entre grandes e pequenas capitais.
+
