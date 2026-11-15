@@ -1,0 +1,81 @@
+# 🔌 API do Pratô / SAFE (Entrega Final)
+
+API REST em **Node.js + Express** com banco **PostgreSQL no Supabase**. É o back-end que o app Expo consome a partir da Entrega Final, sem dados simulados.
+
+| Exigência da entrega | Onde está |
+|---|---|
+| Node.js/Express | `src/server.js` |
+| Uma tabela por CRUD (no mínimo uma por integrante) | 6 tabelas do DER em `sql/schema.sql` |
+| Rotas RESTful completas (GET, GET por id, POST, PUT, DELETE) | Um arquivo por tabela em `src/rotas/` |
+| Relacionamento real validado pela API | `garantirExiste()` em `src/erros.js`, usado nas rotas antes de gravar, e as chaves estrangeiras do banco |
+| Tratamento de erros com status HTTP | `tratarErros()` em `src/erros.js`: `400`, `404` e `500`, sempre `{ "erro": "..." }` |
+
+---
+
+## ▶️ Como rodar
+
+1. Instale o [Node.js](https://nodejs.org) 20 ou mais novo.
+2. Na pasta `api/`:
+   ```bash
+   npm install
+   ```
+3. Copie o `.env.example` para `.env` e cole a URL do banco (peça a senha para a Alana, por mensagem privada):
+   * Supabase > botão **Connect** no topo do projeto > **Session pooler** > copie a URL e troque `[YOUR-PASSWORD]` pela senha.
+   * O `.env` **nunca** vai para o Git (já está no `.gitignore`).
+4. Suba a API:
+   ```bash
+   npm start
+   ```
+   ou `npm run dev`, que reinicia sozinho quando você salva um arquivo.
+5. Teste: abra `http://localhost:3333/` no navegador. Tem que aparecer `{"status":"ok","banco":"ok",...}`.
+
+### Celular com Expo Go
+O celular não enxerga o `localhost` do computador. No app (`app/src/services/api.js`), use o **IP do computador** na mesma rede Wi-Fi, por exemplo `http://192.168.0.10:3333`. Para ver o IP no Windows: `ipconfig` (linha "Endereço IPv4"). Se não conectar, libere a porta 3333 no Firewall do Windows.
+
+---
+
+## 🗄️ Banco de dados
+
+* `sql/schema.sql`: cria as 6 tabelas do DER (já rodado no Supabase).
+* `sql/seed.sql`: dados de teste fictícios (a usuária de teste tem id `7b1e4c2a-9f3d-4e8a-b6c1-2d5f8a9e0c31`).
+* Para recriar do zero: rode os dois de novo no **SQL Editor** do Supabase (o `schema.sql` tem as linhas de `drop` comentadas no topo).
+
+---
+
+## 🧩 Como criar as rotas da sua tabela
+
+1. Copie `src/rotas/_modelo.js` para `src/rotas/<caminho>.js`. O nome do arquivo vira o caminho: `contatos.js` vira `/contatos`. **Não precisa mexer no `server.js`.**
+2. No arquivo novo, troque `TABELA`, `CAMPOS` e as regras de `validar()` pelas da sua tabela, com os nomes do DER.
+3. Em `conferirRelacionamentos()`, confira cada chave estrangeira com `garantirExiste('tabela', id, 'campo')`.
+4. Teste as 5 rotas e anote na tabela abaixo.
+
+Regras:
+* Sempre consulta com parâmetros (`$1`, `$2`), nunca texto do pedido colado no SQL.
+* Para recusar um pedido: `throw new ErroApi(400, 'mensagem')`. O `tratarErros` responde no formato padrão.
+* Erros do próprio banco (e-mail repetido, valor fora da lista do `CHECK`, chave estrangeira) já viram `400` sozinhos.
+* Nunca devolva `senha_hash`.
+
+---
+
+## 🛣️ Rotas
+
+| Caminho | Tabela | Responsável | Issue | Situação |
+|---|---|---|---|---|
+| `GET /` | (saúde da API e do banco) | Alana | #64 | ✅ |
+| `/usuarias` | `usuarias` | Alana | #65 | a fazer |
+| `/contatos` | `contatos_confianca` | Felipe | #69 | a fazer |
+| `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | a fazer |
+| `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | a fazer |
+| `/incidentes` | `cofre_incidentes` | João Pedro | #80 | a fazer |
+| `/indicadores` | `indicadores_capitais` | João Pedro | #83 | a fazer |
+
+Cada caminho tem `GET /caminho`, `GET /caminho/:id`, `POST /caminho`, `PUT /caminho/:id` e `DELETE /caminho/:id`.
+
+## ⚠️ Respostas de erro
+
+| Status | Quando |
+|---|---|
+| `400` | Campo obrigatório faltando, valor fora da lista, id que não é UUID, relacionamento que não existe, valor repetido |
+| `404` | Id não encontrado, ou caminho que não existe |
+| `500` | Erro interno (a mensagem real aparece só no terminal da API) |
+| `503` | Só no `GET /`: a API está no ar, mas o banco não respondeu |

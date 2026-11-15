@@ -1,0 +1,3 @@
+node_modules/
+# O .env tem a senha do banco: nunca vai para o Git.
+.env
