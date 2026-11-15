@@ -122,6 +122,48 @@ import { usuaria } from '../../../data/usuaria';
 * Valores calculados (total de calorias, kcal restantes, nível de risco) **não ficam no arquivo de dados**: a tela calcula. Assim, mudar um dado atualiza tudo sozinho.
 * Somente dados fictícios: nomes, telefones, endereços e coordenadas inventados.
 
+### A partir da Entrega Final: dados da API
+
+Os dados vêm da API pelo `app/src/services/api.js`. Regras:
+
+* A tela **nunca** chama `fetch` direto: usa uma função do `api.js` (ex.: `buscarUsuaria`).
+* A chamada fica dentro de um `useEffect`, com `try/catch`.
+* A tela mostra **carregando** enquanto espera e a **mensagem de erro** se falhar.
+* O id da usuária vem de `USUARIA_TESTE_ID`, exportado do `api.js` (até o primeiro acesso guardar o id real).
+
+```js
+import { buscarUsuaria, USUARIA_TESTE_ID } from '../../../services/api';
+
+const [usuaria, setUsuaria] = useState(null);
+const [carregando, setCarregando] = useState(true);
+const [erro, setErro] = useState('');
+
+useEffect(() => {
+  async function carregar() {
+    try {
+      setUsuaria(await buscarUsuaria(USUARIA_TESTE_ID));
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setCarregando(false);
+    }
+  }
+  carregar();
+}, []);
+
+if (carregando) return <ActivityIndicator />;
+if (erro) return <Text>{erro}</Text>;
+```
+
+Para criar as funções da sua tabela, acrescente um bloco no `api.js`:
+
+```js
+// ---------- Contatos (Felipe, #69) ----------
+export function listarContatos(usuariaId) {
+  return requisitar(`/contatos?usuaria_id=${usuariaId}`);
+}
+```
+
 ---
 
 ## 🧩 6. Componentes
@@ -226,3 +268,4 @@ Description: Closes #44
 - [ ] Cabeçalho do arquivo mantido e atualizado
 - [ ] Só os arquivos da tarefa marcados no commit
 - [ ] Mensagem no padrão `Área: o que foi feito (Nome)` + `Closes #N`
+
