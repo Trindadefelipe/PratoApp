@@ -62,7 +62,7 @@ Regras:
 | Caminho | Tabela | Responsável | Issue | Situação |
 |---|---|---|---|---|
 | `GET /` | (saúde da API e do banco) | Alana | #64 | ✅ |
-| `/usuarias` | `usuarias` | Alana | #65 | a fazer |
+| `/usuarias` | `usuarias` | Alana | #65 | ✅ |
 | `/contatos` | `contatos_confianca` | Felipe | #69 | a fazer |
 | `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | a fazer |
 | `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | a fazer |
@@ -70,6 +70,40 @@ Regras:
 | `/indicadores` | `indicadores_capitais` | João Pedro | #83 | a fazer |
 
 Cada caminho tem `GET /caminho`, `GET /caminho/:id`, `POST /caminho`, `PUT /caminho/:id` e `DELETE /caminho/:id`.
+
+### `/usuarias` (Alana, #65)
+
+Campos: `nome_ficticio`, `email`, `pin_secreto` e `duress_pin` (obrigatórios no `POST`), mais `camuflagem_ativa` (`true` por padrão) e `senha` (opcionais). No `PUT`, mande só o que quer mudar.
+
+* PINs vão como **texto** (`"0123"`), com 4 a 6 dígitos, e os dois precisam ser diferentes.
+* A `senha` é opcional porque o app entra pelo PIN, sem login (o primeiro acesso só cria os dois códigos). Sem `senha`, a API preenche o `senha_hash` com o hash de um valor aleatório, porque o campo é obrigatório no banco.
+* A senha nunca é guardada em texto, e nenhuma resposta devolve `senha_hash`.
+* E-mail repetido (sem diferenciar maiúsculas) devolve `400`.
+
+Exemplo de `POST /usuarias`:
+```json
+{
+  "nome_ficticio": "Maria Teste",
+  "email": "maria.teste@exemplo.com",
+  "pin_secreto": "1234",
+  "duress_pin": "9876"
+}
+```
+
+Testes feitos (todos com o resultado esperado):
+
+| Pedido | Caso | Status |
+|---|---|---|
+| `GET /usuarias` | lista | `200` |
+| `GET /usuarias/:id` | usuária do `seed.sql` | `200` |
+| `GET /usuarias/:id` | id que não existe / id mal formado | `404` / `400` |
+| `POST /usuarias` | dados certos, sem senha / com senha | `201` |
+| `POST /usuarias` | sem e-mail, senha curta, PIN com 2 dígitos, PIN como número, PINs iguais | `400` |
+| `POST /usuarias` | e-mail que já existe | `400` |
+| `PUT /usuarias/:id` | só `camuflagem_ativa` / o próprio e-mail | `200` |
+| `PUT /usuarias/:id` | `duress_pin` igual ao PIN atual, e-mail de outra usuária, corpo vazio | `400` |
+| `PUT /usuarias/:id` | id que não existe | `404` |
+| `DELETE /usuarias/:id` | usuária criada no teste / a mesma de novo | `200` / `404` |
 
 ## ⚠️ Respostas de erro
 
