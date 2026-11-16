@@ -56,3 +56,7 @@ export function atualizarUsuaria(id, dados) {
   return requisitar(`/usuarias/${id}`, { metodo: 'PUT', corpo: dados });
 }
 
+export function criarUsuaria(dados) {
+  return requisitar('/usuarias', { metodo: 'POST', corpo: dados });
+}
+
