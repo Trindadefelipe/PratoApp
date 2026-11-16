@@ -238,3 +238,41 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * A governança de código com commits atômicos vinculados a issues (`Closes #N`) e auditorias automatizadas via `/pr-code-reviewer` proporciona total rastreabilidade das contribuições individuais de cada membro da equipe.
 
 
+## Entrega Final: Higor Domingos
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Rotas RESTful de Alertas SOS (API) | Gemini / Antigravity | Construção de `api/src/rotas/alertas.js` com os 5 métodos HTTP, validação estrita do DER, checagem de chave estrangeira (`usuaria_id` e `viagem_id`) e prepared statements | Higor Domingos |
+| Painel Agregado da Delegacia (API e Web) | Gemini / Antigravity | Criação da rota agregada `GET /painel` com JOIN em usuárias e viagens, além do painel web responsivo em `painel/index.html` com atualização automática | Higor Domingos |
+| Integração Mobile do SOS e Histórico | Gemini / Antigravity | Migração de `app/src/services/sos.js` e `AlertasHistoricoScreen.js` para consumo da API real, tratamento velado do *Duress PIN* e suporte a Update e Delete | Higor Domingos |
+| Polling em tempo real no app | Gemini / Antigravity | Implementação de atualização periódica a cada 5s via `useEffect` no histórico de alertas | Higor Domingos |
+| Modelagem de Machine Learning (Etapa 4 - DS) | Gemini / Antigravity | Construção dos pipelines com `RobustScaler`, `OneHotEncoder`, divisão temporal estrita, validação cruzada com `TimeSeriesSplit` (Regressão Logística e Random Forest) e clusterização K-Means | Higor Domingos |
+| Governança e auditoria de issues | Gemini / Antigravity | Criação da skill `.agents/skills/issue-closer/SKILL.md` para auditoria formal de critérios de aceite e ordem de fechamento no GitHub | Higor Domingos |
+
+### Prompts testados
+
+#### Rotas de Alertas SOS e Painel (Gemini / Antigravity)
+
+**Prompt:** "construa as rotas RESTful para alertas_sos em api/src/rotas/alertas.js e a rota agregada em painel.js seguindo o padrão _modelo.js, com validação de chaves estrangeiras, prepared statements e documentação no README"
+
+**Resultado:** Endpoints completos com tratamento padronizado `{ "erro": "..." }`, validação de `usuaria_id` e `viagem_id` via `garantirExiste()` e documentação no `api/README.md`.
+
+#### Integração do SOS Silencioso (Gemini / Antigravity)
+
+**Prompt:** "atualize o serviço sos.js e a tela AlertasHistoricoScreen para consumir a API Supabase sem dados simulados, mantendo a regra de segurança de não alertar o agressor quando o gatilho for DURESS_PIN e adicionando polling periódico"
+
+**Resultado:** Integração fluida com tratamento silencioso de erros no modo de coação, eliminação de imports de `data/alertas.js` e ações de avançar status e excluir alerta na interface.
+
+#### Modelagem e Comparação de Modelos (Gemini / Antigravity)
+
+**Prompt:** "implemente a Etapa 4 no notebook.ipynb com divisão temporal treino (até 2015) e teste (2016-2022), TimeSeriesSplit, RobustScaler dentro de Pipeline, Regressão Logística, Random Forest e K-Means para os perfis das 27 capitais, sem vazamento de dados"
+
+**Resultado:** Células executáveis no notebook com engenharia de atributos retroativos (lags e médias móveis), comparação de métricas focando em Recall e justificativa metodológica alinhada para a Etapa 5 do João Pedro (#82).
+
+### O que eu aprendi e decidi
+
+* A persistência de dados críticos de emergência deve priorizar a integridade referencial: vincular o alerta à usuária e à viagem ativa garante rastreabilidade jurídica sem expor dados desnecessários.
+* A regra de segurança do *Duress PIN* é inegociável: mesmo em caso de falha de conexão ou timeout na API, o aplicativo jamais pode emitir alertas visuais de erro na tela de disfarce, resguardando a integridade física da mulher.
+* Na modelagem preditiva de séries temporais sociais, o uso de `TimeSeriesSplit` e o cálculo de estatísticas (como a mediana de corte) exclusivamente na janela de treino é indispensável para evitar o vazamento de dados (*look-ahead bias*), garantindo estimativas acadêmicas confiáveis para a equipe.
