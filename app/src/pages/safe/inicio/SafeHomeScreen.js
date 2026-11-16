@@ -66,13 +66,14 @@ export default function SafeHomeScreen({ navigation }) {
       {/* Cabeçalho */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.saudacao}>Olá, {usuaria.nome_ficticio.split(' ')[0]}</Text>
+          <View style={styles.linhaSaudacao}>
+            <Text style={styles.saudacao}>Olá, {usuaria.nome_ficticio.split(' ')[0]}</Text>
+            <View style={styles.badgeSafe}>
+              <Ionicons name="shield-checkmark-outline" size={12} color={colors.verdeProfundo} />
+              <Text style={styles.badgeSafeTexto}>SAFE</Text>
+            </View>
+          </View>
           <Text style={styles.titulo}>Espaço seguro</Text>
-        </View>
-
-        <View style={styles.badgeSafe}>
-          <Ionicons name="shield-checkmark-outline" size={14} color={colors.verdeProfundo} />
-          <Text style={styles.badgeSafeTexto}>SAFE</Text>
         </View>
       </View>
 
@@ -197,6 +198,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 20,
+  },
+  linhaSaudacao: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 2,
   },
   saudacao: {
     fontFamily: fonts.regular,
