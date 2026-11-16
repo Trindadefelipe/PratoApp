@@ -16,7 +16,7 @@
 //   * Botões de discagem rápida: Ligue 180 e 190
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -30,12 +30,31 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
-import {dispararSos, TIPOS_GATILHO } from '../../../services/sos';
-import { usuaria } from '../../../data/usuaria';
+import { dispararSos, TIPOS_GATILHO } from '../../../services/sos';
+import { buscarUsuaria, USUARIA_TESTE_ID } from '../../../services/api';
+import { lerIdUsuaria } from '../../../services/sessao';
 
 export default function SafeHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [sosEnviado, setSosEnviado] = useState(false);
+  const [nomeUsuaria, setNomeUsuaria] = useState('Ana');
+
+  useEffect(() => {
+    let ativo = true;
+    (async () => {
+      try {
+        const idSessao = await lerIdUsuaria().catch(() => null);
+        const usuariaId = idSessao || USUARIA_TESTE_ID;
+        const dados = await buscarUsuaria(usuariaId);
+        if (ativo && dados?.nome_ficticio) {
+          setNomeUsuaria(dados.nome_ficticio.split(' ')[0]);
+        }
+      } catch (e) {
+        // Fallback silencioso preserva a saudação sem travar a interface
+      }
+    })();
+    return () => { ativo = false; };
+  }, []);
 
   const handleAcionarSos = async () => {
     try {
@@ -43,11 +62,12 @@ export default function SafeHomeScreen({ navigation }) {
       setSosEnviado(true);
       Alert.alert(
         'Alerta SOS Disparado',
-        'Sua localização e pedido de ajuda foram registrados silenciosamente.',
+        'Sua localização e pedido de ajuda foram registrados na central com sucesso.',
         [{ text: 'OK' }]
       );
     } catch (error) {
       console.error('Erro ao disparar SOS:', error);
+      Alert.alert('Aviso', 'Não foi possível registrar o alerta. Tente novamente.');
     }
   };
 
@@ -66,7 +86,7 @@ export default function SafeHomeScreen({ navigation }) {
       {/* Cabeçalho */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.saudacao}>Olá, {usuaria.nome_ficticio.split(' ')[0]}</Text>
+          <Text style={styles.saudacao}>Olá, {nomeUsuaria}</Text>
           <Text style={styles.titulo}>Espaço seguro</Text>
         </View>
 
