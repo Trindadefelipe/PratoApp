@@ -196,7 +196,7 @@ Os nomes das rotas **não têm** o sufixo `Screen`:
 | Viagem | `ViagemNova`, `ViagemEmAndamento` |
 | Cofre | `IncidentesList`, `IncidenteForm`, `IncidenteDetalhe` |
 | Ajustes | `PerfilConfig`, `ConfigCamuflagem` |
-| Raiz | `PratoTabs`, `SafeTabs` |
+| Raiz | `PrimeiroAcesso`, `PratoTabs`, `SafeTabs` |
 
 | Para fazer | Use |
 |---|---|
