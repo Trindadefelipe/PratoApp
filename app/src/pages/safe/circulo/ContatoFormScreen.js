@@ -4,13 +4,14 @@
 // Componente: ContatoFormScreen
 // Navegação: Stack (push sobre a lista)
 // Responsável: Felipe Trindade
-// Entrega: 2 (24/10)
+// Entrega Final: Integrado à API REST (Issue #70)
 //
-// O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
+// O que o protótipo mostra nesta tela:
 //   * Campos: nome, telefone ou WhatsApp, relação
-//   * Prioridade: Alta, Média, Baixa
+//   * Prioridade: Alta (1), Média (2), Baixa (3)
 //   * Switches: avisar por SMS e por WhatsApp
-//   * Botões Salvar contato e Excluir contato
+//   * Integração com POST /contatos, PUT /contatos/:id e DELETE /contatos/:id
+//   * Exibição de mensagens de erro da API e confirmação de exclusão
 // ============================================================
 
 import React, { useState } from 'react';
@@ -22,6 +23,7 @@ import {
   Pressable,
   Switch,
   Alert,
+  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,7 +31,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 import BotaoPrimario from '../../../components/BotaoPrimario';
-import { PRIORIDADES } from '../../../data/contatos';
+import {
+  criarContato,
+  atualizarContato,
+  removerContato,
+  USUARIA_TESTE_ID,
+  PRIORIDADES,
+} from '../../../services/api';
 
 export default function ContatoFormScreen({ navigation, route }) {
   const contatoExistente = route.params?.contato;
@@ -48,22 +56,53 @@ export default function ContatoFormScreen({ navigation, route }) {
     contatoExistente ? Boolean(contatoExistente.notificar_whatsapp) : true
   );
 
+  // Estados de feedback assíncrono
+  const [salvando, setSalvando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
+  const [erroFormulario, setErroFormulario] = useState(null);
+
   const inicial = nome.trim() ? nome.trim().charAt(0).toUpperCase() : 'M';
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
+    setErroFormulario(null);
+
     if (!nome.trim() || !telefone.trim()) {
-      Alert.alert('Campos obrigatórios', 'Por favor, preencha o nome e o telefone do contato.');
+      setErroFormulario('Por favor, preencha o nome e o telefone do contato.');
       return;
     }
 
-    Alert.alert(
-      'Sucesso',
-      modoEdicao ? 'Contato atualizado com sucesso!' : 'Contato adicionado com sucesso!',
-      [{ text: 'OK', onPress: () => navigation.goBack() }]
-    );
+    const dados = {
+      usuaria_id: contatoExistente?.usuaria_id || USUARIA_TESTE_ID,
+      nome: nome.trim(),
+      telefone: telefone.trim(),
+      parentesco_relacao: relacao.trim() || 'Contato de Confiança',
+      nivel_prioridade: Number(prioridade),
+      notificar_sms: Boolean(notificarSms),
+      notificar_whatsapp: Boolean(notificarWhatsapp),
+    };
+
+    try {
+      setSalvando(true);
+      if (modoEdicao) {
+        await atualizarContato(contatoExistente.id, dados);
+      } else {
+        await criarContato(dados);
+      }
+
+      Alert.alert(
+        'Sucesso',
+        modoEdicao ? 'Contato atualizado com sucesso!' : 'Contato adicionado ao Círculo!',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
+    } catch (err) {
+      setErroFormulario(err.message || 'Falha ao salvar contato na API.');
+    } finally {
+      setSalvando(false);
+    }
   };
 
   const handleExcluir = () => {
+    setErroFormulario(null);
     Alert.alert(
       'Excluir contato',
       `Tem certeza de que deseja remover ${nome || 'este contato'} do seu Círculo de Confiança?`,
@@ -72,10 +111,18 @@ export default function ContatoFormScreen({ navigation, route }) {
         {
           text: 'Excluir',
           style: 'destructive',
-          onPress: () => {
-            Alert.alert('Removido', 'Contato removido com sucesso.', [
-              { text: 'OK', onPress: () => navigation.goBack() },
-            ]);
+          onPress: async () => {
+            try {
+              setExcluindo(true);
+              await removerContato(contatoExistente.id);
+              Alert.alert('Removido', 'Contato removido com sucesso.', [
+                { text: 'OK', onPress: () => navigation.goBack() },
+              ]);
+            } catch (err) {
+              setErroFormulario(err.message || 'Falha ao excluir contato na API.');
+            } finally {
+              setExcluindo(false);
+            }
           },
         },
       ]
@@ -96,6 +143,7 @@ export default function ContatoFormScreen({ navigation, route }) {
               pressed && styles.botaoVoltarPressionado,
             ]}
             onPress={() => navigation.goBack()}
+            disabled={salvando || excluindo}
           >
             <Ionicons name="chevron-back" size={22} color={colors.grafite} />
           </Pressable>
@@ -104,6 +152,14 @@ export default function ContatoFormScreen({ navigation, route }) {
             {modoEdicao ? 'Editar contato' : 'Novo contato'}
           </Text>
         </View>
+
+        {/* Mensagem de Erro da API */}
+        {erroFormulario && (
+          <View style={styles.erroBanner}>
+            <Ionicons name="alert-circle" size={20} color={colors.coral} style={styles.erroBannerIcone} />
+            <Text style={styles.erroBannerTexto}>{erroFormulario}</Text>
+          </View>
+        )}
 
         {/* Avatar com inicial grande */}
         <View style={styles.avatarContainer}>
@@ -122,7 +178,11 @@ export default function ContatoFormScreen({ navigation, route }) {
               placeholder="Nome do contato"
               placeholderTextColor={colors.cinza}
               value={nome}
-              onChangeText={setNome}
+              onChangeText={(texto) => {
+                setNome(texto);
+                if (erroFormulario) setErroFormulario(null);
+              }}
+              editable={!salvando && !excluindo}
             />
           </View>
 
@@ -142,7 +202,11 @@ export default function ContatoFormScreen({ navigation, route }) {
                 placeholderTextColor={colors.cinza}
                 keyboardType="phone-pad"
                 value={telefone}
-                onChangeText={setTelefone}
+                onChangeText={(texto) => {
+                  setTelefone(texto);
+                  if (erroFormulario) setErroFormulario(null);
+                }}
+                editable={!salvando && !excluindo}
               />
             </View>
           </View>
@@ -155,11 +219,15 @@ export default function ContatoFormScreen({ navigation, route }) {
               placeholder="Ex: Mãe, Amiga, Vizinha"
               placeholderTextColor={colors.cinza}
               value={relacao}
-              onChangeText={setRelacao}
+              onChangeText={(texto) => {
+                setRelacao(texto);
+                if (erroFormulario) setErroFormulario(null);
+              }}
+              editable={!salvando && !excluindo}
             />
           </View>
 
-          {/* Seleção de Prioridade (Chips / Segmented) */}
+          {/* Seleção de Prioridade */}
           <View style={styles.campoGrupo}>
             <Text style={styles.rotulo}>Prioridade</Text>
             <View style={styles.prioridadeContainer}>
@@ -173,6 +241,7 @@ export default function ContatoFormScreen({ navigation, route }) {
                       ativo && styles.opcaoPrioridadeAtiva,
                     ]}
                     onPress={() => setPrioridade(nivel)}
+                    disabled={salvando || excluindo}
                   >
                     <Text
                       style={[
@@ -203,6 +272,7 @@ export default function ContatoFormScreen({ navigation, route }) {
               <Switch
                 value={notificarSms}
                 onValueChange={setNotificarSms}
+                disabled={salvando || excluindo}
                 trackColor={{ false: colors.begeDivisor, true: colors.verdeProfundo }}
                 thumbColor={colors.branco}
               />
@@ -223,6 +293,7 @@ export default function ContatoFormScreen({ navigation, route }) {
               <Switch
                 value={notificarWhatsapp}
                 onValueChange={setNotificarWhatsapp}
+                disabled={salvando || excluindo}
                 trackColor={{ false: colors.begeDivisor, true: colors.verdeProfundo }}
                 thumbColor={colors.branco}
               />
@@ -231,8 +302,9 @@ export default function ContatoFormScreen({ navigation, route }) {
 
           {/* Botão Salvar Contato */}
           <BotaoPrimario
-            titulo="Salvar contato"
+            titulo={salvando ? "Salvando contato..." : "Salvar contato"}
             onPress={handleSalvar}
+            disabled={salvando || excluindo}
             style={styles.botaoSalvar}
           />
 
@@ -244,8 +316,13 @@ export default function ContatoFormScreen({ navigation, route }) {
                 pressed && styles.botaoExcluirPressionado,
               ]}
               onPress={handleExcluir}
+              disabled={salvando || excluindo}
             >
-              <Text style={styles.textoExcluir}>Excluir contato</Text>
+              {excluindo ? (
+                <ActivityIndicator size="small" color={colors.coral} />
+              ) : (
+                <Text style={styles.textoExcluir}>Excluir contato</Text>
+              )}
             </Pressable>
           )}
         </View>
@@ -287,6 +364,26 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: 22,
     color: colors.grafite,
+  },
+  erroBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.pessegoClaro,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.coral,
+  },
+  erroBannerIcone: {
+    marginRight: 8,
+  },
+  erroBannerTexto: {
+    flex: 1,
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.coral,
+    lineHeight: 18,
   },
   avatarContainer: {
     alignItems: 'center',

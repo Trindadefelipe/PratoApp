@@ -56,3 +56,33 @@ export function atualizarUsuaria(id, dados) {
   return requisitar(`/usuarias/${id}`, { metodo: 'PUT', corpo: dados });
 }
 
+
+// ---------- Contatos de Confiança (Felipe, #70) ----------
+export const PRIORIDADES = {
+  1: 'Alta',
+  2: 'Média',
+  3: 'Baixa',
+};
+
+export function listarContatos(usuariaId = USUARIA_TESTE_ID) {
+  const query = usuariaId ? `?usuaria_id=${usuariaId}` : '';
+  return requisitar(`/contatos${query}`);
+}
+
+export function buscarContato(id) {
+  return requisitar(`/contatos/${id}`);
+}
+
+export function criarContato(dados) {
+  return requisitar('/contatos', { metodo: 'POST', corpo: dados });
+}
+
+export function atualizarContato(id, dados) {
+  return requisitar(`/contatos/${id}`, { metodo: 'PUT', corpo: dados });
+}
+
+export function removerContato(id) {
+  return requisitar(`/contatos/${id}`, { metodo: 'DELETE' });
+}
+
+

@@ -4,32 +4,57 @@
 // Componente: ContatosListScreen
 // Navegação: Tab (aba Círculo), raiz do CirculoStack
 // Responsável: Felipe Trindade
-// Entrega: 2 (24/10)
+// Entrega Final: Integrado à API REST (Issue #70)
 //
-// O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
+// O que o protótipo mostra nesta tela:
 //   * Busca de contato e aviso sobre prioridade Alta
-//   * Lista de contatos com relação, telefone, prioridade e canais (SMS, WhatsApp)
+//   * Lista de contatos da usuária via API com relação, telefone, prioridade e canais
+//   * Estados visuais: carregando, lista vazia e erro da API
 //   * Botão flutuante + para criar contato
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
   TextInput,
   FlatList,
   Pressable,
+  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
-import { contatos as contatosIniciais, PRIORIDADES } from '../../../data/contatos';
+import { listarContatos, PRIORIDADES } from '../../../services/api';
 
 export default function ContatosListScreen({ navigation }) {
   const [busca, setBusca] = useState('');
-  const [listaContatos] = useState(contatosIniciais);
+  const [listaContatos, setListaContatos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+
+  const carregarContatos = async () => {
+    try {
+      setCarregando(true);
+      setErro(null);
+      const dados = await listarContatos();
+      setListaContatos(dados || []);
+    } catch (err) {
+      setErro(err.message || 'Não foi possível carregar os contatos de confiança.');
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  // Recarrega sempre que a tela ganha foco (ao voltar da criação/edição/exclusão)
+  useFocusEffect(
+    useCallback(() => {
+      carregarContatos();
+    }, [])
+  );
 
   // Filtragem da busca por nome ou relação
   const contatosFiltrados = listaContatos.filter((c) => {
@@ -65,7 +90,9 @@ export default function ContatosListScreen({ navigation }) {
 
     return (
       <View style={[styles.badgeBase, estiloBadge]}>
-        <Text style={[styles.badgeTextoBase, estiloTexto]}>{PRIORIDADES[nivel]}</Text>
+        <Text style={[styles.badgeTextoBase, estiloTexto]}>
+          {PRIORIDADES[nivel] || 'Normal'}
+        </Text>
       </View>
     );
   };
@@ -93,11 +120,11 @@ export default function ContatosListScreen({ navigation }) {
         <View style={styles.infoContainer}>
           <View style={styles.linhaNome}>
             <Text style={styles.nomeContato}>{item.nome}</Text>
-            {item.parentesco_relacao && (
+            {item.parentesco_relacao ? (
               <Text style={styles.relacaoContato}>
                 {' '}({item.parentesco_relacao})
               </Text>
-            )}
+            ) : null}
           </View>
           <Text style={styles.telefoneContato}>{item.telefone}</Text>
         </View>
@@ -169,20 +196,51 @@ export default function ContatosListScreen({ navigation }) {
         </Text>
       </View>
 
-      {/* Lista de contatos */}
-      <FlatList
-        data={contatosFiltrados}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listaConteudo}
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={styles.separador} />}
-        ListEmptyComponent={() => (
-          <View style={styles.vazioContainer}>
-            <Text style={styles.vazioTexto}>Nenhum contato encontrado.</Text>
+      {/* Estado de Erro */}
+      {erro && (
+        <View style={styles.erroCard}>
+          <Ionicons name="alert-circle-outline" size={22} color={colors.coral} style={styles.erroIcone} />
+          <View style={styles.erroInfo}>
+            <Text style={styles.erroTexto}>{erro}</Text>
+            <Pressable style={styles.botaoTentarNovamente} onPress={carregarContatos}>
+              <Text style={styles.botaoTentarTexto}>Tentar novamente</Text>
+            </Pressable>
           </View>
-        )}
-      />
+        </View>
+      )}
+
+      {/* Estado de Carregamento inicial */}
+      {carregando && listaContatos.length === 0 ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.coral} />
+          <Text style={styles.loadingTexto}>Carregando contatos de confiança...</Text>
+        </View>
+      ) : (
+        /* Lista de contatos */
+        <FlatList
+          data={contatosFiltrados}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listaConteudo}
+          showsVerticalScrollIndicator={false}
+          refreshing={carregando}
+          onRefresh={carregarContatos}
+          ItemSeparatorComponent={() => <View style={styles.separador} />}
+          ListEmptyComponent={() => (
+            <View style={styles.vazioContainer}>
+              <Ionicons name="people-outline" size={40} color={colors.cinza} style={{ marginBottom: 8 }} />
+              <Text style={styles.vazioTitulo}>
+                {busca.length > 0 ? 'Nenhum contato encontrado' : 'Seu Círculo está vazio'}
+              </Text>
+              <Text style={styles.vazioTexto}>
+                {busca.length > 0
+                  ? 'Tente buscar por outro nome ou parentesco.'
+                  : 'Adicione pessoas de extrema confiança para receberem seus alertas de emergência.'}
+              </Text>
+            </View>
+          )}
+        />
+      )}
 
       {/* Botão flutuante (+) para criar novo contato */}
       <Pressable
@@ -255,6 +313,51 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.grafite,
     lineHeight: 18,
+  },
+  erroCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: colors.pessegoClaro,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+  },
+  erroIcone: {
+    marginRight: 10,
+    marginTop: 2,
+  },
+  erroInfo: {
+    flex: 1,
+  },
+  erroTexto: {
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.coral,
+    marginBottom: 8,
+  },
+  botaoTentarNovamente: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.coral,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  botaoTentarTexto: {
+    fontFamily: fonts.semibold,
+    fontSize: 12,
+    color: colors.branco,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 60,
+  },
+  loadingTexto: {
+    marginTop: 12,
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.cinza,
   },
   listaConteudo: {
     paddingBottom: 90,
@@ -349,13 +452,22 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   vazioContainer: {
-    paddingVertical: 32,
+    paddingVertical: 40,
     alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  vazioTitulo: {
+    fontFamily: fonts.bold,
+    fontSize: 16,
+    color: colors.grafite,
+    marginBottom: 4,
   },
   vazioTexto: {
     fontFamily: fonts.regular,
     fontSize: 14,
     color: colors.cinza,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   fab: {
     position: 'absolute',
