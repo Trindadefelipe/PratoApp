@@ -47,13 +47,17 @@ export async function requisitar(caminho, opcoes = {}) {
 }
 
 
-// ---------- Usuárias (Alana, #65) ----------
+// ---------- Usuárias (Alana, #65 / #87) ----------
 export function buscarUsuaria(id) {
   return requisitar(`/usuarias/${id}`);
 }
 
 export function atualizarUsuaria(id, dados) {
   return requisitar(`/usuarias/${id}`, { metodo: 'PUT', corpo: dados });
+}
+
+export function criarUsuaria(dados) {
+  return requisitar('/usuarias', { metodo: 'POST', corpo: dados });
 }
 
 
@@ -86,3 +90,28 @@ export function removerContato(id) {
 }
 
 
+// ---------- Alertas SOS (Higor Domingos, #75 / #76 / #78) ----------
+export function listarAlertas(usuariaId) {
+  const query = usuariaId ? `?usuaria_id=${usuariaId}` : '';
+  return requisitar(`/alertas${query}`);
+}
+
+export function buscarAlerta(id) {
+  return requisitar(`/alertas/${id}`);
+}
+
+export function criarAlerta(dados) {
+  return requisitar('/alertas', { metodo: 'POST', corpo: dados });
+}
+
+export function atualizarStatusAlerta(id, status_delegacia) {
+  return requisitar(`/alertas/${id}`, { metodo: 'PUT', corpo: { status_delegacia } });
+}
+
+export function removerAlerta(id) {
+  return requisitar(`/alertas/${id}`);
+}
+
+export function buscarPainel() {
+  return requisitar('/painel');
+}
