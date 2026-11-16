@@ -63,7 +63,7 @@ Regras:
 |---|---|---|---|---|
 | `GET /` | (saúde da API e do banco) | Alana | #64 | ✅ |
 | `/usuarias` | `usuarias` | Alana | #65 | ✅ |
-| `/contatos` | `contatos_confianca` | Felipe | #69 | a fazer |
+| `/contatos` | `contatos_confianca` | Felipe | #69 | ✅ |
 | `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | a fazer |
 | `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | a fazer |
 | `/incidentes` | `cofre_incidentes` | João Pedro | #80 | a fazer |
@@ -104,6 +104,42 @@ Testes feitos (todos com o resultado esperado):
 | `PUT /usuarias/:id` | `duress_pin` igual ao PIN atual, e-mail de outra usuária, corpo vazio | `400` |
 | `PUT /usuarias/:id` | id que não existe | `404` |
 | `DELETE /usuarias/:id` | usuária criada no teste / a mesma de novo | `200` / `404` |
+
+### `/contatos` (Felipe, #69)
+
+Campos: `usuaria_id`, `nome`, `telefone`, `parentesco_relacao` e `nivel_prioridade` (obrigatórios no `POST`), mais `notificar_sms` e `notificar_whatsapp` (`true` por padrão). No `PUT`, mande apenas os campos que deseja alterar.
+
+* `usuaria_id` precisa ser um UUID válido e existir na tabela `usuarias` (validado via `garantirExiste`, devolvendo `400` antes de gravar caso não exista).
+* `nome` (máx. 100 caracteres), `telefone` (máx. 20 caracteres) e `parentesco_relacao` (máx. 50 caracteres) não podem ser vazios.
+* `nivel_prioridade` deve ser obrigatoriamente `1` (Alta), `2` (Média) ou `3` (Baixa).
+* `GET /contatos?usuaria_id=...` filtra os contatos da usuária informada e ordena prioritariamente por `nivel_prioridade asc` (prioridade 1 no topo) e secundariamente por `criado_em desc`.
+
+Exemplo de `POST /contatos`:
+```json
+{
+  "usuaria_id": "7b1e4c2a-9f3d-4e8a-b6c1-2d5f8a9e0c31",
+  "nome": "Carla Silva",
+  "telefone": "11988887777",
+  "parentesco_relacao": "Irmã",
+  "nivel_prioridade": 1,
+  "notificar_sms": true,
+  "notificar_whatsapp": true
+}
+```
+
+Testes feitos (todos com o resultado esperado):
+
+| Pedido | Caso | Status |
+|---|---|---|
+| `GET /contatos` | lista geral | `200` |
+| `GET /contatos?usuaria_id=...` | filtrando por usuária, ordenado por prioridade | `200` |
+| `GET /contatos/:id` | contato existente / id inexistente (`404`) / id inválido (`400`) | `200` / `404` / `400` |
+| `POST /contatos` | dados válidos | `201` |
+| `POST /contatos` | campos obrigatórios faltando / prioridade inválida | `400` |
+| `POST /contatos` | `usuaria_id` inexistente no banco (relacionamento real) | `400` |
+| `PUT /contatos/:id` | atualização parcial de campos | `200` |
+| `PUT /contatos/:id` | id que não existe / corpo vazio | `404` / `400` |
+| `DELETE /contatos/:id` | contato removido com sucesso / o mesmo de novo | `200` / `404` |
 
 ## ⚠️ Respostas de erro
 
