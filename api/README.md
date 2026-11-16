@@ -65,7 +65,7 @@ Regras:
 | `/usuarias` | `usuarias` | Alana | #65 | ✅ |
 | `/contatos` | `contatos_confianca` | Felipe | #69 | a fazer |
 | `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | a fazer |
-| `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | a fazer |
+| `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | ✅ |
 | `/incidentes` | `cofre_incidentes` | João Pedro | #80 | a fazer |
 | `/indicadores` | `indicadores_capitais` | João Pedro | #83 | a fazer |
 
@@ -104,6 +104,44 @@ Testes feitos (todos com o resultado esperado):
 | `PUT /usuarias/:id` | `duress_pin` igual ao PIN atual, e-mail de outra usuária, corpo vazio | `400` |
 | `PUT /usuarias/:id` | id que não existe | `404` |
 | `DELETE /usuarias/:id` | usuária criada no teste / a mesma de novo | `200` / `404` |
+
+### `/alertas` e `/painel` (Higor Domingos, #75 e #78)
+
+Campos de `alertas_sos`: `usuaria_id`, `latitude`, `longitude`, `tipo_gatilho` (obrigatórios no `POST`), mais `viagem_id` (opcional, com validação de existência), `endereco_aproximado` e `status_delegacia` (`'NOVO'`, `'EM_ATENDIMENTO'`, `'CONCLUIDO'`).
+
+* `tipo_gatilho`: deve ser um dos valores do DER: `'BOTAO_DIRETO'`, `'DURESS_PIN'`, `'FALTA_CHECKIN'`, `'SHAKE'`.
+* `status_delegacia`: default `'NOVO'`. Atualizável via `PUT /alertas/:id` para acompanhar o atendimento da delegacia.
+* **Relacionamentos reais:** valida via `garantirExiste()` se `usuaria_id` e `viagem_id` (quando informado) existem no banco, devolvendo `400` caso inexistentes.
+* `GET /alertas?usuaria_id=...`: filtra os alertas de uma usuária ordenados do mais recente para o mais antigo (`criado_em desc`).
+* `GET /painel`: endpoint agregado que junta alertas ativos (`NOVO` e `EM_ATENDIMENTO`) com os dados da usuária (`nome_ficticio`) e viagem (`origem_descricao`, `destino_descricao`), servindo o painel da delegacia e a atualização em tempo real do app.
+
+Exemplo de `POST /alertas`:
+```json
+{
+  "usuaria_id": "7b1e4c2a-9f3d-4e8a-b6c1-2d5f8a9e0c31",
+  "latitude": -23.3045,
+  "longitude": -51.1696,
+  "endereco_aproximado": "Londrina/PR",
+  "tipo_gatilho": "BOTAO_DIRETO"
+}
+```
+
+Testes feitos:
+
+| Pedido | Caso | Status |
+|---|---|---|
+| `GET /alertas` | lista geral de alertas | `200` |
+| `GET /alertas?usuaria_id=...` | filtrado por usuária, ordenado desc | `200` |
+| `GET /alertas/:id` | alerta existente do `seed.sql` | `200` |
+| `GET /alertas/:id` | id inexistente / UUID inválido | `404` / `400` |
+| `POST /alertas` | dados válidos | `201` |
+| `POST /alertas` | sem latitude/longitude, gatilho inválido | `400` |
+| `POST /alertas` | usuaria_id inexistente / viagem_id inexistente | `400` |
+| `PUT /alertas/:id` | atualização de status_delegacia | `200` |
+| `PUT /alertas/:id` | status inválido / corpo vazio | `400` |
+| `DELETE /alertas/:id` | remoção com sucesso / repetido | `200` / `404` |
+| `GET /painel` | agregação de alertas abertos com usuária e viagem | `200` |
+
 
 ## ⚠️ Respostas de erro
 
