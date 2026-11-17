@@ -4,23 +4,22 @@
 // Componente: ViagemNovaScreen
 // Navegação: Tab (aba Viagem), raiz do ViagemStack
 // Responsável: Higor Bueno
-// Entrega: 2 (24/10)
+// Entrega: Final (integrado com a API e Supabase, issue #73)
 //
 // O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
 //   * Campos De e Para
 //   * Tempo estimado: 15, 30, 45, 60 min e chegada prevista
 //   * Quem será avisada (contatos do Círculo com checkbox)
-//   * Botão Iniciar viagem (Stack.replace para ViagemEmAndamento)
+//   * Botão Iniciar viagem (POST /viagens e Stack.replace para ViagemEmAndamento)
 // ============================================================
 
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, ScrollView, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import BotaoPrimario from '../../../components/BotaoPrimario';
 import Chip from '../../../components/Chip';
-import { contatos } from '../../../data/contatos';
-import { viagemAtiva } from '../../../data/viagens';
+import { criarViagem, listarContatos, USUARIA_TESTE_ID } from '../../../services/api';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 
@@ -33,12 +32,35 @@ const CORES_AVATAR = [
 ];
 
 export default function ViagemNovaScreen({ navigation }) {
-    const [origem, setOrigem] = useState(viagemAtiva.origem_descricao);
-    const [destino, setDestino] = useState(viagemAtiva.destino_descricao);
+    const [origem, setOrigem] = useState('Faculdade Positivo');
+    const [destino, setDestino] = useState('Casa');
     const [tempoSelecionado, setTempoSelecionado] = useState(30);
-    const [contatosSelecionados, setContatosSelecionados] = useState(
-        viagemAtiva.contatos_notificados_ids || [1, 2]
-    );
+    const [contatos, setContatos] = useState([]);
+    const [contatosSelecionados, setContatosSelecionados] = useState([]);
+    const [carregando, setCarregando] = useState(false);
+    const [erro, setErro] = useState(null);
+
+    // Carrega contatos de confiança da API para listar quem será avisada
+    useEffect(() => {
+        let montado = true;
+        listarContatos(USUARIA_TESTE_ID)
+            .then((dados) => {
+                if (montado && Array.isArray(dados)) {
+                    setContatos(dados);
+                    // Seleciona por padrão os contatos de maior prioridade
+                    const idsIniciais = dados.slice(0, 2).map((c) => c.id);
+                    setContatosSelecionados(idsIniciais);
+                }
+            })
+            .catch(() => {
+                // Se a rota de contatos ainda estiver sendo finalizada, mantém lista vazia sem quebrar
+                if (montado) setContatos([]);
+            });
+
+        return () => {
+            montado = false;
+        };
+    }, []);
 
     // Calcula horário previsto somando os minutos selecionados ao horário atual
     function calcularChegadaPrevista(minutos) {
@@ -57,9 +79,34 @@ export default function ViagemNovaScreen({ navigation }) {
         }
     }
 
-    function iniciarViagem() {
-        // Na Entrega 2, faz a transição de estado da navegação conforme o protótipo
-        navigation.replace('ViagemEmAndamento');
+    async function iniciarViagem() {
+        if (!origem.trim() || !destino.trim()) {
+            setErro('Por favor, preencha os pontos de partida e destino.');
+            return;
+        }
+
+        setErro(null);
+        setCarregando(true);
+
+        try {
+            const previsaoChegada = new Date(Date.now() + tempoSelecionado * 60000).toISOString();
+            const novaViagem = await criarViagem({
+                usuaria_id: USUARIA_TESTE_ID,
+                origem_descricao: origem.trim(),
+                destino_descricao: destino.trim(),
+                previsao_chegada: previsaoChegada,
+                status_viagem: 'EM_ANDAMENTO',
+            });
+
+            navigation.replace('ViagemEmAndamento', {
+                viagemId: novaViagem.id,
+                viagem: novaViagem,
+            });
+        } catch (err) {
+            setErro(err.message || 'Não foi possível iniciar a viagem. Verifique a conexão com a API.');
+        } finally {
+            setCarregando(false);
+        }
     }
 
     return (
@@ -78,6 +125,14 @@ export default function ViagemNovaScreen({ navigation }) {
                     <Text style={estilos.titulo}>Nova viagem</Text>
                 </View>
 
+                {/* Mensagem de Erro */}
+                {erro ? (
+                    <View style={estilos.alertaErro}>
+                        <Ionicons name="alert-circle-outline" size={20} color={colors.vermelho} />
+                        <Text style={estilos.textoErro}>{erro}</Text>
+                    </View>
+                ) : null}
+
                 {/* Campo De */}
                 <Text style={estilos.rotulo}>De</Text>
                 <View style={estilos.inputContainer}>
@@ -88,6 +143,7 @@ export default function ViagemNovaScreen({ navigation }) {
                         onChangeText={setOrigem}
                         placeholder="Ponto de partida"
                         placeholderTextColor={colors.cinza}
+                        editable={!carregando}
                     />
                 </View>
 
@@ -101,6 +157,7 @@ export default function ViagemNovaScreen({ navigation }) {
                         onChangeText={setDestino}
                         placeholder="Destino final"
                         placeholderTextColor={colors.cinza}
+                        editable={!carregando}
                     />
                 </View>
 
@@ -120,52 +177,61 @@ export default function ViagemNovaScreen({ navigation }) {
                     Chegada prevista às {calcularChegadaPrevista(tempoSelecionado)}
                 </Text>
 
-                {/* Quem será avisada */}
-                <Text style={estilos.secaoTitulo}>Quem será avisada</Text>
-                <View style={estilos.listaContatos}>
-                    {contatos.map((contato, index) => {
-                        const estaMarcado = contatosSelecionados.includes(contato.id);
-                        const estiloCor = CORES_AVATAR[index % CORES_AVATAR.length];
-                        const inicial = contato.nome.trim().charAt(0).toUpperCase();
+                {/* Quem será avisada (vindo da API) */}
+                {contatos.length > 0 ? (
+                    <>
+                        <Text style={estilos.secaoTitulo}>Quem será avisada</Text>
+                        <View style={estilos.listaContatos}>
+                            {contatos.map((contato, index) => {
+                                const estaMarcado = contatosSelecionados.includes(contato.id);
+                                const estiloCor = CORES_AVATAR[index % CORES_AVATAR.length];
+                                const inicial = (contato.nome || '?').trim().charAt(0).toUpperCase();
 
-                        return (
-                            <Pressable
-                                key={contato.id}
-                                style={estilos.itemContato}
-                                onPress={() => alternarContato(contato.id)}
-                            >
-                                <View style={[estilos.avatar, { backgroundColor: estiloCor.fundo }]}>
-                                    <Text style={[estilos.avatarTexto, { color: estiloCor.texto }]}>
-                                        {inicial}
-                                    </Text>
-                                </View>
+                                return (
+                                    <Pressable
+                                        key={contato.id}
+                                        style={estilos.itemContato}
+                                        onPress={() => alternarContato(contato.id)}
+                                    >
+                                        <View style={[estilos.avatar, { backgroundColor: estiloCor.fundo }]}>
+                                            <Text style={[estilos.avatarTexto, { color: estiloCor.texto }]}>
+                                                {inicial}
+                                            </Text>
+                                        </View>
 
-                                <View style={estilos.infoContato}>
-                                    <Text style={estilos.nomeContato}>
-                                        {contato.nome}{' '}
-                                        <Text style={estilos.parentescoContato}>
-                                            ({contato.parentesco_relacao})
-                                        </Text>
-                                    </Text>
-                                </View>
+                                        <View style={estilos.infoContato}>
+                                            <Text style={estilos.nomeContato}>
+                                                {contato.nome}{' '}
+                                                <Text style={estilos.parentescoContato}>
+                                                    ({contato.parentesco_relacao})
+                                                </Text>
+                                            </Text>
+                                        </View>
 
-                                <View style={[estilos.checkbox, estaMarcado && estilos.checkboxMarcado]}>
-                                    {estaMarcado && (
-                                        <Ionicons name="checkmark" size={16} color={colors.branco} />
-                                    )}
-                                </View>
-                            </Pressable>
-                        );
-                    })}
-                </View>
+                                        <View style={[estilos.checkbox, estaMarcado && estilos.checkboxMarcado]}>
+                                            {estaMarcado && (
+                                                <Ionicons name="checkmark" size={16} color={colors.branco} />
+                                            )}
+                                        </View>
+                                    </Pressable>
+                                );
+                            })}
+                        </View>
+                    </>
+                ) : null}
 
                 {/* Botão de Ação */}
                 <BotaoPrimario
-                    titulo="Iniciar viagem"
+                    titulo={carregando ? 'Iniciando viagem...' : 'Iniciar viagem'}
                     variante="positivo"
                     style={estilos.botaoIniciar}
                     onPress={iniciarViagem}
+                    desabilitado={carregando}
                 />
+
+                {carregando && (
+                    <ActivityIndicator size="small" color={colors.verdeProfundo} style={{ marginTop: 12 }} />
+                )}
 
             </ScrollView>
         </SafeAreaView>
@@ -201,6 +267,21 @@ const estilos = StyleSheet.create({
         fontFamily: fonts.bold,
         fontSize: 24,
         color: colors.grafite,
+    },
+    alertaErro: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: colors.pessegoClaro,
+        padding: 12,
+        borderRadius: 12,
+        marginBottom: 16,
+    },
+    textoErro: {
+        flex: 1,
+        fontFamily: fonts.regular,
+        fontSize: 14,
+        color: colors.vermelho,
     },
     rotulo: {
         fontFamily: fonts.medium,
