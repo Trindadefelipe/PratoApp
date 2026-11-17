@@ -230,3 +230,38 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * A persistência de dados críticos de emergência deve priorizar a integridade referencial: vincular o alerta à usuária e à viagem ativa garante rastreabilidade jurídica sem expor dados desnecessários.
 * A regra de segurança do *Duress PIN* é inegociável: mesmo em caso de falha de conexão ou timeout na API, o aplicativo jamais pode emitir alertas visuais de erro na tela de disfarce, resguardando a integridade física da mulher.
 * Na modelagem preditiva de séries temporais sociais, o uso de `TimeSeriesSplit` e o cálculo de estatísticas (como a mediana de corte) exclusivamente na janela de treino é indispensável para evitar o vazamento de dados (*look-ahead bias*), garantindo estimativas acadêmicas confiáveis para a equipe.
+
+
+
+## Entrega Final: Higor Bueno
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Rotas RESTful de Viagens Seguras e Check-ins (API) | Gemini / Antigravity | Construção de `api/src/rotas/viagens.js` e `api/src/rotas/checkins.js` com os 5 métodos HTTP, validação estrita do DER (`status_viagem`, `status_resposta`), integridade referencial via `garantirExiste` e documentação no `api/README.md` | Higor Bueno |
+| Camada de Serviços da API (`services/api.js`) | Gemini / Antigravity | Adição de funções cliente para criar, buscar, atualizar, encerrar e cancelar viagens seguras e registrar check-ins | Higor Bueno |
+| Integração Mobile de Nova Viagem (Tela 08) | Gemini / Antigravity | Atualização de `ViagemNovaScreen.js` para criar viagem real via `POST /viagens`, carregar contatos de confiança da API e redirecionar para a Tela 09 com o ID gerado, eliminando dados mockados | Higor Bueno |
+| Integração Mobile de Viagem em Andamento (Tela 09) | Gemini / Antigravity | Atualização de `ViagemEmAndamentoScreen.js` para sincronização em tempo real da `previsao_chegada`, registro de check-ins via `POST /checkins` ao solicitar mais 10 minutos e encerramento com "Cheguei segura" via `PUT /viagens/:id` | Higor Bueno |
+| Auditoria e Governança de Issues | Gemini / Antigravity | Levantamento, filtragem e ordenação topológica das issues da Entrega Final abertas pela Alana, garantindo atendimento à Definição de Pronto (DoD) | Higor Bueno |
+
+### Prompts testados
+
+#### Rotas da API de Viagens e Check-ins (Gemini / Antigravity)
+
+**Prompt:** "construa as rotas RESTful para viagens_seguras em api/src/rotas/viagens.js e checkins_viagem em api/src/rotas/checkins.js seguindo o padrão _modelo.js, com validação de campos do DER, conferência de chave estrangeira com usuarias e viagens_seguras via garantirExiste, e atualização da tabela de rotas do api/README.md"
+
+**Resultado:** Criação de endpoints robustos com tratamento padronizado `{ "erro": "..." }`, prepared statements para prevenção de SQL injection e suporte a filtros por `usuaria_id` e `viagem_id`.
+
+#### Integração das Telas 08 e 09 com a API (Gemini / Antigravity)
+
+**Prompt:** "atualize ViagemNovaScreen e ViagemEmAndamentoScreen para consumir os serviços da API em app/src/services/api.js, removendo completamente os imports de data/viagens.js e data/contatos.js, gerenciando estados de carregamento e erro, e registrando check-ins e encerramento no Supabase"
+
+**Resultado:** Migração completa das telas para consumo assíncrono da API, cálculo preciso do anel de progresso com base na previsão de chegada e eliminação total de acoplamento a dados simulados locais.
+
+### O que eu aprendi e decidi
+
+* A separação entre o ciclo de vida da viagem (`viagens_seguras`) e os seus marcos periódicos (`checkins_viagem`) viabiliza auditoria forense detalhada em caso de atraso ou acionamento de SOS, com integridade referencial protegida no banco relacional.
+* No desenvolvimento mobile para situações de risco, o botão "Cheguei segura" deve encerrar a viagem e persistir o carimbo de data/hora (`finalizado_em`) no back-end antes de resetar a navegação, assegurando que o status no painel da delegacia seja imediatamente atualizado.
+* A eliminação gradual de dados mockados em favor de um cliente unificado de API (`services/api.js`) centraliza o tratamento de falhas de rede (`try/catch`) e uniformiza a experiência da usuária em todo o ecossistema do app.
+
