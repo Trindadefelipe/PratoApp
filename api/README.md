@@ -64,7 +64,7 @@ Regras:
 | `GET /` | (saúde da API e do banco) | Alana | #64 | ✅ |
 | `/usuarias` | `usuarias` | Alana | #65 | ✅ |
 | `/contatos` | `contatos_confianca` | Felipe | #69 | a fazer |
-| `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | a fazer |
+| `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | ✅ |
 | `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | ✅ |
 | `/incidentes` | `cofre_incidentes` | João Pedro | #80 | a fazer |
 | `/indicadores` | `indicadores_capitais` | João Pedro | #83 | a fazer |
@@ -141,6 +141,59 @@ Testes feitos:
 | `PUT /alertas/:id` | status inválido / corpo vazio | `400` |
 | `DELETE /alertas/:id` | remoção com sucesso / repetido | `200` / `404` |
 | `GET /painel` | agregação de alertas abertos com usuária e viagem | `200` |
+
+### `/viagens` e `/checkins` (Higor Bueno, #72)
+
+Campos de `viagens_seguras`: `usuaria_id`, `origem_descricao`, `destino_descricao`, `previsao_chegada` (obrigatórios no `POST`), mais `horario_inicio` (default atual), `status_viagem` (`'EM_ANDAMENTO'`, `'CONCLUIDA_COM_SUCESSO'`, `'ATRASADA'`, `'SOS_ACIONADO'`), `latitude_destino`, `longitude_destino` e `finalizado_em`.
+
+Campos de `checkins_viagem`: `viagem_id` (obrigatório no `POST`), mais `horario_checkin` (default atual), `latitude_atual`, `longitude_atual` e `status_resposta` (`'PENDENTE'`, `'CONFIRMADO'`, `'EXPIRADO'`).
+
+* `status_viagem`: default `'EM_ANDAMENTO'`. Finalização ("Cheguei segura") atualiza para `'CONCLUIDA_COM_SUCESSO'` e grava `finalizado_em` via `PUT /viagens/:id`.
+* **Relacionamentos reais:** valida via `garantirExiste()` se `usuaria_id` existe em `usuarias` antes de criar a viagem, e se `viagem_id` existe em `viagens_seguras` antes de criar o check-in (devolvendo `400` caso inexistentes).
+* `GET /viagens?usuaria_id=...`: filtra as viagens de uma usuária ordenadas do mais recente para o mais antigo (`horario_inicio desc`).
+* `GET /checkins?viagem_id=...`: lista os check-ins vinculados a uma viagem específica (`horario_checkin desc`).
+
+Exemplo de `POST /viagens`:
+```json
+{
+  "usuaria_id": "7b1e4c2a-9f3d-4e8a-b6c1-2d5f8a9e0c31",
+  "origem_descricao": "Faculdade Positivo",
+  "destino_descricao": "Casa",
+  "previsao_chegada": "2026-11-17T02:00:00.000Z"
+}
+```
+
+Exemplo de `POST /checkins`:
+```json
+{
+  "viagem_id": "b1a2b3c4-0001-4000-8000-000000000001",
+  "status_resposta": "CONFIRMADO",
+  "latitude_atual": -23.3080,
+  "longitude_atual": -51.1650
+}
+```
+
+Testes feitos:
+
+| Pedido | Caso | Status |
+|---|---|---|
+| `GET /viagens` | lista geral de viagens | `200` |
+| `GET /viagens?usuaria_id=...` | filtrado por usuária, ordenado desc | `200` |
+| `GET /viagens/:id` | viagem existente do `seed.sql` | `200` |
+| `GET /viagens/:id` | id inexistente / UUID inválido | `404` / `400` |
+| `POST /viagens` | dados válidos | `201` |
+| `POST /viagens` | sem origem/destino/previsão, status inválido | `400` |
+| `POST /viagens` | usuaria_id inexistente | `400` |
+| `PUT /viagens/:id` | encerramento "Cheguei segura" (`CONCLUIDA_COM_SUCESSO`, `finalizado_em`) | `200` |
+| `PUT /viagens/:id` | status inválido / corpo vazio / id inexistente | `400` / `400` / `404` |
+| `DELETE /viagens/:id` | remoção com sucesso / repetido | `200` / `404` |
+| `GET /checkins?viagem_id=...` | lista check-ins da viagem | `200` |
+| `GET /checkins/:id` | check-in existente / inexistente | `200` / `404` |
+| `POST /checkins` | dados válidos | `201` |
+| `POST /checkins` | viagem_id inexistente | `400` |
+| `PUT /checkins/:id` | confirmação de resposta (`CONFIRMADO`) | `200` |
+| `DELETE /checkins/:id` | remoção com sucesso / repetido | `200` / `404` |
+
 
 
 ## ⚠️ Respostas de erro
