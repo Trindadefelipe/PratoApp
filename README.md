@@ -57,7 +57,7 @@ flowchart TD
         R_Viagens["/viagens & /checkins<br/>(Higor B.)"]
         R_Alertas["/alertas & /painel<br/>(Higor D.)"]
         R_Incidentes["/incidentes<br/>(João Pedro)"]
-        R_Indicadores["/indicadores<br/>(planejada, João Pedro #83)"]
+        R_Indicadores["/indicadores<br/>(João Pedro #83)"]
         Server --> R_Usuarias
         Server --> R_Contatos
         Server --> R_Viagens
@@ -73,11 +73,13 @@ flowchart TD
         T_Viagens[("viagens_seguras / checkins")]
         T_Alertas[("alertas_sos")]
         T_Incidentes[("cofre_incidentes")]
+        T_Indicadores[("indicadores_capitais")]
         Postgres --- T_Usuarias
         Postgres --- T_Contatos
         Postgres --- T_Viagens
         Postgres --- T_Alertas
         Postgres --- T_Incidentes
+        Postgres --- T_Indicadores
     end
 
     subgraph DS["📊 Pipeline Data Science"]
@@ -97,14 +99,14 @@ flowchart TD
 
 | Exigência da Entrega | Onde está implementado | Responsáveis | Situação |
 |---|---|---|:---:|
-| **Back-end (API RESTful)** em Node.js/Express, modular com rotas completas | `api/src/server.js` e `api/src/rotas/` (usuárias, contatos, viagens, check-ins, alertas e painel) | Alana, Felipe, Higor B., Higor D., João Pedro | ⏳ falta `/incidentes` (#80) |
-| **Banco de Dados Relacional** com as tabelas do DER no PostgreSQL | `api/sql/schema.sql` e `api/sql/seed.sql` no Supabase | Alana (#63) e Equipe | ✅ |
+| **Back-end (API RESTful)** em Node.js/Express, modular com rotas completas | `api/src/server.js` e `api/src/rotas/` (usuárias, contatos, viagens, check-ins, alertas, painel, incidentes e indicadores) | Alana, Felipe, Higor B., Higor D., João Pedro | ✅ |
+| **Banco de Dados Relacional** com as tabelas do DER no PostgreSQL | `api/sql/schema.sql`, `api/sql/seed.sql` e `api/sql/seed_indicadores.sql` no Supabase | Alana (#63) e Equipe | ✅ |
 | **Validação de Relacionamentos Reais** pela API (ex: `usuaria_id` existente) | `garantirExiste()` em `api/src/erros.js` e checagem em `POST`/`PUT` | Equipe em suas rotas | ✅ |
-| **Consumo Real no App Mobile** (Create, Read, Update, Delete via API) | `app/src/services/api.js` e páginas de cada módulo | Cada aluno em seu CRUD | ⏳ usuárias, contatos, viagens e alertas pela API; Cofre ainda com dados simulados (#81) |
+| **Consumo Real no App Mobile** (Create, Read, Update, Delete via API) | `app/src/services/api.js` e páginas de cada módulo | Cada aluno em seu CRUD | ✅ usuárias, contatos, viagens, alertas e Cofre pela API; Tela 17 lê `/indicadores` |
 | **Gatilho de Entrada e Saída Rápida (*Quick Exit*)** funcionando juntos | `PratoMetasScreen.js` (PINs vindos da API), `BotaoSaidaRapida.js` e `SafeTabs.js` | Alana (#68) e Felipe (#77) | ✅ |
 | **Data Science:** modelagem, avaliação e indicador integrado | `data-science/notebook.ipynb` (seções 6.3, 6.4 e 7) e Tela 17 com aviso acadêmico | Higor D. (#79), Alana (#82), João Pedro (#83), Higor B. (#74) | ✅ Notebook final executado de ponta a ponta com saídas e gráficos visíveis, modelo Random Forest (Recall 0,931 / Acurácia 0,794) superando o piso e requirements.txt |
-| **Governança & Rastreabilidade:** commits individuais e PRs com padrão | Histórico do Git (`Área: descrição (Nome) Closes #N`) | Todos os integrantes | ⏳ depende das entregas de cada integrante |
-| **Quadro Kanban e Registro de IA:** avanço real e prompts documentados | [GitHub Projects](https://github.com/users/alanakaled10/projects/1) / [kanban-backlog.md](docs/kanban-backlog.md) e [USO_IA.md](USO_IA.md) | Todos os integrantes | ⏳ #84 |
+| **Governança & Rastreabilidade:** commits individuais e PRs com padrão | Histórico do Git (`Área: descrição (Nome) Closes #N`) | Todos os integrantes | ✅ |
+| **Quadro Kanban e Registro de IA:** avanço real e prompts documentados | [GitHub Projects](https://github.com/users/alanakaled10/projects/1) / [kanban-backlog.md](docs/kanban-backlog.md) e [USO_IA.md](USO_IA.md) | Todos os integrantes | ✅ USO_IA.md com a seção de cada integrante; Kanban exportado no Blackboard (#84) |
 
 ---
 
@@ -116,7 +118,7 @@ flowchart TD
 | **Felipe Trindade** | Círculo de Confiança & Saída Rápida | `contatos_confianca` | `/contatos` | Tela 06 (`ContatosList`), Tela 07 (`ContatoForm`), `BotaoSaidaRapida` | **Etapa 5:** Análise Exploratória de Dados (EDA) |
 | **Higor Bueno** | Viagem Segura & Check-ins | `viagens_seguras`, `checkins_viagem` | `/viagens`, `/checkins` | Tela 08 (`ViagemNova`), Tela 09 (`ViagemEmAndamento`) | **Etapas 3 e 4:** Qualidade, Tratamento e Execução Final |
 | **Higor Domingos** | Alertas SOS & Painel Delegacia | `alertas_sos` | `/alertas`, `/painel` | Tela 05 (`SafeHome`), Tela 15 (`AlertasHistorico`), Painel Web | **Seção 6.3:** Modelagem e Treinamento de Modelos (#79) |
-| **João Pedro** | Cofre de Incidentes & Indicador DS | `cofre_incidentes` | `/incidentes`, `/indicadores` (planejada) | Tela 10 (`IncidentesList`), Tela 11 (`IncidenteForm`), Tela 12 (`Detalhe`), Tela 17 | **Integração** do indicador na Tela 17 (#83) |
+| **João Pedro** | Cofre de Incidentes & Indicador DS | `cofre_incidentes` | `/incidentes`, `/indicadores` | Tela 10 (`IncidentesList`), Tela 11 (`IncidenteForm`), Tela 12 (`Detalhe`), Tela 17 | **Integração** do indicador na Tela 17 (#83) |
 
 ---
 

@@ -48,7 +48,7 @@
 * [x] **[API]** Rotas da tabela `contatos_confianca` com validação de relacionamento real (`garantirExiste`). *(Resp: Felipe)* — [#69](https://github.com/Trindadefelipe/PratoApp/issues/69)
 * [x] **[API]** Rotas de viagens seguras e check-ins (`viagens_seguras` e `checkins_viagem`). *(Resp: Higor Bueno)* — [#72](https://github.com/Trindadefelipe/PratoApp/issues/72)
 * [x] **[API]** Rotas de alertas SOS (`alertas_sos`) com gravação silenciosa de coordenadas. *(Resp: Higor Domingos)* — [#75](https://github.com/Trindadefelipe/PratoApp/issues/75)
-* [ ] **[API]** Rotas do cofre de incidentes (`cofre_incidentes`). *(Resp: João Pedro)* — [#80](https://github.com/Trindadefelipe/PratoApp/issues/80)
+* [x] **[API]** Rotas do cofre de incidentes (`cofre_incidentes`). *(Resp: João Pedro)* — [#80](https://github.com/Trindadefelipe/PratoApp/issues/80)
 
 #### 📱 Integração Mobile & Segurança
 * [x] **[Mobile]** Camada base de acesso HTTP no app (`services/api.js`). *(Resp: Alana)* — [#66](https://github.com/Trindadefelipe/PratoApp/issues/66)
@@ -60,15 +60,15 @@
 * [x] **[Mobile]** Telas 08 e 09 (Viagem Segura) consumindo a API. *(Resp: Higor Bueno)* — [#73](https://github.com/Trindadefelipe/PratoApp/issues/73)
 * [x] **[Mobile]** Botão SOS e histórico gravando alertas na API. *(Resp: Higor Domingos)* — [#76](https://github.com/Trindadefelipe/PratoApp/issues/76)
 * [x] **[Mobile]** Status dos alertas atualizando sozinho no Painel da Delegacia. *(Resp: Higor Domingos)* — [#78](https://github.com/Trindadefelipe/PratoApp/issues/78)
-* [ ] **[Mobile]** Telas 10, 11 e 12 (Cofre de Incidentes) consumindo a API. *(Resp: João Pedro)* — [#81](https://github.com/Trindadefelipe/PratoApp/issues/81)
-* [ ] **[Mobile]** Indicador da capital integrado na Tela 17 com aviso acadêmico. *(Resp: João Pedro)* — [#83](https://github.com/Trindadefelipe/PratoApp/issues/83)
+* [x] **[Mobile]** Telas 10, 11 e 12 (Cofre de Incidentes) consumindo a API. *(Resp: João Pedro)* — [#81](https://github.com/Trindadefelipe/PratoApp/issues/81)
+* [x] **[Mobile]** Indicador da capital integrado na Tela 17 com aviso acadêmico. *(Resp: João Pedro)* — [#83](https://github.com/Trindadefelipe/PratoApp/issues/83)
 
 #### 📊 Data Science
-* [ ] **[Data Science]** Treinamento e comparação dos modelos de Machine Learning. *(Resp: Higor Domingos)* — [#79](https://github.com/Trindadefelipe/PratoApp/issues/79)
-* [ ] **[Data Science]** Avaliação com métricas completas e validação cruzada. *(Resp: Alana)* — [#82](https://github.com/Trindadefelipe/PratoApp/issues/82)
-* [ ] **[Data Science]** Notebook final executado e documentado com README de DS. *(Resp: Higor Bueno)* — [#74](https://github.com/Trindadefelipe/PratoApp/issues/74)
+* [x] **[Data Science]** Treinamento e comparação dos modelos de Machine Learning. *(Resp: Higor Domingos)* — [#79](https://github.com/Trindadefelipe/PratoApp/issues/79)
+* [x] **[Data Science]** Avaliação com métricas completas e validação cruzada. *(Resp: Alana)* — [#82](https://github.com/Trindadefelipe/PratoApp/issues/82)
+* [x] **[Data Science]** Notebook final executado e documentado com README de DS. *(Resp: Higor Bueno)* — [#74](https://github.com/Trindadefelipe/PratoApp/issues/74)
 
 #### 📚 Governança, Documentação e Encerramento
 * [x] **[Doc]** README raiz, modelagem DER e matriz de papéis com a arquitetura final. *(Resp: Felipe)* — [#71](https://github.com/Trindadefelipe/PratoApp/issues/71)
-* [ ] **[Doc]** Atualização do `USO_IA.md` com ferramentas e prompts da Entrega Final. *(Resp: Equipe)* — [#84](https://github.com/Trindadefelipe/PratoApp/issues/84)
-* [ ] **[Geral]** Teste de ponta a ponta sem mocks e consolidação dos 5 envios no Blackboard. *(Resp: Equipe)* — [#85](https://github.com/Trindadefelipe/PratoApp/issues/85)
+* [x] **[Doc]** Atualização do `USO_IA.md` com ferramentas e prompts da Entrega Final. *(Resp: Equipe)* — [#84](https://github.com/Trindadefelipe/PratoApp/issues/84)
+* [x] **[Geral]** Teste de ponta a ponta sem mocks e consolidação dos 5 envios no Blackboard. *(Resp: Equipe)* — [#85](https://github.com/Trindadefelipe/PratoApp/issues/85)
