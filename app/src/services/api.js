@@ -184,3 +184,13 @@ export function atualizarIncidente(id, dados) {
 export function removerIncidente(id) {
   return requisitar(`/incidentes/${id}`, { metodo: 'DELETE' });
 }
+
+
+// ---------- Indicadores das Capitais (João Pedro, #83) ----------
+export function listarIndicadores() {
+  return requisitar('/indicadores');
+}
+
+export function buscarIndicadorPorCapital(capital) {
+  return requisitar(`/indicadores/${encodeURIComponent(capital)}`);
+}

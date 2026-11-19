@@ -3,16 +3,16 @@
 //
 // Componente: ResultadoRiscoScreen
 // Navegação: Stack (push após a última pergunta)
-// Responsável: Felipe Trindade
-// Entrega: 2 (24/10)
+// Responsável: Felipe Trindade (tela) / João Pedro (indicador DS #83)
 //
 // O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
 //   * Nível de atenção (Baixo, Moderado, Alto) com barra
+//   * Indicador contextual da capital vindo da API (GET /indicadores)
 //   * Botões Falar com o Círculo, Ver guia de direitos e Ligar para o 180
 //   * Aviso de estimativa acadêmica
 // ============================================================
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,13 +20,19 @@ import {
   StyleSheet,
   Linking,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import CabecalhoTela from '../../../components/safe/CabecalhoTela';
 import BotaoPrimario from '../../../components/BotaoPrimario';
+import Chip from '../../../components/Chip';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
+import {
+  listarIndicadores,
+  buscarIndicadorPorCapital,
+} from '../../../services/api';
 
 export default function ResultadoRiscoScreen({ route, navigation }) {
   const respostas = route.params?.respostas || [];
@@ -34,6 +40,55 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
     (acc, val) => acc + (typeof val === 'number' ? val : 0),
     0
   );
+
+  const [capitais, setCapitais] = useState([]);
+  const [capitalSelecionada, setCapitalSelecionada] = useState('');
+  const [indicadorAtual, setIndicadorAtual] = useState(null);
+  const [carregandoIndicador, setCarregandoIndicador] = useState(true);
+  const [erroIndicador, setErroIndicador] = useState(null);
+
+  const carregarIndicadores = async () => {
+    try {
+      setCarregandoIndicador(true);
+      setErroIndicador(null);
+      const lista = await listarIndicadores();
+      const itens = Array.isArray(lista) ? lista : [];
+      setCapitais(itens);
+
+      if (itens.length > 0) {
+        const padrao =
+          itens.find((item) => item.capital === 'São Paulo') || itens[0];
+        setCapitalSelecionada(padrao.capital);
+        setIndicadorAtual(padrao);
+      }
+    } catch (err) {
+      setErroIndicador(
+        err.message || 'Não foi possível carregar o indicador da capital.'
+      );
+    } finally {
+      setCarregandoIndicador(false);
+    }
+  };
+
+  useEffect(() => {
+    carregarIndicadores();
+  }, []);
+
+  const selecionarCapital = async (capital) => {
+    setCapitalSelecionada(capital);
+    try {
+      setCarregandoIndicador(true);
+      setErroIndicador(null);
+      const dado = await buscarIndicadorPorCapital(capital);
+      setIndicadorAtual(dado);
+    } catch (err) {
+      setErroIndicador(
+        err.message || 'Não foi possível consultar a capital selecionada.'
+      );
+    } finally {
+      setCarregandoIndicador(false);
+    }
+  };
 
   // Classificação do nível de atenção conforme a soma das respostas (0 a 24)
   const obterClassificacao = (pontos) => {
@@ -169,6 +224,106 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
               })}
             </View>
           </View>
+        </View>
+
+        {/* Contexto Regional (Indicador DS vindo da API) */}
+        <View style={estilos.cardIndicador}>
+          <Text style={estilos.tituloIndicador}>
+            Contexto da capital (Data Science)
+          </Text>
+          <Text style={estilos.subtituloIndicador}>
+            Informação complementar baseada no histórico público da capital:
+          </Text>
+
+          {capitais.length > 0 && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={estilos.listaCapitais}
+            >
+              {capitais.map((item) => (
+                <Chip
+                  key={item.capital}
+                  titulo={item.capital}
+                  ativo={capitalSelecionada === item.capital}
+                  onPress={() => selecionarCapital(item.capital)}
+                />
+              ))}
+            </ScrollView>
+          )}
+
+          {carregandoIndicador && (
+            <View style={estilos.estadoIndicador}>
+              <ActivityIndicator size="small" color={colors.verdeProfundo} />
+              <Text style={estilos.textoEstadoIndicador}>
+                Carregando indicador da API...
+              </Text>
+            </View>
+          )}
+
+          {erroIndicador && !carregandoIndicador && (
+            <View style={estilos.erroIndicadorBox}>
+              <Text style={estilos.erroIndicadorTexto}>{erroIndicador}</Text>
+              <Pressable
+                style={estilos.botaoTentarIndicador}
+                onPress={carregarIndicadores}
+              >
+                <Text style={estilos.textoTentarIndicador}>
+                  Tentar novamente
+                </Text>
+              </Pressable>
+            </View>
+          )}
+
+          {indicadorAtual && !carregandoIndicador && !erroIndicador && (
+            <View style={estilos.detalheIndicador}>
+              <View style={estilos.linhaIndicadorTopo}>
+                <Text style={estilos.nomeCapital}>
+                  {indicadorAtual.capital} • {indicadorAtual.regiao}
+                </Text>
+                <View
+                  style={[
+                    estilos.badgeIndicador,
+                    {
+                      backgroundColor:
+                        indicadorAtual.classe_risco === 'Alto'
+                          ? colors.coralClaro
+                          : colors.verdeClaro,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      estilos.badgeIndicadorTexto,
+                      {
+                        color:
+                          indicadorAtual.classe_risco === 'Alto'
+                            ? colors.coral
+                            : colors.verdeProfundo,
+                      },
+                    ]}
+                  >
+                    Indicador {indicadorAtual.classe_risco} (
+                    {Math.round(Number(indicadorAtual.probabilidade_alto) * 100)}%)
+                  </Text>
+                </View>
+              </View>
+
+              <Text style={estilos.metricaIndicador}>
+                Taxa em {indicadorAtual.ano_referencia}:{' '}
+                {Number(indicadorAtual.taxa_recente).toFixed(2)} por 100 mil
+                mulheres
+              </Text>
+              {Boolean(indicadorAtual.perfil_cluster) && (
+                <Text style={estilos.perfilIndicador}>
+                  {indicadorAtual.perfil_cluster}
+                </Text>
+              )}
+              <Text style={estilos.notaAcademicaIndicador}>
+                Estimativa acadêmica agregada por capital ({indicadorAtual.modelo_origem}) — não mede risco individual.
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Seção de Ações e Atalhos */}
@@ -374,5 +529,108 @@ const estilos = StyleSheet.create({
     fontSize: 12,
     color: colors.amareloProfundo,
     lineHeight: 18,
+  },
+  cardIndicador: {
+    backgroundColor: colors.branco,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.begeCard,
+    padding: 16,
+    marginBottom: 24,
+  },
+  tituloIndicador: {
+    fontFamily: fonts.semibold,
+    fontSize: 16,
+    color: colors.grafite,
+    marginBottom: 4,
+  },
+  subtituloIndicador: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    color: colors.cinza,
+    marginBottom: 12,
+  },
+  listaCapitais: {
+    paddingBottom: 10,
+  },
+  estadoIndicador: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 10,
+  },
+  textoEstadoIndicador: {
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.cinza,
+  },
+  erroIndicadorBox: {
+    backgroundColor: colors.pessegoClaro,
+    borderRadius: 12,
+    padding: 12,
+  },
+  erroIndicadorTexto: {
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.coral,
+    marginBottom: 8,
+  },
+  botaoTentarIndicador: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.coral,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  textoTentarIndicador: {
+    fontFamily: fonts.semibold,
+    fontSize: 12,
+    color: colors.branco,
+  },
+  detalheIndicador: {
+    backgroundColor: colors.creme,
+    borderRadius: 14,
+    padding: 14,
+    marginTop: 4,
+  },
+  linhaIndicadorTopo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 8,
+  },
+  nomeCapital: {
+    fontFamily: fonts.bold,
+    fontSize: 15,
+    color: colors.grafite,
+  },
+  badgeIndicador: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  badgeIndicadorTexto: {
+    fontFamily: fonts.semibold,
+    fontSize: 12,
+  },
+  metricaIndicador: {
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.grafite,
+    marginBottom: 4,
+  },
+  perfilIndicador: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.cinza,
+    marginBottom: 8,
+  },
+  notaAcademicaIndicador: {
+    fontFamily: fonts.regular,
+    fontSize: 11,
+    color: colors.amareloProfundo,
+    lineHeight: 16,
   },
 });

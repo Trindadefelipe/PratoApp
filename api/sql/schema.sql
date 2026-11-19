@@ -105,13 +105,31 @@ create table if not exists cofre_incidentes (
 );
 
 
+-- ---------- Tabela 6: indicadores_capitais (João Pedro, #83) ----------
+-- Indicador estatístico agregado por capital, exportado pelo notebook de DS.
+-- Não representa risco individual da usuária (apenas contexto regional).
+create table if not exists indicadores_capitais (
+    id                  uuid primary key default gen_random_uuid(),
+    capital             varchar(80) not null unique,
+    regiao              varchar(30) not null,
+    ano_referencia      integer     not null,
+    taxa_recente        double precision not null,
+    classe_risco        varchar(20) not null check (classe_risco in ('Baixo', 'Alto')),
+    probabilidade_alto  double precision not null check (probabilidade_alto >= 0 and probabilidade_alto <= 1),
+    perfil_cluster      varchar(80),
+    modelo_origem       varchar(80) not null,
+    atualizado_em       timestamp   not null default current_timestamp
+);
+
+
 -- ---------- Segurança no Supabase ----------
 -- Liga o RLS sem nenhuma regra: o acesso público do Supabase (chave "anon")
 -- não lê nem grava nada. A nossa API em Node conecta direto no banco
 -- (DATABASE_URL, usuário postgres) e continua funcionando normalmente.
-alter table usuarias           enable row level security;
-alter table contatos_confianca enable row level security;
-alter table viagens_seguras    enable row level security;
-alter table checkins_viagem    enable row level security;
-alter table alertas_sos        enable row level security;
-alter table cofre_incidentes   enable row level security;
+alter table usuarias             enable row level security;
+alter table contatos_confianca   enable row level security;
+alter table viagens_seguras      enable row level security;
+alter table checkins_viagem      enable row level security;
+alter table alertas_sos          enable row level security;
+alter table cofre_incidentes     enable row level security;
+alter table indicadores_capitais enable row level security;
