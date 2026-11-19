@@ -243,7 +243,7 @@ PratoApp/
 │   │   ├── erros.js          # Middleware central de tratamento e validação de integridade
 │   │   └── server.js         # Servidor Express com carregamento dinâmico de rotas
 │   └── sql/                  # schema.sql e seed.sql para o PostgreSQL
-├── painel/                   # Dashboard Web em tempo real para a Delegacia
+├── painel/                   # Painel da Delegacia em React Native Web, tempo real (ver painel/README.md)
 ├── data-science/             # Pipeline de Ciência de Dados
 │   ├── dados/                # Bases públicas (Atlas da Violência / IPEA)
 │   └── notebook.ipynb        # Notebook com EDA, pré-processamento, modelos e métricas

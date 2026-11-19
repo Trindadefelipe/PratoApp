@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Painel da Delegacia",
+    "slug": "painel-delegacia",
+    "version": "1.0.0",
+    "platforms": ["web"],
+    "web": {
+      "favicon": "./assets/logo.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
