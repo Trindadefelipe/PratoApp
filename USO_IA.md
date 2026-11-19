@@ -343,3 +343,52 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * Validar `usuaria_id` com `garantirExiste()` antes de gravar em `cofre_incidentes` assegura integridade referencial e devolve mensagens claras (`400 Bad Request`) ao aplicativo em vez de erros genéricos de banco.
 
 
+
+## Entrega Final: Alana Caled
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Ordem das issues | Claude (Claude Code) | Análise do repositório e das issues #87, #67 e #68 para decidir a ordem: a #87 primeiro, porque as outras duas dependem do `id` da usuária guardado no primeiro acesso | Alana Caled |
+| Protótipo do primeiro acesso (#87) | Claude (Claude Design e Claude Code) | Criação dos layputs das 5 telas do primeiro acesso no visual da fachada e exportação em PNG no mesmo tamanho dos protótipos anteriores (`prato-05` a `prato-09`) | Alana Caled |
+| Primeiro acesso, gatilho do PIN e Ajustes (#87, #68 e #67) | Claude (Claude Code) | Sugestão de código (tela de primeiro acesso, `sessao.js`, `RootStack`, PINs vindos da API na tela de Metas), digitado, adaptado e testado por mim; revisão antes de cada commit | Alana Caled |
+| Revisão das issues fechadas na madrugada de 19/11 | Claude (Claude Code), em outra máquina | Revisão do código das issues #67, #68, #70 e #71 antes de fechar: conferir se seguia o `padroes-de-codigo.md` (cores do tema, nomes do DER, cabeçalhos), se o Círculo usava a usuária do celular e se o notebook tinha sido executado com as saídas. Resultou nos ajustes do Círculo, da saída rápida, das cores do histórico de alertas e da validação cruzada ordenada por ano | Alana Caled |
+| Revisão dos PRs do grupo | Claude (Claude Code) | Simulação dos merges e leitura do código dos PRs #90 a #96: encontrou o `removerAlerta` sem `DELETE` no #91, o `listarContatos` repetido entre o #91 e o #96 e os créditos de Data Science removidos do README no #93. Os comentários de revisão foram escritos com a IA e aprovados por mim antes de publicar | Alana Caled |
+| Revisão do Cofre de Incidentes (#80 e #81) | Claude (Claude Code) | Teste das 16 rotas de `/incidentes` e do fluxo no navegador; encontrou a falta da tabela de testes no README, o campo de notas sem lugar para digitar e textos que prometiam criptografia e PDF assinado. Os ajustes foram feitos no PR #97 | Alana Caled |
+| Avaliação do modelo (#82) | Claude (Claude Code) | Células da seção 6.4 (pisos recalculados com o mesmo alvo, tabela de métricas, matriz de confusão, comparação com o piso e silhueta do K-Means), coladas e executadas por mim no Colab; texto da decisão escrito a partir dos números que eu obtive | Alana Caled |
+| Conferência da modelagem (#79) | Claude (Claude Code) | Comparação das saídas salvas no notebook com uma execução do zero: os números não batiam, e a correção foi registrada na issue | Alana Caled |
+
+### Prompts testados
+
+#### Ordem das issues (Claude Code)
+
+**Prompt:** "analise o projeto e olhe a issue #87, quero adicionar os protótipos da tela, esse é o melhor momento ou é melhor fazer as outras issues antes?"
+
+**Resultado:** recomendação de fazer a #87 primeiro, com os protótipos junto, e depois a #68 e a #67, porque as duas precisam do `id` guardado no primeiro acesso.
+
+#### Revisão das issues da madrugada (Claude Code, outra máquina)
+
+**Prompt (resumo):** "revise o código dessas issues e veja se está no padrão do projeto e se o notebook foi testado antes de eu fechar"
+
+**Resultado:** o Círculo ainda usava a usuária de teste, cores soltas no histórico de alertas e a validação cruzada sem ordenar por ano; a #79 foi reaberta porque o notebook não tinha saídas
+
+#### Revisão dos PRs do grupo (Claude Code)
+
+**Prompt:** "Analise os prs do felipe e do higor, veja se posso dar merge em algum"
+
+**Resultado:** três PRs liberados para merge e dois com ajustes pedidos; a simulação dos merges mostrou os conflitos e a ordem certa (#90 antes do #96, por causa da rota `/contatos`).
+
+#### Avaliação do modelo (Claude Code)
+
+**Prompt:** "me ajude a fazê-la, não commite nada, me mande aqui pra eu tentar fazer"
+
+**Resultado:** células da seção 6.4 para colar no Colab. Ao rodar do zero, a Random Forest teve recall 0,931 e superou o piso de "repetir o ano anterior"; as saídas da modelagem ficaram diferentes das que estavam salvas antes.
+
+### O que eu aprendi e decidi
+
+* Todo código sugerido foi lido, adaptado e testado por mim (no navegador, no Expo Go ou no Colab) antes do commit, e eu mesma fiz os commits.
+* Decidi a ordem das minhas issues (#87, depois #68 e #67) e assumi a avaliação do modelo (#82) no lugar do João Pedro.
+* Aprendi a comparar o modelo com um piso calculado do mesmo jeito: comparar com um piso feito com outro alvo daria uma conclusão errada.
+* Uma execução do zero ("Reiniciar e executar tudo") é a prova de que o notebook funciona; saídas salvas de outra execução podem não bater com o código.
+* Os comentários nos PRs e nas issues do grupo foram revisados e aprovados por mim antes de serem publicados.
