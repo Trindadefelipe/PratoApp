@@ -191,6 +191,39 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * A criação de features estruturadas (como Macrorregião e faixas ordinais de risco) e a normalização padronizada são etapas indispensáveis para que os algoritmos de Machine Learning (como K-Means ou Random Forest) convirjam sem serem distorcidos pelas disparidades populacionais entre grandes e pequenas capitais.
 
 
+## Entrega 2: Higor Domingos
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Tela 05: Início do SAFE e Botão SOS | Gemini / Antigravity | Implementação da `SafeHomeScreen.js` com botão central de emergência em destaque, saudação dinâmica contextual e navegação protegida | Higor Domingos |
+| Tela 15: Histórico de Alertas SOS | Gemini / Antigravity | Implementação da `AlertasHistoricoScreen.js` com lista de acionamentos, badges de status, formatação de data/hora e tipo de gatilho | Higor Domingos |
+| Lógica do SOS Silencioso e Duress PIN | Gemini / Antigravity | Implementação de `app/src/services/sos.js` com regra de disparo sob coação (*Duress PIN*), geração de payloads simulados e supressão de alertas visuais de erro | Higor Domingos |
+| Dados simulados de alertas SOS | Gemini / Antigravity | Criação de `app/src/data/alertas.js` estruturado conforme entidades e chaves estrangeiras do DER (`usuaria_id`, `tipo_gatilho`, `status_alerta`) | Higor Domingos |
+| Padronização visual do módulo SOS | Gemini / Antigravity | Alinhamento das cores de `theme/colors.js` e fontes de `theme/fonts.js` em todo o fluxo de emergência | Higor Domingos |
+
+### Prompts testados
+
+#### Módulo de SOS e Histórico de Alertas (Gemini / Antigravity)
+
+**Prompt:** "implemente a Tela 05 (SafeHomeScreen) com botão de SOS em destaque e a Tela 15 (AlertasHistoricoScreen) seguindo docs/padroes-de-codigo.md, tema com colors.js e fonts.js e fluxo de dados com data/alertas.js"
+
+**Resultado:** Telas completas integradas ao `InicioStack`, respeitando a identidade visual, contraste para situações de estresse e exibição clara do histórico de chamados da usuária.
+
+#### Lógica de Proteção sob Coação (Gemini / Antigravity)
+
+**Prompt:** "crie o serviço app/src/services/sos.js com a regra do Duress PIN: caso a usuária informe a senha sob coação, o app deve abrir a interface normalmente mas acionar o SOS silencioso em segundo plano sem exibir erros visuais"
+
+**Resultado:** Função `dispararSos()` com captura de tipo de gatilho (`MANUAL`, `DURESS_PIN`, `QUEDA_CONEXAO`), isolamento de falhas em modo coação e geração de carimbos de auditoria compatíveis com a tabela `alertas_sos`.
+
+### O que eu aprendi e decidi
+
+* Em interfaces de emergência para vítimas de violência, a usabilidade do botão SOS requer área de toque ampliada e feedback tátil, mas nunca deve travar a usuária com confirmações burocráticas quando o perigo é iminente.
+* A regra de segurança do *Duress PIN* exige arquitetura defensiva: a prioridade máxima é proteger a integridade física da usuária, simulando uma operação normal para o agressor enquanto as autoridades e a rede de confiança são notificadas.
+* A consistência entre a estrutura dos dados simulados e o modelo relacional (DER) desde a Entrega 2 facilitou a posterior transição para a API real e PostgreSQL sem necessidade de refatorar a árvore de componentes da tela.
+
+
 ## Entrega Final: Felipe Trindade
 
 ### Onde foram usadas
