@@ -29,4 +29,5 @@ export const colors = {
     coralClaro     : '#FCE4DE', // fundo de avatar no Círculo
     azulClaro      : '#EBF4FF', // fundo do selo de alerta NOVO no histórico
     azulEscuro     : '#1E6091', // texto do selo de alerta NOVO no histórico
+    fundoModal     : 'rgba(38, 52, 58, 0.35)', // grafite transparente atrás dos modais
 }
