@@ -12,13 +12,19 @@
 //   * Anel de calorias: kcal restantes e consumidas em relação à meta
 //   * Lista de refeições: café da manhã, almoço, lanche e jantar
 //   * Contador de copos de água
+//
+// Entrega Final: o botão + de uma refeição não registrada abre o ModalRefeicao.
+// A refeição registrada fica guardada no celular (AsyncStorage) só naquele dia,
+// e o anel de calorias atualiza. É da fachada: não vai para a API nem para o DER.
 // ============================================================
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, TextInput, Image, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnelCalorias from '../../components/prato/AnelCalorias';
+import ModalRefeicao from '../../components/prato/ModalRefeicao';
 import { refeicoes, metas } from '../../data/prato';
 import { colors } from '../../theme/colors';
 import { fonts } from '../../theme/fonts';
@@ -39,10 +45,44 @@ function dataDeHoje(){
     return `${DIAS[hoje.getDay()]}, ${hoje.getDate()} de ${MESES[hoje.getMonth()]}`;
 }
 
+// Chave do dia no celular: as refeições registradas valem só para hoje.
+function chaveDoDia(){
+    const hoje = new Date();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    return `prato:refeicoes:${hoje.getFullYear()}-${mes}-${dia}`;
+}
+
 export default function PratoHomeScreen({navigation}){
     const [copos, setCopos] = useState(metas.aguaCopos);
+    const [listaRefeicoes, setListaRefeicoes] = useState(refeicoes);
+    const [registrando, setRegistrando] = useState(null);
 
-    const fatias = refeicoes
+    // Junta as refeições do data/prato.js com as registradas hoje no celular
+    useEffect(() => {
+        AsyncStorage.getItem(chaveDoDia())
+            .then((texto) => {
+                const salvas = texto ? JSON.parse(texto) : {};
+                setListaRefeicoes(refeicoes.map((r) => (salvas[r.id] ? { ...r, ...salvas[r.id], registrada: true } : r)));
+            })
+            .catch(() => setListaRefeicoes(refeicoes));
+    }, []);
+
+    async function salvarRefeicao({ descricao, kcal }){
+        const id = registrando.id;
+        setListaRefeicoes((atual) => atual.map((r) => (r.id === id ? { ...r, descricao, kcal, registrada: true } : r)));
+        setRegistrando(null);
+        try {
+            const texto = await AsyncStorage.getItem(chaveDoDia());
+            const salvas = texto ? JSON.parse(texto) : {};
+            salvas[id] = { descricao, kcal };
+            await AsyncStorage.setItem(chaveDoDia(), JSON.stringify(salvas));
+        } catch {
+            // Sem armazenamento, a refeição continua na tela até fechar o app
+        }
+    }
+
+    const fatias = listaRefeicoes
         .filter((r) => r.registrada)
         .map((r) => ({kcal: r.kcal, cor: corRefeicao[r.id].fundo}));
 
@@ -75,7 +115,7 @@ export default function PratoHomeScreen({navigation}){
                 </View>
 
                 <AnelCalorias fatias={fatias} meta={metas.calorias}/>
-                {refeicoes.map((refeicao) => (
+                {listaRefeicoes.map((refeicao) => (
                     <View key={refeicao.id} style={estilos.refeicao}>
                         <View style={[estilos.refeicaoIcone, { backgroundColor: corRefeicao[refeicao.id].fundo }]}>
                             <Ionicons name='restaurant' size={22} color={corRefeicao[refeicao.id].icone} />
@@ -92,8 +132,13 @@ export default function PratoHomeScreen({navigation}){
                                 {' '}kcal
                             </Text>
                         ) : (
-                            <Pressable style={estilos.botaoMais}>
-                                <Ionicons name='add' size={22} color={colors.grafite}/> 
+                            <Pressable
+                                style={estilos.botaoMais}
+                                onPress={() => setRegistrando(refeicao)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Registrar ${refeicao.nome}`}
+                            >
+                                <Ionicons name='add' size={22} color={colors.grafite}/>
                             </Pressable>
                         )}
                     </View>
@@ -120,6 +165,13 @@ export default function PratoHomeScreen({navigation}){
                 </View>
 
             </ScrollView>
+
+            <ModalRefeicao
+                visivel={Boolean(registrando)}
+                refeicao={registrando}
+                onSalvar={salvarRefeicao}
+                onFechar={() => setRegistrando(null)}
+            />
 
         </SafeAreaView>
         

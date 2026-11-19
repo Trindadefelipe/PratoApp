@@ -2,13 +2,14 @@
 // TELA 04: Receitas rápidas
 //
 // Componente: PratoReceitasScreen
-// Navegação: Tab (aba Receitas)
+// Navegação: Tab (aba Receitas), raiz do ReceitasStack
 // Responsável: Alana Caled
 // Entrega: 2 (24/10)
 //
 // O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
 //   * Chips de filtro: Todas, Café da manhã, Almoço, Jantar
 //   * Lista de receitas com tempo de preparo, kcal e botão de favoritar
+// Entrega Final: tocar na receita abre o detalhe (ReceitaDetalhe)
 // ============================================================
 
 import { useState } from 'react';
@@ -24,7 +25,7 @@ const FILTROS = ['Todas', 'Café da manhã', 'Almoço', 'Jantar'];
 
 const CORES_CARTAO = [colors.verdeFolha, colors.amarelo, colors.pessegoPastel, colors.coral, colors.verdeProfundo];
 
-export default function PratoReceitasScreen(){
+export default function PratoReceitasScreen({navigation}){
     const [filtro, setFiltro]       = useState('Todas');
     const [favoritas, setFavoritas] = useState(
         receitas.filter((r) => r.favorita).map((r) => r.id)
@@ -75,6 +76,11 @@ export default function PratoReceitasScreen(){
                         cor={CORES_CARTAO[(item.id - 1) % CORES_CARTAO.length]}
                         favorita={favoritas.includes(item.id)}
                         onFavoritar={() => alternarFavorita(item.id)}
+                        onAbrir={() => navigation.navigate('ReceitaDetalhe', {
+                            id: item.id,
+                            cor: CORES_CARTAO[(item.id - 1) % CORES_CARTAO.length],
+                            favorita: favoritas.includes(item.id),
+                        })}
                     />
                 )}
                 ListEmptyComponent={

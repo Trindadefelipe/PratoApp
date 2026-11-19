@@ -5,6 +5,7 @@
 //   * cor: cor do quadrado com o ícone
 //   * favorita: se o coração aparece preenchido
 //   * onFavoritar: o que acontece ao tocar no coração
+//   * onAbrir: o que acontece ao tocar na receita (abre o detalhe)
 // ============================================================
 
 import { Ionicons } from "@expo/vector-icons";
@@ -14,9 +15,15 @@ import { fonts } from "../../theme/fonts";
 
 
 
-export default function CartaoReceita({receita, cor, favorita, onFavoritar}){
+export default function CartaoReceita({receita, cor, favorita, onFavoritar, onAbrir}){
     return(
         <View style={estilos.cartao}>
+            <Pressable
+                style={({pressed}) => [estilos.abrir, pressed && estilos.pressionado]}
+                onPress={onAbrir}
+                accessibilityRole="button"
+                accessibilityLabel={`Abrir receita ${receita.nome}`}
+            >
             <View style={[estilos.imagem, {backgroundColor: cor}]}>
                 <Ionicons name="restaurant" size={34} color={colors.branco}/> 
             </View>
@@ -36,8 +43,14 @@ export default function CartaoReceita({receita, cor, favorita, onFavoritar}){
                     </View>
                 </View>
             </View>
+            </Pressable>
 
-            <Pressable onPress={onFavoritar} hitSlop={10}>
+            <Pressable
+                onPress={onFavoritar}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel={favorita ? 'Remover dos favoritos' : 'Favoritar receita'}
+            >
                 <Ionicons
                     name={favorita ? 'heart' : 'heart-outline'}
                     size={24}
@@ -54,6 +67,17 @@ const estilos = StyleSheet.create({
         alignItems: 'center',
         gap: 14,
         marginBottom: 16,
+    },
+
+    abrir: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 14,
+    },
+
+    pressionado: {
+        opacity: 0.7,
     },
 
     imagem: {

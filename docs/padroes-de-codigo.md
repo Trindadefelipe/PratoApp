@@ -191,6 +191,7 @@ Os nomes das rotas **não têm** o sufixo `Screen`:
 | Aba | Rotas |
 |---|---|
 | Pratô (abas) | `Diario`, `Metas`, `Receitas` |
+| Receitas | `ReceitasLista`, `ReceitaDetalhe` |
 | Início | `SafeHome`, `AlertasHistorico`, `GuiaDireitos`, `Autoavaliacao`, `ResultadoRisco` |
 | Círculo | `ContatosList`, `ContatoForm` |
 | Viagem | `ViagemNova`, `ViagemEmAndamento` |
