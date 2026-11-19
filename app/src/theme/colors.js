@@ -27,4 +27,6 @@ export const colors = {
     preto          : '#000000', // sombras
     pessegoSuave   : '#FEEEDE', // fundo do aviso de prioridade no Círculo
     coralClaro     : '#FCE4DE', // fundo de avatar no Círculo
+    azulClaro      : '#EBF4FF', // fundo do selo de alerta NOVO no histórico
+    azulEscuro     : '#1E6091', // texto do selo de alerta NOVO no histórico
 }

@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     color: colors.grafite,
   },
   bannerErro: {
-    backgroundColor: '#FFEAEA',
+    backgroundColor: colors.coralClaro,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   badgeNovo: {
-    backgroundColor: '#EBF4FF',
+    backgroundColor: colors.azulClaro,
   },
   badgeEmAtendimento: {
     backgroundColor: colors.amareloClaro,
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   badgeTextoNovo: {
-    color: '#1E6091',
+    color: colors.azulEscuro,
   },
   badgeTextoEmAtendimento: {
     color: colors.amareloEscuro,
