@@ -358,6 +358,10 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 | Revisão do Cofre de Incidentes (#80 e #81) | Claude (Claude Code) | Teste das 16 rotas de `/incidentes` e do fluxo no navegador; encontrou a falta da tabela de testes no README, o campo de notas sem lugar para digitar e textos que prometiam criptografia e PDF assinado. Os ajustes foram feitos no PR #97 | Alana Caled |
 | Avaliação do modelo (#82) | Claude (Claude Code) | Células da seção 6.4 (pisos recalculados com o mesmo alvo, tabela de métricas, matriz de confusão, comparação com o piso e silhueta do K-Means), coladas e executadas por mim no Colab; texto da decisão escrito a partir dos números que eu obtive | Alana Caled |
 | Conferência da modelagem (#79) | Claude (Claude Code) | Comparação das saídas salvas no notebook com uma execução do zero: os números não batiam, e a correção foi registrada na issue | Alana Caled |
+| Conferência da entrega | Claude (Claude Code) | Comparação do repositório com o checklist da Entrega Final: rotas da API testadas, telas ainda usando a usuária de teste, indicador da Tela 17 (#83) faltando e README e Kanban desatualizados | Alana Caled |
+| Correções encontradas nos testes | Claude (Claude Code) | Diagnóstico de três problemas que vi testando o app: telas de Viagem gravando na usuária de teste, datas voltando 3 horas adiantadas (o `pg` lia as colunas `timestamp` em UTC como horário de Brasília) e lixeira do histórico de alertas sem efeito no navegador (o `Alert.alert` não funciona no react-native-web). O código das correções veio no chat, e eu apliquei e testei antes do commit | Alana Caled |
+| Extras da fachada Pratô | Claude (Claude Code) | Código escrito pela IA, a partir da minha ideia: tela de detalhe da receita (ingredientes e modo de preparo) e botão + do Diário registrando a refeição do dia no celular. Revisei e testei no navegador antes de aprovar o PR #101 | Alana Caled |
+| Painel da Delegacia em React Native | Claude (Claude Code) | Código escrito pela IA, a partir do protótipo do grupo: o painel em HTML virou um app Expo web separado, com contadores, lista, mapa ilustrado e botões de atendimento ligados à API. Revisei, testei com a API e o banco reais e aprovei o PR #102 | Alana Caled |
 
 ### Prompts testados
 
@@ -385,6 +389,24 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 
 **Resultado:** células da seção 6.4 para colar no Colab. Ao rodar do zero, a Random Forest teve recall 0,931 e superou o piso de "repetir o ano anterior"; as saídas da modelagem ficaram diferentes das que estavam salvas antes.
 
+#### Conferência da entrega (Claude Code)
+
+**Prompt:** "com o que temos hoje (em relação a código e forma como foi organizado o projeto), está tudo de acordo com a forma da entrega?", junto com o texto do enunciado
+
+**Resultado:** checklist item por item. A API respondia nas 7 rotas e o app abria sem erros, mas faltavam o indicador na Tela 17 (#83), as telas de Viagem usavam a usuária de teste e o README ainda dizia que a modelagem não tinha terminado.
+
+#### Horário errado na viagem (Claude Code)
+
+**Prompt:** "Tá certo isso?", com prints da Nova viagem (chegada às 10:35) e da viagem em andamento (chegada às 13:35, 194 minutos restantes)
+
+**Resultado:** a consulta direta ao banco mostrou que ele gravava certo em UTC, e o erro estava na leitura. Uma linha no `db.js` resolveu as datas do app inteiro, inclusive o Cofre.
+
+#### Extras da fachada e painel (Claude Code)
+
+**Prompt:** "no botão + a pessoa conseguir adicionar uma refeição de fato e na receita, quando clica abrir de fato a receita, criar também a tela que a polícia vê", e depois "o painel está feio, quero igual o do protótipo, usando react native como todas as telas"
+
+**Resultado:** a IA mostrou que o painel da delegacia já existia em HTML e recomendou fazer a refeição sem banco, para não mexer no schema no dia da entrega. O código dos três extras foi escrito por ela numa cópia separada do projeto, sem misturar com as minhas correções ainda sem commit, e testado no navegador antes dos PRs.
+
 ### O que eu aprendi e decidi
 
 * Todo código sugerido foi lido, adaptado e testado por mim (no navegador, no Expo Go ou no Colab) antes do commit, e eu mesma fiz os commits.
@@ -392,3 +414,5 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * Aprendi a comparar o modelo com um piso calculado do mesmo jeito: comparar com um piso feito com outro alvo daria uma conclusão errada.
 * Uma execução do zero ("Reiniciar e executar tudo") é a prova de que o notebook funciona; saídas salvas de outra execução podem não bater com o código.
 * Os comentários nos PRs e nas issues do grupo foram revisados e aprovados por mim antes de serem publicados.
+* Nos extras (receita, refeição e painel), o código foi escrito pela IA e eu revisei, testei e aprovei os PRs. Decidi fazer a refeição só no celular, sem criar tabela nova, para não arriscar o banco no dia da entrega.
+* Testar o app de verdade, e não só ler o código, foi o que mostrou os erros de horário e da lixeira: os dois só aparecem com o app rodando no navegador.
