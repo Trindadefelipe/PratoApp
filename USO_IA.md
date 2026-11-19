@@ -326,7 +326,7 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 
 #### Rotas da API e Integração do Cofre de Incidentes (Gemini / Antigravity)
 
-**Prompt:** "Audite o repositório, atualize a branch main e verifique as issues abertas atribuídas a mim (#80 e #81). Primeiro, implemente api/src/rotas/incidentes.js seguindo o padrão de _modelo.js, validando os campos do DER de cofre_incidentes, a chave estrangeira usuaria_id com garantirExiste() e documentando em api/README.md. Em seguida, adicione os métodos do cofre em app/src/services/api.js, centralize constantes/formatações em app/src/services/incidentes.js e integre as Telas 10, 11 e 12 (IncidentesListScreen, IncidenteFormScreen e IncidenteDetalheScreen) removendo qualquer import de app/src/data/, tratando estados de loading/erro e respeitando docs/padroes-de-codigo.md. Faça commits atômicos na main com Closes #80 e Closes #81."
+**Prompt:** "Analise as issues abertas atribuídas a mim no repositório (#80 e #81) e implemente o módulo do Cofre de Incidentes seguindo docs/padroes-de-codigo.md: crie as rotas de cofre_incidentes em api/src/rotas/incidentes.js com validação do DER e de usuaria_id, e integre as Telas 10, 11 e 12 ao services/api.js removendo os dados simulados de data/incidentes.js."
 
 **Resultado:** Implementação de `api/src/rotas/incidentes.js` com consultas parametrizadas e validação de chave estrangeira `usuaria_id`, atualização de `api/README.md`, criação de `app/src/services/incidentes.js`, adição dos métodos em `app/src/services/api.js` e migração completa das Telas 10, 11 e 12 para a API real, fechando as issues #80 e #81 via commits na `main`.
 
