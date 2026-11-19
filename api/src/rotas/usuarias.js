@@ -4,7 +4,7 @@
 //   GET    /usuarias/:id      uma usuária
 //   POST   /usuarias          cria       (201)
 //   PUT    /usuarias/:id      atualiza só os campos enviados
-//   DELETE /usuarias/:id      apaga
+//   DELETE /usuarias/:id      apaga (junto com os alertas SOS dela)
 // Erros: 400 dado inválido ou e-mail repetido, 404 id não encontrado.
 // Nunca devolve senha_hash.
 // Responsável: Alana Caled (issue #65)
@@ -170,13 +170,26 @@ roteador.put('/:id', async (req, res) => {
     res.json(rows[0]);
 });
 
-// DELETE /usuarias/:id
-// Os registros ligados a ela (contatos, viagens...) seguem a regra do schema.sql.
+// DELETE /usuarias/:id  ("Apagar meus dados", Tela 13)
+// Contatos, viagens, check-ins e cofre são apagados em cascata pelo schema.sql.
+// Os alertas SOS não têm cascata no banco, então são apagados aqui antes.
+// Tudo numa transação: ou apaga tudo, ou não apaga nada.
 roteador.delete('/:id', async (req, res) => {
     validarId(req.params.id);
-    const { rows } = await db.query(`delete from ${TABELA} where id = $1 returning ${COLUNAS_PUBLICAS}`, [req.params.id]);
-    if (rows.length === 0) throw naoEncontrada(req.params.id);
-    res.json({ removido: rows[0] });
+    const cliente = await db.pool.connect();
+    try {
+        await cliente.query('begin');
+        const alertas = await cliente.query('delete from alertas_sos where usuaria_id = $1', [req.params.id]);
+        const { rows } = await cliente.query(`delete from ${TABELA} where id = $1 returning ${COLUNAS_PUBLICAS}`, [req.params.id]);
+        if (rows.length === 0) throw naoEncontrada(req.params.id);
+        await cliente.query('commit');
+        res.json({ removido: rows[0], alertas_removidos: alertas.rowCount });
+    } catch (erro) {
+        await cliente.query('rollback');
+        throw erro;
+    } finally {
+        cliente.release();
+    }
 });
 
 module.exports = roteador;

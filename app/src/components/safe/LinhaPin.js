@@ -5,7 +5,7 @@
 //   * titulo e descricao: textos da linha
 //   * pin: o PIN atual (só a quantidade de dígitos aparece, como bolinhas)
 //   * validar: recebe o novo PIN e devolve uma mensagem de erro, ou null se estiver certo
-//   * onSalvar: recebe o novo PIN já validado
+//   * onSalvar: recebe o novo PIN já validado; pode ser async e devolver uma mensagem de erro
 // ============================================================
 
 
@@ -25,13 +25,18 @@ export default function LinhaPin({titulo, descricao, pin, validar, onSalvar}){
         setErro(null);
     }
 
-    function salvar(){
+    // onSalvar pode ser assíncrono e devolver uma mensagem de erro (ex.: recusa da API)
+    async function salvar(){
         const mensagemErro = validar(novoPin);
         if (mensagemErro){
             setErro(mensagemErro);
             return;
         }
-        onSalvar(novoPin);
+        const erroAoSalvar = await onSalvar(novoPin);
+        if (erroAoSalvar){
+            setErro(erroAoSalvar);
+            return;
+        }
         cancelar();
     }
 
