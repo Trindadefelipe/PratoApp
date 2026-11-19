@@ -1,0 +1,18 @@
+# Dependências do Pipeline de Data Science - Pratô / SAFE
+# Projeto Integrador 2º/2026 · Universidade Positivo (Campus Londrina)
+
+# Manipulação e análise de dados
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Aprendizado de Máquina (Classificação, Pipelines, K-Means e Métricas)
+scikit-learn>=1.3.0
+
+# Visualização de dados e gráficos
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Ambiente interativo de execução (Jupyter Notebook / Lab)
+jupyter>=1.0.0
+ipykernel>=6.25.0

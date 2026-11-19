@@ -102,7 +102,7 @@ flowchart TD
 | **Validação de Relacionamentos Reais** pela API (ex: `usuaria_id` existente) | `garantirExiste()` em `api/src/erros.js` e checagem em `POST`/`PUT` | Equipe em suas rotas | ✅ |
 | **Consumo Real no App Mobile** (Create, Read, Update, Delete via API) | `app/src/services/api.js` e páginas de cada módulo | Cada aluno em seu CRUD | ⏳ usuárias, contatos, viagens e alertas pela API; Cofre ainda com dados simulados (#81) |
 | **Gatilho de Entrada e Saída Rápida (*Quick Exit*)** funcionando juntos | `PratoMetasScreen.js` (PINs vindos da API), `BotaoSaidaRapida.js` e `SafeTabs.js` | Alana (#68) e Felipe (#77) | ✅ |
-| **Data Science:** modelagem, avaliação e indicador integrado | `data-science/notebook.ipynb` (seção 6.3 e avaliação) e Tela 17 com aviso acadêmico | Higor D. (#79), Alana (#82), João Pedro (#83) | ⏳ modelagem escrita, falta executar; avaliação e indicador em andamento |
+| **Data Science:** modelagem, avaliação e indicador integrado | `data-science/notebook.ipynb` (seções 6.3, 6.4 e 7) e Tela 17 com aviso acadêmico | Higor D. (#79), Alana (#82), João Pedro (#83), Higor B. (#74) | ✅ Notebook final executado de ponta a ponta com saídas e gráficos visíveis, modelo Random Forest (Recall 0,931 / Acurácia 0,794) superando o piso e requirements.txt |
 | **Governança & Rastreabilidade:** commits individuais e PRs com padrão | Histórico do Git (`Área: descrição (Nome) Closes #N`) | Todos os integrantes | ⏳ depende das entregas de cada integrante |
 | **Quadro Kanban e Registro de IA:** avanço real e prompts documentados | [GitHub Projects](https://github.com/users/alanakaled10/projects/1) / [kanban-backlog.md](docs/kanban-backlog.md) e [USO_IA.md](USO_IA.md) | Todos os integrantes | ⏳ #84 |
 
@@ -133,11 +133,54 @@ O pipeline completo está implementado em [`data-science/notebook.ipynb`](data-s
 | **1 e 2. Governança, aquisição e dicionário** | Alana Caled | Ficha da base, conformidade com a LGPD, limitações, carga de dados e dicionário de tipos estatísticos |
 | **3 e 4. Qualidade e tratamento** | Higor Bueno | Diagnóstico nas 5 dimensões de qualidade, tratamento pedagógico, tabela de decisões e comparação antes × depois |
 | **5. Análise exploratória (EDA)** | Felipe Trindade | Medidas resumo, distribuição de frequências, série histórica, correlações e respostas às 3 perguntas de negócio |
-| **6. Plano e 6.3 Modelagem** | Higor Domingos | Alvo sem vazamento, validação cruzada temporal, Regressão Logística × Random Forest e K-Means |
-| **Avaliação** | Alana Caled (#82) | Métricas completas (acurácia, precisão, recall, F1, ROC-AUC), matriz de confusão, comparação com os pisos e decisão final |
-| **Integração** | João Pedro (#83) | Indicador da capital exibido na Tela 17 com aviso acadêmico |
+| **6. Plano e 6.3 Modelagem** | Higor Domingos (#79) | Alvo sem vazamento temporal, pipelines do scikit-learn, validação cruzada temporal, Regressão Logística × Random Forest e K-Means |
+| **6.4 Avaliação** | Alana Caled (#82) | Métricas completas (acurácia, precisão, recall, F1, ROC-AUC), matriz de confusão, comparação com os pisos e decisão do modelo final |
+| **Execução Final & Reprodutibilidade** | Higor Bueno (#74) | Atualização do título, seção 7 com síntese e checklist da Entrega Final, conferência dos caminhos Colab/local, `requirements.txt` e documentação |
+| **Integração no Mobile** | João Pedro (#83) | Indicador contextual da capital exibido na Tela 17 com aviso acadêmico |
 
 **Decisões de tratamento:** A base bruta permanece intacta em `data-science/dados/` (arquivos CSV originais). Na limpeza, os 6 zeros (Palmas nos primeiros anos e Natal em 2004) e os 16 outliers da taxa foram **mantidos e sinalizados** como anos reais de alta violência. Foram criadas as variáveis `regiao` e `faixa_risco`. A base unificada é `capitais_homicidios_mulheres.csv` e a tratada é `capitais_dados_processados.csv`.
+
+### 🤖 Modelo Escolhido e Métricas de Avaliação
+
+O modelo selecionado para gerar o indicador contextual de violência na capital é a **Random Forest com Pipeline** (`pipe_rf`), encapsulando tratamento numérico com `RobustScaler` e categórico com `OneHotEncoder`.
+
+* **Critério de Decisão:** Conforme planejado na seção 6.2 do notebook, a métrica norteadora é a **maximização do Recall da classe "alto"** (minimizar falsos negativos). Em uma aplicação de segurança para mulheres em situação de vulnerabilidade, o pior erro é classificar um ano com taxa crítica de violência como se fosse seguro.
+* **Partição de Teste *Out-of-Time* (2016 a 2022 — 189 instâncias capital × ano):**
+
+| Métrica | Random Forest (Escolhido) | Regressão Logística | Piso 1: Persistência (Ano Anterior) | Piso 2: Majoritária |
+| :--- | :---: | :---: | :---: | :---: |
+| **Recall da classe "Alto"** | **0,931** (94/101 acertos) | 0,911 (92/101 acertos) | 0,851 (86/101 acertos) | 1,000 (101/101)* |
+| **Acurácia** | **0,794** (150/189) | 0,788 (149/189) | 0,772 (146/189) | 0,534 (101/189) |
+| **F1-Score** | **0,828** | 0,821 | 0,800 | 0,697 |
+| **Precisão** | **0,746** (94/126) | 0,748 (92/123) | 0,754 (86/114) | 0,534 |
+| **ROC-AUC** | **0,857** | 0,870 | — | — |
+| **CV Temporal (Recall)** | **0,743 ± 0,179** | 0,708 ± 0,193 | — | — |
+
+*\* Nota: O piso da classe majoritária possui recall 1,000 artificial porque classifica 100% dos casos como "alto", gerando 88 falsos positivos e a menor acurácia de todas (53,4%).*
+
+* **Interpretação da Matriz de Confusão (Random Forest):** Em 101 casos de taxa alta no período de teste, o modelo identificou corretamente **94 casos**, deixando passar apenas **7 falsos negativos**. Em contrapartida, registrou 32 falsos positivos (precisão de 0,746), assumindo deliberadamente o custo de alertar preventivamente a deixar uma usuária desassistida.
+* **Superação dos Pisos:** A Random Forest superou o piso de persistência temporal em acurácia (+2,1 p.p.), em F1 (+2,8 p.p.) e decisivamente no recall prioritário (**+7,9 p.p.**).
+* **Agrupamento Não Supervisionado (K-Means):** Identificou 3 perfis funcionais de capitais (taxa baixa, intermediária e crítica), com coeficiente de silhueta de 0,346 (para k=3) e 0,415 (para k=2).
+
+### 📱 Onde Aparece no App Mobile
+
+O indicador contextual de Data Science é consumido na **Tela 17 (Resultado da Autoavaliação)** (`app/src/pages/ResultadoAutoavaliacaoScreen.js`).
+
+1. **Contexto Urbano Complementar:** Ao concluir o questionário ou selecionar sua capital, a usuária recebe uma informação contextual objetiva informando se a sua localidade apresenta historicamente taxa de homicídios femininos acima ou abaixo da mediana nacional.
+2. **Salvaguarda Ética e Anti-Falácia Ecológica:** O modelo descreve **a localidade**, e **nunca** calcula nem atribui risco individual à pessoa (evitando rotulação estigmatizante ou complacência em capitais abaixo da média).
+3. **Aviso Acadêmico e Emergência:** A informação é acompanhada de legenda educativa explícita e botões de discagem rápida para a **Central de Atendimento à Mulher (Ligue 180)** e **Polícia Militar (Ligue 190)**.
+
+### 🧪 Como Reproduzir o Notebook
+
+O notebook [`data-science/notebook.ipynb`](data-science/notebook.ipynb) foi totalmente executado e suas saídas e gráficos interativos estão embutidos e visíveis diretamente no GitHub.
+
+Para executá-lo do zero:
+```bash
+cd data-science
+pip install -r requirements.txt
+jupyter notebook notebook.ipynb
+```
+* **Compatibilidade Colab / Local:** A rotina de carga em Python detecta automaticamente se os dados estão na pasta local `dados/`, na raiz do repositório ou no Google Colab (neste último, efetua o download direto dos arquivos CSV via GitHub raw, dispensando upload manual).
 
 ---
 
