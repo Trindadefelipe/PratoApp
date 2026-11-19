@@ -67,7 +67,7 @@ Regras:
 | `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | ✅ |
 | `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | ✅ |
 | `/incidentes` | `cofre_incidentes` | João Pedro | #80 | ✅ |
-| `/indicadores` | `indicadores_capitais` | João Pedro | #83 | a fazer |
+| `/indicadores` | `indicadores_capitais` | João Pedro | #83 | ✅ |
 
 Cada caminho tem `GET /caminho`, `GET /caminho/:id`, `POST /caminho`, `PUT /caminho/:id` e `DELETE /caminho/:id`.
 
@@ -264,6 +264,13 @@ Testes feitos (todos com o resultado esperado):
 | `PUT /incidentes/:id` | `tipo_violencia` inválido / corpo vazio | `400` |
 | `PUT /incidentes/:id` | id que não existe | `404` |
 | `DELETE /incidentes/:id` | incidente criado no teste / o mesmo de novo | `200` / `404` |
+
+### `/indicadores` (João Pedro, #83)
+
+Rotas de leitura da tabela `indicadores_capitais` (`sql/schema.sql` e `sql/seed_indicadores.sql`), alimentada pelo notebook de Data Science:
+
+* `GET /indicadores`: lista as 27 capitais ordenadas por nome (`capital asc`).
+* `GET /indicadores/:capital`: busca o indicador da capital informada (sem diferenciar maiúsculas ou acentos); devolve `404` se a capital não existir.
 
 ## ⚠️ Respostas de erro
 
