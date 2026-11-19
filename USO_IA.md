@@ -322,6 +322,7 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 | Camada de Serviços da API (`services/api.js`) | Gemini / Antigravity | Adição de funções cliente para criar, buscar, atualizar, encerrar e cancelar viagens seguras e registrar check-ins | Higor Bueno |
 | Integração Mobile de Nova Viagem (Tela 08) | Gemini / Antigravity | Atualização de `ViagemNovaScreen.js` para criar viagem real via `POST /viagens`, carregar contatos de confiança da API e redirecionar para a Tela 09 com o ID gerado, eliminando dados mockados | Higor Bueno |
 | Integração Mobile de Viagem em Andamento (Tela 09) | Gemini / Antigravity | Atualização de `ViagemEmAndamentoScreen.js` para sincronização em tempo real da `previsao_chegada`, registro de check-ins via `POST /checkins` ao solicitar mais 10 minutos e encerramento com "Cheguei segura" via `PUT /viagens/:id` | Higor Bueno |
+| Consolidação, Execução e Governança de Data Science (Issue #74) | Gemini / Antigravity | Atualização do título, seção 7 com síntese do pipeline e checklist da Entrega Final no notebook, validação das saídas e gráficos embutidos, criação do `data-science/requirements.txt` e atualização detalhada da seção de Data Science no README | Higor Bueno |
 | Auditoria e Governança de Issues | Gemini / Antigravity | Levantamento, filtragem e ordenação topológica das issues da Entrega Final abertas pela Alana, garantindo atendimento à Definição de Pronto (DoD) | Higor Bueno |
 
 ### Prompts testados
@@ -337,6 +338,13 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 **Prompt:** "atualize ViagemNovaScreen e ViagemEmAndamentoScreen para consumir os serviços da API em app/src/services/api.js, removendo completamente os imports de data/viagens.js e data/contatos.js, gerenciando estados de carregamento e erro, e registrando check-ins e encerramento no Supabase"
 
 **Resultado:** Migração completa das telas para consumo assíncrono da API, cálculo preciso do anel de progresso com base na previsão de chegada e eliminação total de acoplamento a dados simulados locais.
+
+#### Consolidação e Execução de Data Science (Gemini / Antigravity)
+
+**Prompt:** "atualize o notebook.ipynb para a Entrega Final com título, mapa do notebook e seção 7 de conclusões e checklist completo, garantindo que todas as 34 células executem em ordem com saídas e gráficos visíveis, crie o data-science/requirements.txt e atualize a seção de Data Science do README.md com o modelo Random Forest escolhido, métricas comparadas aos pisos e integração no app"
+
+**Resultado:** Notebook totalmente executado com saídas, tabelas e gráficos renderizados, requirements.txt com todas as dependências especificadas e documentação metodológica detalhada no README e no próprio notebook, fechando a issue #74.
+
 
 ### O que eu aprendi e decidi
 
