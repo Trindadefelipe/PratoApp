@@ -250,14 +250,14 @@ jupyter notebook notebook.ipynb
 
 ### 4. Como testar o fluxo de segurança do protótipo
 
-1. **Fachada Pratô:** O app inicializa na tela inofensiva de dieta (Diário de calorias e refeições).
+1. **Primeiro acesso e fachada Pratô:** Na primeira abertura, o app pede nome, e-mail, o "código do diário" (PIN secreto) e o código de emergência (PIN de coação), e cria a usuária pela API. Depois disso, ele sempre abre na tela inofensiva de dieta (Diário de calorias e refeições).
 2. **Gatilho de Entrada Secreta:**
    * Navegue até a aba **Metas** e digite o PIN secreto padrão da usuária (`1234`) no campo de meta de calorias; ou
    * Dê um toque longo sobre o logotipo do Pratô no topo da tela inicial.
 3. **Área Segura (SAFE):** O app executa a transição imediata para a área restrita com as abas Início, Círculo, Viagem, Cofre e Ajustes.
 4. **CRUDs pela API:** Cadastre, liste, edite e exclua registros (ex: contatos no Círculo de Confiança). Os dados serão salvos diretamente no Supabase via chamadas à API Express.
 5. **Gatilho de Saída Rápida (*Quick Exit*):**
-   * Em qualquer tela ou formulário do SAFE, toque no botão camuflado **"Salvar rascunho"** no canto superior direito.
+   * Em qualquer tela ou formulário do SAFE, toque no botão camuflado de **"Salvar rascunho"** (círculo branco com ícone de documento, no canto inferior esquerdo, acima das abas).
    * O app executa imediatamente `navigation.reset` para a Fachada Pratô, limpando todo o histórico do SAFE da memória (pressionar o botão "Voltar" do Android jamais reabre a área segura).
 
 ---
@@ -266,7 +266,7 @@ jupyter notebook notebook.ipynb
 
 ```text
 PratoApp/
-├── app/                      # Aplicativo Mobile em React Native (Expo)
+├── app/                      # Aplicativo Mobile em React Native (Expo), ver app/README.md
 │   └── src/
 │       ├── pages/
 │       │   ├── prato/        # Fachada: Diário, Metas, Receitas
@@ -283,15 +283,16 @@ PratoApp/
 │       └── services/         # Integração HTTP com a API Express (services/api.js)
 ├── api/                      # Back-end Node.js / Express 5
 │   ├── src/
-│   │   ├── rotas/            # usuarias.js, contatos.js, viagens.js, alertas.js, incidentes.js
+│   │   ├── rotas/            # usuarias, contatos, viagens, checkins, alertas, painel, incidentes, indicadores
 │   │   ├── db.js             # Conexão Pool com PostgreSQL (Supabase)
 │   │   ├── erros.js          # Middleware central de tratamento e validação de integridade
 │   │   └── server.js         # Servidor Express com carregamento dinâmico de rotas
-│   └── sql/                  # schema.sql e seed.sql para o PostgreSQL
+│   └── sql/                  # schema.sql, seed.sql e seed_indicadores.sql para o PostgreSQL
 ├── painel/                   # Painel da Delegacia em React Native Web, tempo real (ver painel/README.md)
 ├── data-science/             # Pipeline de Ciência de Dados
 │   ├── dados/                # Bases públicas (Atlas da Violência / IPEA)
-│   └── notebook.ipynb        # Notebook com EDA, pré-processamento, modelos e métricas
+│   ├── notebook.ipynb        # Notebook executado com EDA, pré-processamento, modelos e métricas
+│   └── README.md             # Como rodar, modelo escolhido e integração com a Tela 17
 ├── docs/                     # Documentação de arquitetura, DER, Kanban e matriz
 ├── USO_IA.md                 # Registro oficial de uso de Inteligência Artificial
 └── README.md                 # Este documento
