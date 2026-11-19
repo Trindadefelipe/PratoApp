@@ -7,9 +7,9 @@
 //
 // O que o protótipo (Entrega 1, seção 4) mostra nesta tela:
 //   * Nível de atenção (Baixo, Moderado, Alto) com barra
-//   * Indicador contextual da capital vindo da API (GET /indicadores)
 //   * Botões Falar com o Círculo, Ver guia de direitos e Ligar para o 180
 //   * Aviso de estimativa acadêmica
+//   * Indicador contextual da capital vindo da API (GET /indicadores), no final
 // ============================================================
 
 import React, { useState, useEffect } from 'react';
@@ -33,6 +33,13 @@ import {
   listarIndicadores,
   buscarIndicadorPorCapital,
 } from '../../../services/api';
+
+// As três faixas do medidor. A faixa do nível da usuária fica forte, as outras claras.
+const NIVEIS = [
+  { rotulo: 'Baixo', cor: colors.verdeFolha },
+  { rotulo: 'Moderado', cor: colors.amarelo },
+  { rotulo: 'Alto', cor: colors.coral },
+];
 
 export default function ResultadoRiscoScreen({ route, navigation }) {
   const respostas = route.params?.respostas || [];
@@ -95,38 +102,29 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
     if (pontos <= 7) {
       return {
         nivel: 'Baixo',
-        titulo: 'Nível de Atenção Baixo',
         descricao:
           'Suas respostas apontam para uma situação de atenção inicial. Mantenha seus limites claros e continue fortalecendo seus laços de apoio.',
-        cor: colors.verdeProfundo,
         fundoCard: colors.verdeClaro,
         bordaCard: colors.verdeBorda,
-        icone: 'shield-checkmark',
         indiceAtivo: 0,
       };
     }
     if (pontos <= 15) {
       return {
         nivel: 'Moderado',
-        titulo: 'Nível de Atenção Moderado',
         descricao:
           'Foram identificados sinais de controle ou situações que merecem atenção redobrada. Considere conversar com pessoas de sua confiança e buscar orientação.',
-        cor: colors.amareloEscuro,
         fundoCard: colors.amareloClaro,
         bordaCard: colors.amarelo,
-        icone: 'alert-circle',
         indiceAtivo: 1,
       };
     }
     return {
       nivel: 'Alto',
-      titulo: 'Nível de Atenção Alto',
       descricao:
         'Suas respostas indicam situações graves e padrões preocupantes de agressão ou controle. Sua segurança é prioridade: procure apoio especializado ou acione sua rede de emergência.',
-      cor: colors.coral,
       fundoCard: colors.coralClaro,
       bordaCard: colors.pessegoPastel,
-      icone: 'warning',
       indiceAtivo: 2,
     };
   };
@@ -146,11 +144,11 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
         showsVerticalScrollIndicator={false}
       >
         <CabecalhoTela
-          titulo="Resultado"
+          titulo="Seu resultado"
           onVoltar={() => navigation.goBack()}
         />
 
-        {/* Card Principal do Nível */}
+        {/* Medidor do nível (igual ao protótipo da Tela 17) */}
         <View
           style={[
             estilos.cardResultado,
@@ -160,70 +158,94 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
             },
           ]}
         >
-          <View style={estilos.topoCard}>
-            <View
-              style={[
-                estilos.circuloIcone,
-                { backgroundColor: colors.branco },
-              ]}
-            >
-              <Ionicons
-                name={infoRisco.icone}
-                size={28}
-                color={infoRisco.cor}
-              />
-            </View>
-            <View style={estilos.textoTopoCard}>
-              <Text style={[estilos.tagNivel, { color: infoRisco.cor }]}>
-                {infoRisco.titulo}
-              </Text>
-              <Text style={estilos.pontuacaoTexto}>
-                Pontuação: {soma} de 24 pontos
-              </Text>
-            </View>
-          </View>
+          <Text style={estilos.rotuloNivel}>Seu nível de atenção</Text>
+          <Text style={estilos.nomeNivel}>{infoRisco.nivel}</Text>
 
-          <Text style={estilos.descricaoResultado}>
-            {infoRisco.descricao}
+          <View style={estilos.linhaSegmentos}>
+            {NIVEIS.map((nivel, idx) => {
+              const ativo = idx === infoRisco.indiceAtivo;
+              return (
+                <View key={nivel.rotulo} style={estilos.colunaSegmento}>
+                  <View
+                    style={[
+                      estilos.segmento,
+                      { backgroundColor: nivel.cor },
+                      !ativo && estilos.segmentoInativo,
+                    ]}
+                  />
+                  <Text
+                    style={[
+                      estilos.rotuloSegmento,
+                      idx === 0 && estilos.rotuloInicio,
+                      idx === NIVEIS.length - 1 && estilos.rotuloFim,
+                      ativo && estilos.rotuloAtivo,
+                    ]}
+                  >
+                    {nivel.rotulo}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+
+        <Text style={estilos.descricaoResultado}>{infoRisco.descricao}</Text>
+
+        {/* Seção de Ações e Atalhos */}
+        <View style={estilos.secaoAcoes}>
+          <Text style={estilos.tituloSecao}>O que fazer agora</Text>
+
+          {/* Botão Falar com o Círculo */}
+          <BotaoPrimario
+            titulo="Falar com o Círculo de Confiança"
+            onPress={() => navigation.navigate('Circulo')}
+            style={estilos.botaoAcao}
+          />
+
+          {/* Botão Ver Guia de Direitos */}
+          <Pressable
+            style={({ pressed }) => [
+              estilos.botaoSecundario,
+              pressed && estilos.botaoPressionado,
+            ]}
+            onPress={() => navigation.navigate('GuiaDireitos')}
+          >
+            <Ionicons
+              name="bookmark-outline"
+              size={18}
+              color={colors.verdeProfundo}
+            />
+            <Text style={estilos.textoBotaoSecundario}>
+              Ver guia de direitos e canais
+            </Text>
+          </Pressable>
+
+          {/* Botão Ligar 180 */}
+          <Pressable
+            style={({ pressed }) => [
+              estilos.botaoLigue180,
+              pressed && estilos.botaoPressionado,
+            ]}
+            onPress={ligarPara180}
+          >
+            <Ionicons name="call" size={18} color={colors.coral} />
+            <Text style={estilos.textoBotao180}>Ligar para o 180 (Central)</Text>
+          </Pressable>
+        </View>
+
+        {/* Aviso de Estimativa Acadêmica */}
+        <View style={estilos.cardAviso}>
+          <Ionicons
+            name="information-circle-outline"
+            size={20}
+            color={colors.cinza}
+          />
+          <Text style={estilos.textoAviso}>
+            Aviso de estimativa acadêmica: este cálculo é uma soma preliminar
+            baseada nas respostas do questionário simulado e não substitui
+            orientação psicológica, jurídica ou policial. Em emergência, ligue
+            190.
           </Text>
-
-          {/* Barra Segmentada de Nível */}
-          <View style={estilos.barraContainer}>
-            <View style={estilos.linhaSegmentos}>
-              {['Baixo', 'Moderado', 'Alto'].map((rotulo, idx) => {
-                const ativo = idx === infoRisco.indiceAtivo;
-                const coresBarra = [
-                  colors.verdeProfundo,
-                  colors.amareloEscuro,
-                  colors.coral,
-                ];
-                return (
-                  <View key={rotulo} style={estilos.colunaSegmento}>
-                    <View
-                      style={[
-                        estilos.segmento,
-                        ativo && {
-                          backgroundColor: coresBarra[idx],
-                          height: 8,
-                        },
-                      ]}
-                    />
-                    <Text
-                      style={[
-                        estilos.rotuloSegmento,
-                        ativo && {
-                          color: coresBarra[idx],
-                          fontFamily: fonts.bold,
-                        },
-                      ]}
-                    >
-                      {rotulo}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
         </View>
 
         {/* Contexto Regional (Indicador DS vindo da API) */}
@@ -326,62 +348,6 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
           )}
         </View>
 
-        {/* Seção de Ações e Atalhos */}
-        <View style={estilos.secaoAcoes}>
-          <Text style={estilos.tituloSecao}>O que fazer agora</Text>
-
-          {/* Botão Falar com o Círculo */}
-          <BotaoPrimario
-            titulo="Falar com o Círculo de Confiança"
-            onPress={() => navigation.navigate('Circulo')}
-            style={estilos.botaoAcao}
-          />
-
-          {/* Botão Ver Guia de Direitos */}
-          <Pressable
-            style={({ pressed }) => [
-              estilos.botaoSecundario,
-              pressed && estilos.botaoPressionado,
-            ]}
-            onPress={() => navigation.navigate('GuiaDireitos')}
-          >
-            <Ionicons
-              name="bookmark-outline"
-              size={18}
-              color={colors.verdeProfundo}
-            />
-            <Text style={estilos.textoBotaoSecundario}>
-              Ver guia de direitos e canais
-            </Text>
-          </Pressable>
-
-          {/* Botão Ligar 180 */}
-          <Pressable
-            style={({ pressed }) => [
-              estilos.botaoLigue180,
-              pressed && estilos.botaoPressionado,
-            ]}
-            onPress={ligarPara180}
-          >
-            <Ionicons name="call" size={18} color={colors.coral} />
-            <Text style={estilos.textoBotao180}>Ligar para o 180 (Central)</Text>
-          </Pressable>
-        </View>
-
-        {/* Aviso de Estimativa Acadêmica */}
-        <View style={estilos.cardAviso}>
-          <Ionicons
-            name="information-circle-outline"
-            size={20}
-            color={colors.cinza}
-          />
-          <Text style={estilos.textoAviso}>
-            Aviso de estimativa acadêmica: este cálculo é uma soma preliminar
-            baseada nas respostas do questionário simulado e não substitui
-            orientação psicológica, jurídica ou policial. Em emergência, ligue
-            190.
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -397,73 +363,61 @@ const estilos = StyleSheet.create({
     paddingBottom: 32,
   },
   cardResultado: {
-    padding: 20,
+    padding: 18,
     borderRadius: 20,
     borderWidth: 1,
     marginTop: 8,
-    marginBottom: 24,
+    marginBottom: 16,
   },
-  topoCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
+  rotuloNivel: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.cinza,
+  },
+  nomeNivel: {
+    fontFamily: fonts.bold,
+    fontSize: 28,
+    color: colors.grafite,
+    marginTop: 2,
     marginBottom: 14,
   },
-  circuloIcone: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.preto,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+  linhaSegmentos: {
+    flexDirection: 'row',
+    gap: 6,
   },
-  textoTopoCard: {
+  colunaSegmento: {
     flex: 1,
+    gap: 6,
   },
-  tagNivel: {
-    fontFamily: fonts.bold,
-    fontSize: 20,
-    marginBottom: 2,
+  segmento: {
+    height: 10,
+    borderRadius: 5,
   },
-  pontuacaoTexto: {
+  segmentoInativo: {
+    opacity: 0.4,
+  },
+  rotuloSegmento: {
     fontFamily: fonts.regular,
-    fontSize: 13,
+    fontSize: 11,
+    color: colors.cinza,
+    textAlign: 'center',
+  },
+  rotuloInicio: {
+    textAlign: 'left',
+  },
+  rotuloFim: {
+    textAlign: 'right',
+  },
+  rotuloAtivo: {
+    fontFamily: fonts.bold,
     color: colors.grafite,
-    opacity: 0.8,
   },
   descricaoResultado: {
     fontFamily: fonts.regular,
     fontSize: 14,
     color: colors.grafite,
     lineHeight: 22,
-    marginBottom: 18,
-  },
-  barraContainer: {
-    marginTop: 4,
-  },
-  linhaSegmentos: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  colunaSegmento: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 6,
-  },
-  segmento: {
-    width: '100%',
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.begeDivisor,
-  },
-  rotuloSegmento: {
-    fontFamily: fonts.medium,
-    fontSize: 11,
-    color: colors.cinza,
+    marginBottom: 24,
   },
   secaoAcoes: {
     gap: 12,
@@ -536,6 +490,7 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.begeCard,
     padding: 16,
+    marginTop: 20,
     marginBottom: 24,
   },
   tituloIndicador: {
