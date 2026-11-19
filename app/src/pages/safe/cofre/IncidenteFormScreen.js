@@ -12,6 +12,7 @@
 //   * Campo "Tipo de violência" com chips: Verbal/Psicológica, Física, Patrimonial, Perseguição
 //   * Campo "Local" com ícone de localização
 //   * Campo "Relato" de múltiplas linhas
+//   * Campo "Notas adicionais" opcional (notas_adicionais do DER, exibido na Tela 12)
 //   * Botões de evidência em caixas tracejadas: Foto, Áudio, Captura
 //   * Botão principal "Salvar no cofre"
 //   * Suporte completo ao modo edição com POST /incidentes e PUT /incidentes/:id
@@ -286,6 +287,21 @@ export default function IncidenteFormScreen({ navigation, route }) {
             />
           </View>
 
+          {/* Campo Notas adicionais (opcional, aparece na Tela 12) */}
+          <View style={estilos.campoGrupo}>
+            <Text style={estilos.rotulo}>Notas adicionais (opcional)</Text>
+            <TextInput
+              style={[estilos.inputRelato, estilos.inputNotas]}
+              value={notasAdicionais}
+              onChangeText={setNotasAdicionais}
+              placeholder="Testemunhas, contexto ou qualquer detalhe extra..."
+              placeholderTextColor={colors.cinza}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
+          </View>
+
           {/* Seção Evidências (Caixas tracejadas interativas) */}
           <View style={estilos.campoGrupo}>
             <Text style={estilos.rotulo}>Evidências</Text>
@@ -504,6 +520,10 @@ const estilos = StyleSheet.create({
     color: colors.grafite,
     minHeight: 120,
     lineHeight: 20,
+  },
+
+  inputNotas: {
+    minHeight: 80,
   },
 
   evidenciasLinha: {
