@@ -1,39 +1,38 @@
 -- ============================================================
--- seed_indicadores.sql: carga inicial das 27 capitais em indicadores_capitais.
--- Baseado em data-science/dados/capitais_dados_processados.csv (ano 2022)
--- e nos perfis K-Means da seção 6.3.4 do notebook.ipynb.
--- Atualizar com o CSV final após a conclusão da issue #82 e execução no Colab.
+-- seed_indicadores.sql: carga das 27 capitais em indicadores_capitais.
+-- Gerado diretamente a partir de data-science/dados/indicadores_capitais.csv
+-- (saída do modelo Random Forest pipe_rf no notebook.ipynb).
 -- Responsável: João Pedro (issue #83)
 -- ============================================================
 
 insert into indicadores_capitais (capital, regiao, ano_referencia, taxa_recente, classe_risco, probabilidade_alto, perfil_cluster, modelo_origem) values
-    ('Porto Velho', 'Norte', 2022, 5.16, 'Alto', 0.645, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Rio Branco', 'Norte', 2022, 1.81, 'Baixo', 0.226, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Manaus', 'Norte', 2022, 6.14, 'Alto', 0.767, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Boa Vista', 'Norte', 2022, 6.91, 'Alto', 0.864, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Belém', 'Norte', 2022, 2.89, 'Baixo', 0.361, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Macapá', 'Norte', 2022, 3.37, 'Baixo', 0.421, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Palmas', 'Norte', 2022, 2.48, 'Baixo', 0.31, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('São Luís', 'Nordeste', 2022, 1.7, 'Baixo', 0.212, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('Teresina', 'Nordeste', 2022, 3.29, 'Baixo', 0.411, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('Fortaleza', 'Nordeste', 2022, 5.89, 'Alto', 0.736, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Natal', 'Nordeste', 2022, 2.77, 'Baixo', 0.346, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('João Pessoa', 'Nordeste', 2022, 1.15, 'Baixo', 0.144, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Recife', 'Nordeste', 2022, 5.28, 'Alto', 0.66, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Maceió', 'Nordeste', 2022, 4.57, 'Alto', 0.571, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Aracaju', 'Nordeste', 2022, 3.71, 'Baixo', 0.464, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('Salvador', 'Nordeste', 2022, 4.89, 'Alto', 0.611, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Belo Horizonte', 'Sudeste', 2022, 2.64, 'Baixo', 0.33, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Vitória', 'Sudeste', 2022, 3.92, 'Alto', 0.49, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Rio de Janeiro', 'Sudeste', 2022, 1.92, 'Baixo', 0.24, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('São Paulo', 'Sudeste', 2022, 0.55, 'Baixo', 0.069, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('Curitiba', 'Sul', 2022, 3.41, 'Baixo', 0.426, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Florianópolis', 'Sul', 2022, 1.08, 'Baixo', 0.135, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('Porto Alegre', 'Sul', 2022, 6.12, 'Alto', 0.765, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Campo Grande', 'Centro-Oeste', 2022, 3.84, 'Baixo', 0.48, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Regressão Logística (pré-carga #83)'),
-    ('Cuiabá', 'Centro-Oeste', 2022, 2.86, 'Baixo', 0.357, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Regressão Logística (pré-carga #83)'),
-    ('Goiânia', 'Centro-Oeste', 2022, 1.82, 'Baixo', 0.228, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)'),
-    ('Brasília', 'Centro-Oeste', 2022, 2.16, 'Baixo', 0.27, 'Perfil 2: Taxa Intermediária / Variável', 'Regressão Logística (pré-carga #83)')
+    ('Aracaju', 'Nordeste', 2022, 3.71, 'Baixo', 0.241, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Belo Horizonte', 'Sudeste', 2022, 2.64, 'Baixo', 0.195, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Belém', 'Norte', 2022, 2.89, 'Alto', 0.707, 'Perfil 2: Taxa Intermediária / Variável', 'Random Forest (pipe_rf)'),
+    ('Boa Vista', 'Norte', 2022, 6.91, 'Alto', 0.777, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('Brasília', 'Centro-Oeste', 2022, 2.16, 'Baixo', 0.265, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Campo Grande', 'Centro-Oeste', 2022, 3.84, 'Baixo', 0.255, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Cuiabá', 'Centro-Oeste', 2022, 2.86, 'Baixo', 0.254, 'Perfil 2: Taxa Intermediária / Variável', 'Random Forest (pipe_rf)'),
+    ('Curitiba', 'Sul', 2022, 3.41, 'Baixo', 0.15, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Florianópolis', 'Sul', 2022, 1.08, 'Baixo', 0.182, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Fortaleza', 'Nordeste', 2022, 5.89, 'Alto', 0.926, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('Goiânia', 'Centro-Oeste', 2022, 1.82, 'Baixo', 0.136, 'Perfil 2: Taxa Intermediária / Variável', 'Random Forest (pipe_rf)'),
+    ('João Pessoa', 'Nordeste', 2022, 1.15, 'Baixo', 0.212, 'Perfil 2: Taxa Intermediária / Variável', 'Random Forest (pipe_rf)'),
+    ('Macapá', 'Norte', 2022, 3.37, 'Alto', 0.778, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Maceió', 'Nordeste', 2022, 4.57, 'Alto', 0.701, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('Manaus', 'Norte', 2022, 6.14, 'Alto', 0.873, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('Natal', 'Nordeste', 2022, 2.77, 'Baixo', 0.21, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Palmas', 'Norte', 2022, 2.48, 'Alto', 0.862, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Porto Alegre', 'Sul', 2022, 6.12, 'Alto', 0.521, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('Porto Velho', 'Norte', 2022, 5.16, 'Alto', 0.892, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('Recife', 'Nordeste', 2022, 5.28, 'Alto', 0.803, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('Rio Branco', 'Norte', 2022, 1.81, 'Alto', 0.897, 'Perfil 2: Taxa Intermediária / Variável', 'Random Forest (pipe_rf)'),
+    ('Rio de Janeiro', 'Sudeste', 2022, 1.92, 'Baixo', 0.107, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Salvador', 'Nordeste', 2022, 4.89, 'Alto', 0.933, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)'),
+    ('São Luís', 'Nordeste', 2022, 1.7, 'Baixo', 0.192, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('São Paulo', 'Sudeste', 2022, 0.55, 'Baixo', 0.103, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Teresina', 'Nordeste', 2022, 3.29, 'Alto', 0.522, 'Perfil 1: Taxa Baixa / Histórico Estável', 'Random Forest (pipe_rf)'),
+    ('Vitória', 'Sudeste', 2022, 3.92, 'Baixo', 0.26, 'Perfil 3: Taxa Crítica / Histórico Elevado', 'Random Forest (pipe_rf)')
 on conflict (capital) do update set
     regiao = excluded.regiao,
     ano_referencia = excluded.ano_referencia,
