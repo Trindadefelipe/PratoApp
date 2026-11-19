@@ -63,8 +63,8 @@ Regras:
 |---|---|---|---|---|
 | `GET /` | (saúde da API e do banco) | Alana | #64 | ✅ |
 | `/usuarias` | `usuarias` | Alana | #65 | ✅ |
-| `/contatos` | `contatos_confianca` | Felipe | #69 | a fazer |
-| `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | a fazer |
+| `/contatos` | `contatos_confianca` | Felipe | #69 | ✅ |
+| `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | ✅ |
 | `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | ✅ |
 | `/incidentes` | `cofre_incidentes` | João Pedro | #80 | a fazer |
 | `/indicadores` | `indicadores_capitais` | João Pedro | #83 | a fazer |
@@ -105,6 +105,42 @@ Testes feitos (todos com o resultado esperado):
 | `PUT /usuarias/:id` | id que não existe | `404` |
 | `DELETE /usuarias/:id` | usuária criada no teste / a mesma de novo | `200` / `404` |
 
+### `/contatos` (Felipe, #69)
+
+Campos: `usuaria_id`, `nome`, `telefone`, `parentesco_relacao` e `nivel_prioridade` (obrigatórios no `POST`), mais `notificar_sms` e `notificar_whatsapp` (`true` por padrão). No `PUT`, mande apenas os campos que deseja alterar.
+
+* `usuaria_id` precisa ser um UUID válido e existir na tabela `usuarias` (validado via `garantirExiste`, devolvendo `400` antes de gravar caso não exista).
+* `nome` (máx. 100 caracteres), `telefone` (máx. 20 caracteres) e `parentesco_relacao` (máx. 50 caracteres) não podem ser vazios.
+* `nivel_prioridade` deve ser obrigatoriamente `1` (Alta), `2` (Média) ou `3` (Baixa).
+* `GET /contatos?usuaria_id=...` filtra os contatos da usuária informada e ordena prioritariamente por `nivel_prioridade asc` (prioridade 1 no topo) e secundariamente por `criado_em desc`.
+
+Exemplo de `POST /contatos`:
+```json
+{
+  "usuaria_id": "7b1e4c2a-9f3d-4e8a-b6c1-2d5f8a9e0c31",
+  "nome": "Carla Silva",
+  "telefone": "11988887777",
+  "parentesco_relacao": "Irmã",
+  "nivel_prioridade": 1,
+  "notificar_sms": true,
+  "notificar_whatsapp": true
+}
+```
+
+Testes feitos (todos com o resultado esperado):
+
+| Pedido | Caso | Status |
+|---|---|---|
+| `GET /contatos` | lista geral | `200` |
+| `GET /contatos?usuaria_id=...` | filtrando por usuária, ordenado por prioridade | `200` |
+| `GET /contatos/:id` | contato existente / id inexistente (`404`) / id inválido (`400`) | `200` / `404` / `400` |
+| `POST /contatos` | dados válidos | `201` |
+| `POST /contatos` | campos obrigatórios faltando / prioridade inválida | `400` |
+| `POST /contatos` | `usuaria_id` inexistente no banco (relacionamento real) | `400` |
+| `PUT /contatos/:id` | atualização parcial de campos | `200` |
+| `PUT /contatos/:id` | id que não existe / corpo vazio | `404` / `400` |
+| `DELETE /contatos/:id` | contato removido com sucesso / o mesmo de novo | `200` / `404` |
+
 ### `/alertas` e `/painel` (Higor Domingos, #75 e #78)
 
 Campos de `alertas_sos`: `usuaria_id`, `latitude`, `longitude`, `tipo_gatilho` (obrigatórios no `POST`), mais `viagem_id` (opcional, com validação de existência), `endereco_aproximado` e `status_delegacia` (`'NOVO'`, `'EM_ATENDIMENTO'`, `'CONCLUIDO'`).
@@ -142,6 +178,57 @@ Testes feitos:
 | `DELETE /alertas/:id` | remoção com sucesso / repetido | `200` / `404` |
 | `GET /painel` | agregação de alertas abertos com usuária e viagem | `200` |
 
+### `/viagens` e `/checkins` (Higor Bueno, #72)
+
+Campos de `viagens_seguras`: `usuaria_id`, `origem_descricao`, `destino_descricao`, `previsao_chegada` (obrigatórios no `POST`), mais `horario_inicio` (default atual), `status_viagem` (`'EM_ANDAMENTO'`, `'CONCLUIDA_COM_SUCESSO'`, `'ATRASADA'`, `'SOS_ACIONADO'`), `latitude_destino`, `longitude_destino` e `finalizado_em`.
+
+Campos de `checkins_viagem`: `viagem_id` (obrigatório no `POST`), mais `horario_checkin` (default atual), `latitude_atual`, `longitude_atual` e `status_resposta` (`'PENDENTE'`, `'CONFIRMADO'`, `'EXPIRADO'`).
+
+* `status_viagem`: default `'EM_ANDAMENTO'`. Finalização ("Cheguei segura") atualiza para `'CONCLUIDA_COM_SUCESSO'` e grava `finalizado_em` via `PUT /viagens/:id`.
+* **Relacionamentos reais:** valida via `garantirExiste()` se `usuaria_id` existe em `usuarias` antes de criar a viagem, e se `viagem_id` existe em `viagens_seguras` antes de criar o check-in (devolvendo `400` caso inexistentes).
+* `GET /viagens?usuaria_id=...`: filtra as viagens de uma usuária ordenadas do mais recente para o mais antigo (`horario_inicio desc`).
+* `GET /checkins?viagem_id=...`: lista os check-ins vinculados a uma viagem específica (`horario_checkin desc`).
+
+Exemplo de `POST /viagens`:
+```json
+{
+  "usuaria_id": "7b1e4c2a-9f3d-4e8a-b6c1-2d5f8a9e0c31",
+  "origem_descricao": "Faculdade Positivo",
+  "destino_descricao": "Casa",
+  "previsao_chegada": "2026-11-17T02:00:00.000Z"
+}
+```
+
+Exemplo de `POST /checkins`:
+```json
+{
+  "viagem_id": "b1a2b3c4-0001-4000-8000-000000000001",
+  "status_resposta": "CONFIRMADO",
+  "latitude_atual": -23.3080,
+  "longitude_atual": -51.1650
+}
+```
+
+Testes feitos:
+
+| Pedido | Caso | Status |
+|---|---|---|
+| `GET /viagens` | lista geral de viagens | `200` |
+| `GET /viagens?usuaria_id=...` | filtrado por usuária, ordenado desc | `200` |
+| `GET /viagens/:id` | viagem existente do `seed.sql` | `200` |
+| `GET /viagens/:id` | id inexistente / UUID inválido | `404` / `400` |
+| `POST /viagens` | dados válidos | `201` |
+| `POST /viagens` | sem origem/destino/previsão, status inválido | `400` |
+| `POST /viagens` | usuaria_id inexistente | `400` |
+| `PUT /viagens/:id` | encerramento "Cheguei segura" (`CONCLUIDA_COM_SUCESSO`, `finalizado_em`) | `200` |
+| `PUT /viagens/:id` | status inválido / corpo vazio / id inexistente | `400` / `400` / `404` |
+| `DELETE /viagens/:id` | remoção com sucesso / repetido | `200` / `404` |
+| `GET /checkins?viagem_id=...` | lista check-ins da viagem | `200` |
+| `GET /checkins/:id` | check-in existente / inexistente | `200` / `404` |
+| `POST /checkins` | dados válidos | `201` |
+| `POST /checkins` | viagem_id inexistente | `400` |
+| `PUT /checkins/:id` | confirmação de resposta (`CONFIRMADO`) | `200` |
+| `DELETE /checkins/:id` | remoção com sucesso / repetido | `200` / `404` |
 
 ## ⚠️ Respostas de erro
 

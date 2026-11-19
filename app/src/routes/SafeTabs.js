@@ -8,8 +8,11 @@
 //   * Cofre (CofreStack)
 //   * Ajustes (AjustesStack)
 //
+// Inclui BotaoSaidaRapida sobreposto a todas as telas e abas do SAFE (Issue #77).
 // Responsáveis: Felipe Trindade e Alana Caled
 // ============================================================
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import InicioStack from './InicioStack';
@@ -18,6 +21,7 @@ import ViagemStack from './ViagemStack';
 import CofreStack from './CofreStack';
 import AjustesStack from './AjustesStack';
 import { criarOpcoesTabs } from './OpcoesTabs';
+import BotaoSaidaRapida from '../components/BotaoSaidaRapida';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,12 +37,21 @@ export default function SafeTabs() {
   const insets = useSafeAreaInsets();
 
   return (
-    <Tab.Navigator screenOptions={criarOpcoesTabs(icones, insets)}>
-      <Tab.Screen name="Inicio"  component={InicioStack}  options={{ title: 'Início' }} />
-      <Tab.Screen name="Circulo" component={CirculoStack} options={{ title: 'Círculo' }} />
-      <Tab.Screen name="Viagem"  component={ViagemStack} />
-      <Tab.Screen name="Cofre"   component={CofreStack} />
-      <Tab.Screen name="Ajustes" component={AjustesStack} />
-    </Tab.Navigator>
+    <View style={styles.container}>
+      <Tab.Navigator screenOptions={criarOpcoesTabs(icones, insets)}>
+        <Tab.Screen name="Inicio"  component={InicioStack}  options={{ title: 'Início' }} />
+        <Tab.Screen name="Circulo" component={CirculoStack} options={{ title: 'Círculo' }} />
+        <Tab.Screen name="Viagem"  component={ViagemStack} />
+        <Tab.Screen name="Cofre"   component={CofreStack} />
+        <Tab.Screen name="Ajustes" component={AjustesStack} />
+      </Tab.Navigator>
+      <BotaoSaidaRapida />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

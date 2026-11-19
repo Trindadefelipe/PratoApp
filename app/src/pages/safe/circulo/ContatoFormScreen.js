@@ -304,7 +304,7 @@ export default function ContatoFormScreen({ navigation, route }) {
           <BotaoPrimario
             titulo={salvando ? "Salvando contato..." : "Salvar contato"}
             onPress={handleSalvar}
-            disabled={salvando || excluindo}
+            desativado={salvando || excluindo}
             style={styles.botaoSalvar}
           />
 

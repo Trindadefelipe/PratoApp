@@ -109,9 +109,51 @@ export function atualizarStatusAlerta(id, status_delegacia) {
 }
 
 export function removerAlerta(id) {
-  return requisitar(`/alertas/${id}`);
+  return requisitar(`/alertas/${id}`, { metodo: 'DELETE' });
 }
 
 export function buscarPainel() {
   return requisitar('/painel');
+}
+
+
+// ---------- Viagens Seguras e Check-ins (Higor Bueno, #72 / #73) ----------
+export function listarViagens(usuariaId) {
+  const query = usuariaId ? `?usuaria_id=${usuariaId}` : '';
+  return requisitar(`/viagens${query}`);
+}
+
+export function buscarViagem(id) {
+  return requisitar(`/viagens/${id}`);
+}
+
+export function criarViagem(dados) {
+  return requisitar('/viagens', { metodo: 'POST', corpo: dados });
+}
+
+export function atualizarViagem(id, dados) {
+  return requisitar(`/viagens/${id}`, { metodo: 'PUT', corpo: dados });
+}
+
+export function encerrarViagem(id) {
+  return requisitar(`/viagens/${id}`, {
+    metodo: 'PUT',
+    corpo: {
+      status_viagem: 'CONCLUIDA_COM_SUCESSO',
+      finalizado_em: new Date().toISOString(),
+    },
+  });
+}
+
+export function cancelarViagem(id) {
+  return requisitar(`/viagens/${id}`, { metodo: 'DELETE' });
+}
+
+export function listarCheckins(viagemId) {
+  const query = viagemId ? `?viagem_id=${viagemId}` : '';
+  return requisitar(`/checkins${query}`);
+}
+
+export function criarCheckin(dados) {
+  return requisitar('/checkins', { metodo: 'POST', corpo: dados });
 }
