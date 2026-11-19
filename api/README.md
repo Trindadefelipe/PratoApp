@@ -66,7 +66,7 @@ Regras:
 | `/contatos` | `contatos_confianca` | Felipe | #69 | ✅ |
 | `/viagens` e `/checkins` | `viagens_seguras` e `checkins_viagem` | Higor Bueno | #72 | ✅ |
 | `/alertas` e `/painel` | `alertas_sos` | Higor Domingos | #75 e #78 | ✅ |
-| `/incidentes` | `cofre_incidentes` | João Pedro | #80 | a fazer |
+| `/incidentes` | `cofre_incidentes` | João Pedro | #80 | ✅ |
 | `/indicadores` | `indicadores_capitais` | João Pedro | #83 | a fazer |
 
 Cada caminho tem `GET /caminho`, `GET /caminho/:id`, `POST /caminho`, `PUT /caminho/:id` e `DELETE /caminho/:id`.
@@ -229,6 +229,26 @@ Testes feitos:
 | `POST /checkins` | viagem_id inexistente | `400` |
 | `PUT /checkins/:id` | confirmação de resposta (`CONFIRMADO`) | `200` |
 | `DELETE /checkins/:id` | remoção com sucesso / repetido | `200` / `404` |
+
+### `/incidentes` (João Pedro, #80)
+
+Campos de `cofre_incidentes`: `usuaria_id`, `data_ocorrencia`, `tipo_violencia` (`'VERBAL_PSICOLOGICA'`, `'FISICA'`, `'PATRIMONIAL'`, `'VIRTUAL_PERSEGUICAO'`) e `relato_detalhado` (obrigatórios no `POST`), mais `local_ocorrencia`, `notas_adicionais` e `anexo_evidencia_url` (opcionais). No `PUT`, envie só os campos que deseja atualizar.
+
+* **Relacionamento real:** valida via `garantirExiste('usuarias', usuaria_id, 'usuaria_id')` se a usuária existe antes de gravar (devolvendo `400` se não existir).
+* `GET /incidentes?usuaria_id=...`: filtra os registros de uma usuária ordenados do mais novo para o mais antigo (`data_ocorrencia desc, criado_em desc`).
+
+Exemplo de `POST /incidentes`:
+```json
+{
+  "usuaria_id": "7b1e4c2a-9f3d-4e8a-b6c1-2d5f8a9e0c31",
+  "data_ocorrencia": "2026-09-26T21:40:00.000Z",
+  "tipo_violencia": "VERBAL_PSICOLOGICA",
+  "relato_detalhado": "Discussão com ameaças verbais em casa.",
+  "local_ocorrencia": "Em casa",
+  "notas_adicionais": "Vizinho presenciou parte da discussão.",
+  "anexo_evidencia_url": "audio_gravado.m4a"
+}
+```
 
 ## ⚠️ Respostas de erro
 
