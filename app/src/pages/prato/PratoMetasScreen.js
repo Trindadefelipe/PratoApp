@@ -13,9 +13,10 @@
 //   * Tela 03: estado de erro "Não foi possível carregar seus dados nutricionais"
 // ============================================================
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { metas, caloriasSemana } from '../../data/prato';
 import { colors } from '../../theme/colors';
@@ -24,7 +25,8 @@ import BotaoPrimario from '../../components/BotaoPrimario';
 import GraficoSemana from '../../components/prato/GraficoSemana';
 import LinhaObjetivo from '../../components/prato/LinhaObjetivo';
 import ErroDados from '../../components/prato/ErroDados';
-import { usuaria } from '../../data/usuaria';
+import { buscarUsuaria } from '../../services/api';
+import { idUsuariaAtual } from '../../services/sessao';
 import {dispararSos, TIPOS_GATILHO} from '../../services/sos';
 
 function formataNumero(numero) {
@@ -46,6 +48,19 @@ export default function PratoMetasScreen({navigation}){
         pesoDesejado: metas.pesoDesejado,
         agua: metas.aguaMetaCopos * 0.25,
     });
+    // PINs da usuária vindos da API; null enquanto não chegaram ou sem conexão
+    const [pins, setPins]                     = useState(null);
+
+    // Busca os PINs toda vez que a aba aparece: um PIN trocado na Tela 14 já vale aqui.
+    // Sem API, nada aparece na tela: a fachada continua parecendo um app de dieta.
+    useFocusEffect(useCallback(() => {
+        let ativo = true;
+        idUsuariaAtual()
+            .then(buscarUsuaria)
+            .then((u) => { if (ativo) setPins({ secreto: u.pin_secreto, coacao: u.duress_pin }); })
+            .catch(() => {});
+        return () => { ativo = false; };
+    }, []));
 
     function ajustar(campo, passo){
         setObjetivos((atual) => ({
@@ -61,12 +76,12 @@ export default function PratoMetasScreen({navigation}){
 
     function salvarMeta(){
         
-        if (valorDigitado === usuaria.pin_secreto) {
+        if (pins && valorDigitado === pins.secreto) {
             limparCampo();
             navigation.reset({ index: 0, routes: [{ name: 'SafeTabs' }] });
             return;
         }
-        if (valorDigitado === usuaria.duress_pin){
+        if (pins && valorDigitado === pins.coacao){
             limparCampo();
             setErro(true);
             dispararSos({tipoGatilho: TIPOS_GATILHO.DURESS_PIN});
