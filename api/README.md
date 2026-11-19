@@ -250,6 +250,21 @@ Exemplo de `POST /incidentes`:
 }
 ```
 
+Testes feitos (todos com o resultado esperado):
+
+| Pedido | Caso | Status |
+|---|---|---|
+| `GET /incidentes` | lista geral | `200` |
+| `GET /incidentes?usuaria_id=...` | filtrando pela usuária, do mais novo para o mais antigo | `200` |
+| `GET /incidentes/:id` | incidente existente / id que não existe / id mal formado | `200` / `404` / `400` |
+| `POST /incidentes` | dados válidos | `201` |
+| `POST /incidentes` | sem data, tipo e relato / `tipo_violencia` fora da lista do DER / data inválida | `400` |
+| `POST /incidentes` | `usuaria_id` que não existe (relacionamento real) | `400` |
+| `PUT /incidentes/:id` | só `notas_adicionais` | `200` |
+| `PUT /incidentes/:id` | `tipo_violencia` inválido / corpo vazio | `400` |
+| `PUT /incidentes/:id` | id que não existe | `404` |
+| `DELETE /incidentes/:id` | incidente criado no teste / o mesmo de novo | `200` / `404` |
+
 ## ⚠️ Respostas de erro
 
 | Status | Quando |

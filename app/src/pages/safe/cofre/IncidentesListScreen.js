@@ -81,7 +81,7 @@ export default function IncidentesListScreen({ navigation }) {
   const handleAjudaCofre = () => {
     Alert.alert(
       'Cofre Protegido',
-      'Todos os registros são armazenados de forma sigilosa e criptografada. Somente você possui acesso com o seu PIN secreto.',
+      'Os registros ficam guardados na área protegida do app, que só abre com o seu PIN secreto. Eles não aparecem no Pratô.',
       [{ text: 'Entendi' }]
     );
   };

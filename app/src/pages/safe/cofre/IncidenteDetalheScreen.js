@@ -139,7 +139,7 @@ export default function IncidenteDetalheScreen({ navigation, route }) {
   const handleExportar = () => {
     Alert.alert(
       'Exportar com segurança',
-      'O relatório deste incidente foi compilado em formato protegido (PDF assinado com hash de integridade). Ele pode ser enviado à Delegacia da Mulher, Defensoria Pública ou anexado a um pedido de medida protetiva de urgência.',
+      'Simulação: na versão final, este registro vira um relatório para enviar à Delegacia da Mulher, à Defensoria Pública ou anexar a um pedido de medida protetiva de urgência.',
       [
         { text: 'Entendi' },
         {
@@ -147,7 +147,7 @@ export default function IncidenteDetalheScreen({ navigation, route }) {
           onPress: () => {
             Alert.alert(
               'Dossiê pronto',
-              'Arquivo protegido gerado. Nenhum dado sensível é mantido em cache temporário desprotegido.'
+              'Envio simulado. Nenhum arquivo foi gerado nem enviado.'
             );
           },
         },
