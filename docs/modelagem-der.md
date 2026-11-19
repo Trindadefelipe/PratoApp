@@ -84,6 +84,16 @@ erDiagram
         VARCHAR_255 anexo_evidencia_url
         TIMESTAMP criado_em
     }
+
+    INDICADORES_CAPITAIS {
+        UUID id PK
+        VARCHAR_100 capital
+        VARCHAR_2 uf
+        FLOAT taxa_homicidios
+        VARCHAR_20 faixa_risco
+        INTEGER ano_referencia
+        TIMESTAMP atualizado_em
+    }
 ```
 
 ---
@@ -153,3 +163,16 @@ erDiagram
 * **`notas_adicionais`**: `TEXT`, NULLABLE.
 * **`anexo_evidencia_url`**: `VARCHAR(255)`, NULLABLE (links simulados para fotos, áudios ou capturas de tela seguras).
 * **`criado_em`**: `TIMESTAMP`, NOT NULL DEFAULT CURRENT_TIMESTAMP.
+
+---
+
+### 📊 Tabela 6: `indicadores_capitais` *(Responsável: João Pedro / Data Science — Issue #83)*
+Tabela de apoio que armazena os indicadores agregados do pipeline de Data Science (Atlas da Violência / IPEA) consumidos pela API na rota `GET /indicadores` e exibidos na Tela 17 do app mobile:
+* **`id`**: `UUID`, Chave Primária (PK), gerado automaticamente (`DEFAULT gen_random_uuid()`).
+* **`capital`**: `VARCHAR(100)`, NOT NULL (ex: "Curitiba", "Londrina", "São Paulo").
+* **`uf`**: `VARCHAR(2)`, NOT NULL (ex: "PR", "SP").
+* **`taxa_homicidios`**: `FLOAT`, NOT NULL (taxa estimada por 100 mil mulheres calculada pelo modelo).
+* **`faixa_risco`**: `VARCHAR(20)`, NOT NULL (ex: "Baixo", "Médio", "Alto", "Crítico").
+* **`ano_referencia`**: `INTEGER`, NOT NULL.
+* **`atualizado_em`**: `TIMESTAMP`, NOT NULL DEFAULT CURRENT_TIMESTAMP.
+

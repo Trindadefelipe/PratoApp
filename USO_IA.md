@@ -191,6 +191,52 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * A criação de features estruturadas (como Macrorregião e faixas ordinais de risco) e a normalização padronizada são etapas indispensáveis para que os algoritmos de Machine Learning (como K-Means ou Random Forest) convirjam sem serem distorcidos pelas disparidades populacionais entre grandes e pequenas capitais.
 
 
+## Entrega Final: Felipe Trindade
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Back-end: Rotas de contatos (`api/src/rotas/contatos.js`) | Gemini / Antigravity | Implementação dos 5 endpoints RESTful (`GET`, `GET /:id`, `POST`, `PUT /:id`, `DELETE /:id`) com Prepared Statements (`$1, $2, ...`) e validação de relacionamento real via `garantirExiste('usuarias', ...)` | Felipe Trindade |
+| Testes automatizados da API | Gemini / Antigravity | Criação de suíte de testes com 10 casos de uso cobrindo CRUD, validação de campos obrigatórios, rejeição de chave estrangeira inexistente (`400`) e `404` | Felipe Trindade |
+| Integração Mobile: Círculo de Confiança | Gemini / Antigravity | Conexão de `ContatosListScreen` e `ContatoFormScreen` ao `services/api.js`, recarregamento com `useFocusEffect`, estados de loading/erro/vazio e eliminação de 100% dos mocks de `data/contatos` | Felipe Trindade |
+| Botão de Saída Rápida (*Quick Exit*) | Gemini / Antigravity | Implementação de `BotaoSaidaRapida.js` com visual camuflado ("Salvar rascunho"), reset imediato sem confirmação para `PratoTabs` e injeção global no `SafeTabs.js` sobre todas as abas e stacks | Felipe Trindade |
+| Documentação e Arquitetura Final | Gemini / Antigravity | Atualização do `README.md` com arquitetura em Mermaid, passos de execução, atualização da matriz de papéis (`matriz-papeis.md`), modelo DER (`modelagem-der.md`) e sincronização do Kanban | Felipe Trindade |
+| Auditoria e Code Review (`pr-code-reviewer`) | Antigravity (`/pr-code-reviewer`) | Auditoria formal nas 4 dimensões (atendimento ao escopo, padrões de código, segurança da vítima e integridade sem quebras) antes da abertura de cada PR (#90, #91 e #92) | Felipe Trindade |
+
+### Prompts testados
+
+#### Rotas de Contatos e Validação de Relacionamento (Gemini / Antigravity)
+
+**Prompt:** "crie o arquivo api/src/rotas/contatos.js a partir do modelo _modelo.js com os 5 endpoints RESTful da tabela contatos_confianca, validando campos do DER, ordenação por nivel_prioridade e conferindo o relacionamento real com usuarias via garantirExiste"
+
+**Resultado:** Código robusto com consultas parametrizadas, prevenção de SQL Injection, tratamento centralizado de erro (`ErroApi`) e recusa de `usuaria_id` inválido com status HTTP `400` antes de gravar no banco.
+
+#### Integração das Telas do Círculo de Confiança (Gemini / Antigravity)
+
+**Prompt:** "conecte ContatosListScreen e ContatoFormScreen ao services/api.js, removendo qualquer import de data/contatos, adicionando useFocusEffect para recarregar ao voltar do formulário e tratando loading, erro da API e diálogo de exclusão"
+
+**Resultado:** Telas 06 e 07 integradas à API real, com feedback visual fluido (`ActivityIndicator`), tratamento de lista vazia contextual, banner de erros e recarregamento automático no retorno.
+
+#### Botão de Saída Rápida com Quick Exit Global (Gemini / Antigravity)
+
+**Prompt:** "implemente o BotaoSaidaRapida.js com visual camuflado de 'Salvar rascunho' e navigation.reset para PratoTabs sem confirmação, inserindo-o de forma sobreposta no SafeTabs para cobrir todas as 5 abas e qualquer tela empilhada"
+
+**Resultado:** Componente flutuante estilizado com `zIndex: 9999` e `useSafeAreaInsets` posicionado na raiz de `SafeTabs.js`, garantindo que um toque em qualquer tela do SAFE encerre a sessão protegida e limpe o histórico de navegação.
+
+#### Auditoria de PRs com Skill /pr-code-reviewer
+
+**Prompt:** "execute a skill /pr-code-reviewer para auditar o diff da implementação contra os critérios de aceite da issue, regras de segurança da vítima e integridade do projeto"
+
+**Resultado:** Emissão de pareceres técnicos conclusivos e estruturados nas 4 dimensões obrigatórias, confirmando 100% de conformidade técnica antes da submissão dos PRs #90, #91 e #92 para revisão.
+
+### O que eu aprendi e decidi
+
+* Em arquiteturas de back-end com Express e PostgreSQL, o uso sistemático de Prepared Statements não é apenas uma boa prática de desempenho, mas o requisito fundamental de segurança para neutralizar vetores de SQL Injection.
+* A validação de integridade referencial em nível de aplicação (como a verificação prévia da existência do `usuaria_id`) melhora expressivamente a experiência do usuário, pois traduz erros brutos de banco de dados em respostas amigáveis (`400 Bad Request`) com mensagens orientativas.
+* Em soluções digitais de apoio a vítimas de violência doméstica, os mecanismos de saída rápida (*Quick Exit*) devem priorizar a segurança física acima de qualquer confirmação de perda de dados: se a vítima for surpreendida, um único toque deve fechar a área protegida sem travas, e a pilha de histórico deve ser purgada para que o botão nativo do Android não reabra a aplicação segura.
+* A governança de código com commits atômicos vinculados a issues (`Closes #N`) e auditorias automatizadas via `/pr-code-reviewer` proporciona total rastreabilidade das contribuições individuais de cada membro da equipe.
+
 
 ## Entrega Final: Higor Domingos
 
