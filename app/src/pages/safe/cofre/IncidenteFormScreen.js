@@ -3,8 +3,8 @@
 //
 // Componente: IncidenteFormScreen
 // Navegação: Stack (push sobre a lista ou a partir do detalhe)
-// Responsável: João Pedro (Issue #59)
-// Entrega: 2 (24/10)
+// Responsável: João Pedro
+// Entrega Final: Integrado à API REST (Issue #81)
 //
 // O que o protótipo (safe-07-incidente-form.png / Seção 4, Página 8) mostra nesta tela:
 //   * Topo com botão Voltar e título "Novo registro" (ou "Editar registro")
@@ -14,7 +14,7 @@
 //   * Campo "Relato" de múltiplas linhas
 //   * Botões de evidência em caixas tracejadas: Foto, Áudio, Captura
 //   * Botão principal "Salvar no cofre"
-//   * Suporte completo ao modo edição quando acionado a partir da Tela 12
+//   * Suporte completo ao modo edição com POST /incidentes e PUT /incidentes/:id
 // ============================================================
 
 import React, { useState, useLayoutEffect } from 'react';
@@ -24,7 +24,6 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  Alert,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -32,11 +31,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 import BotaoPrimario from '../../../components/BotaoPrimario';
+import { criarIncidente, atualizarIncidente } from '../../../services/api';
+import { idUsuariaAtual } from '../../../services/sessao';
 import {
-  adicionarIncidente,
-  atualizarIncidente,
-  TIPOS_VIOLENCIA,
-} from '../../../data/incidentes';
+  formatarDataIsoParaInput,
+  converterDataInputParaIso,
+  extrairEvidencias,
+  montarAnexoEvidenciaUrl,
+} from '../../../services/incidentes';
 
 const CHIPS_LINHA_1 = [
   { chave: 'VERBAL_PSICOLOGICA', rotulo: 'Verbal/Psicológica' },
@@ -47,32 +49,6 @@ const CHIPS_LINHA_1 = [
 const CHIPS_LINHA_2 = [
   { chave: 'VIRTUAL_PERSEGUICAO', rotulo: 'Perseguição' },
 ];
-
-function gerarDataHoraAtualFormatada() {
-  const agora = new Date();
-  const dia = String(agora.getDate()).padStart(2, '0');
-  const mes = String(agora.getMonth() + 1).padStart(2, '0');
-  const ano = agora.getFullYear();
-  const horas = String(agora.getHours()).padStart(2, '0');
-  const minutos = String(agora.getMinutes()).padStart(2, '0');
-  return `${dia}/${mes}/${ano}, ${horas}:${minutos}`;
-}
-
-function formatarDataIsoParaExibicao(dataIso) {
-  if (!dataIso) return gerarDataHoraAtualFormatada();
-  try {
-    const data = new Date(dataIso);
-    if (isNaN(data.getTime())) return dataIso;
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const ano = data.getFullYear();
-    const horas = String(data.getHours()).padStart(2, '0');
-    const minutos = String(data.getMinutes()).padStart(2, '0');
-    return `${dia}/${mes}/${ano}, ${horas}:${minutos}`;
-  } catch (e) {
-    return dataIso;
-  }
-}
 
 export default function IncidenteFormScreen({ navigation, route }) {
   const incidenteEdicao = route.params?.incidente;
@@ -86,8 +62,8 @@ export default function IncidenteFormScreen({ navigation, route }) {
   // Estados dos campos do formulário
   const [dataHora, setDataHora] = useState(
     incidenteEdicao
-      ? formatarDataIsoParaExibicao(incidenteEdicao.data_ocorrencia)
-      : gerarDataHoraAtualFormatada()
+      ? formatarDataIsoParaInput(incidenteEdicao.data_ocorrencia)
+      : formatarDataIsoParaInput()
   );
 
   const [tipoViolencia, setTipoViolencia] = useState(
@@ -106,13 +82,15 @@ export default function IncidenteFormScreen({ navigation, route }) {
     incidenteEdicao?.notas_adicionais || ''
   );
 
-  // Estado das evidências (seleção simulada conforme protótipo)
   const [evidenciasSelecionadas, setEvidenciasSelecionadas] = useState(() => {
-    if (incidenteEdicao?.evidencia_tipo) {
-      return [incidenteEdicao.evidencia_tipo];
+    if (incidenteEdicao?.anexo_evidencia_url) {
+      return extrairEvidencias(incidenteEdicao.anexo_evidencia_url).tipos;
     }
-    return ['audio']; // Simulação padrão inicial para novos testes
+    return [];
   });
+
+  const [salvando, setSalvando] = useState(false);
+  const [erroFormulario, setErroFormulario] = useState(null);
 
   const alternarEvidencia = (tipo) => {
     if (evidenciasSelecionadas.includes(tipo)) {
@@ -122,97 +100,42 @@ export default function IncidenteFormScreen({ navigation, route }) {
     }
   };
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
+    setErroFormulario(null);
+
     if (!relato.trim()) {
-      Alert.alert(
-        'Relato obrigatório',
-        'Por favor, preencha o relato do ocorrido para registrar com segurança no cofre.'
-      );
+      setErroFormulario('Por favor, preencha o relato do ocorrido.');
       return;
     }
 
-    // Monta o label da evidência para exibição
-    let labelEvidencia = 'Sem evidências';
-    let tipoPrincipalEvidencia = null;
-    let evidenciasArray = [];
-
-    if (evidenciasSelecionadas.length > 0) {
-      tipoPrincipalEvidencia = evidenciasSelecionadas[0];
-      if (evidenciasSelecionadas.includes('audio')) {
-        labelEvidencia = '1 áudio';
-        evidenciasArray.push({
-          id: 'ev-audio',
-          tipo: 'audio',
-          label: 'Áudio gravado',
-          corBg: colors.verdeClaro,
-          corTexto: colors.verdeProfundo,
-          icone: 'mic-outline',
-        });
-      }
-      if (evidenciasSelecionadas.includes('captura')) {
-        labelEvidencia = evidenciasArray.length > 0 ? `${labelEvidencia} e 1 captura` : '1 captura de tela';
-        evidenciasArray.push({
-          id: 'ev-captura',
-          tipo: 'captura',
-          label: 'Captura',
-          corBg: colors.pessegoClaro,
-          corTexto: colors.marromEscuro,
-          icone: 'image-outline',
-        });
-      }
-      if (evidenciasSelecionadas.includes('foto')) {
-        labelEvidencia = evidenciasArray.length > 0 ? `${labelEvidencia} e 1 foto` : '1 foto anexada';
-        evidenciasArray.push({
-          id: 'ev-foto',
-          tipo: 'foto',
-          label: 'Foto',
-          corBg: colors.amareloClaro,
-          corTexto: colors.amareloProfundo,
-          icone: 'camera-outline',
-        });
-      }
+    const dataIso = converterDataInputParaIso(dataHora);
+    if (!dataIso) {
+      setErroFormulario('Informe a data e hora no formato DD/MM/AAAA, HH:mm.');
+      return;
     }
 
     const dadosRegistro = {
+      usuaria_id: incidenteEdicao?.usuaria_id || (await idUsuariaAtual()),
+      data_ocorrencia: dataIso,
       tipo_violencia: tipoViolencia,
-      local_ocorrencia: local.trim() || 'Não informado',
+      local_ocorrencia: local.trim() || null,
       relato_detalhado: relato.trim(),
-      notas_adicionais: notasAdicionais.trim(),
-      evidencia_tipo: tipoPrincipalEvidencia,
-      evidencia_label: labelEvidencia,
-      evidencias: evidenciasArray,
+      notas_adicionais: notasAdicionais.trim() || null,
+      anexo_evidencia_url: montarAnexoEvidenciaUrl(evidenciasSelecionadas),
     };
 
-    if (modoEdicao) {
-      atualizarIncidente(incidenteEdicao.id, dadosRegistro);
-      Alert.alert(
-        'Registro atualizado',
-        'As informações do incidente foram atualizadas com sucesso no seu cofre.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Volta para a lista ou detalhe atualizado
-              navigation.navigate('IncidentesList');
-            },
-          },
-        ]
-      );
-    } else {
-      adicionarIncidente({
-        ...dadosRegistro,
-        titulo_curto: relato.trim().slice(0, 24),
-      });
-      Alert.alert(
-        'Salvo no cofre',
-        'Seu registro foi guardado de forma sigilosa e protegida.',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
+    try {
+      setSalvando(true);
+      if (modoEdicao) {
+        await atualizarIncidente(incidenteEdicao.id, dadosRegistro);
+      } else {
+        await criarIncidente(dadosRegistro);
+      }
+      navigation.goBack();
+    } catch (err) {
+      setErroFormulario(err.message || 'Falha ao salvar registro na API.');
+    } finally {
+      setSalvando(false);
     }
   };
 
@@ -240,6 +163,14 @@ export default function IncidenteFormScreen({ navigation, route }) {
             {modoEdicao ? 'Editar registro' : 'Novo registro'}
           </Text>
         </View>
+
+        {/* Mensagem de erro da API ou validação */}
+        {erroFormulario && (
+          <View style={estilos.erroBanner}>
+            <Ionicons name="alert-circle" size={20} color={colors.coral} style={estilos.erroBannerIcone} />
+            <Text style={estilos.erroBannerTexto}>{erroFormulario}</Text>
+          </View>
+        )}
 
         {/* Formulário */}
         <View style={estilos.formulario}>
@@ -444,8 +375,9 @@ export default function IncidenteFormScreen({ navigation, route }) {
 
           {/* Botão Principal Salvar no Cofre */}
           <BotaoPrimario
-            titulo="Salvar no cofre"
+            titulo={salvando ? 'Salvando no cofre...' : 'Salvar no cofre'}
             onPress={handleSalvar}
+            desativado={salvando}
             style={estilos.botaoSalvar}
           />
         </View>
@@ -611,5 +543,28 @@ const estilos = StyleSheet.create({
 
   botaoSalvar: {
     marginTop: 10,
+  },
+
+  erroBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.pessegoClaro,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.coral,
+  },
+
+  erroBannerIcone: {
+    marginRight: 8,
+  },
+
+  erroBannerTexto: {
+    flex: 1,
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.coral,
+    lineHeight: 18,
   },
 });

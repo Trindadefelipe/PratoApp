@@ -161,3 +161,26 @@ export function listarCheckins(viagemId) {
 export function criarCheckin(dados) {
   return requisitar('/checkins', { metodo: 'POST', corpo: dados });
 }
+
+
+// ---------- Cofre de Incidentes (João Pedro, #80 / #81) ----------
+export function listarIncidentes(usuariaId) {
+  const query = usuariaId ? `?usuaria_id=${usuariaId}` : '';
+  return requisitar(`/incidentes${query}`);
+}
+
+export function buscarIncidente(id) {
+  return requisitar(`/incidentes/${id}`);
+}
+
+export function criarIncidente(dados) {
+  return requisitar('/incidentes', { metodo: 'POST', corpo: dados });
+}
+
+export function atualizarIncidente(id, dados) {
+  return requisitar(`/incidentes/${id}`, { metodo: 'PUT', corpo: dados });
+}
+
+export function removerIncidente(id) {
+  return requisitar(`/incidentes/${id}`, { metodo: 'DELETE' });
+}

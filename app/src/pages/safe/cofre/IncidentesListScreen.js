@@ -3,14 +3,15 @@
 //
 // Componente: IncidentesListScreen
 // Navegação: Tab (aba Cofre), raiz do CofreStack
-// Responsável: João Pedro (Issue #58)
-// Entrega: 2 (24/10)
+// Responsável: João Pedro
+// Entrega Final: Integrado à API REST (Issue #81)
 //
 // O que o protótipo (safe-06-cofre-lista.png) mostra nesta tela:
 //   * Topo com texto "Só você vê estes registros" e ícone de cadeado
 //   * Título "Cofre de Incidentes"
 //   * Chips de filtro por tipo: Todos, Verbal, Física, Patrimonial, Virtual
 //   * Linha do tempo com marcadores coloridos, data, título, resumo e evidências
+//   * Estados visuais: carregando, lista vazia e erro da API
 //   * Botão flutuante (+) para abrir a Tela 11 (Novo registro)
 //   * Toque no card abrindo a Tela 12 (Detalhe do incidente)
 // ============================================================
@@ -23,6 +24,7 @@ import {
   FlatList,
   Pressable,
   Alert,
+  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -31,40 +33,41 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 import Chip from '../../../components/Chip';
+import { listarIncidentes } from '../../../services/api';
+import { idUsuariaAtual } from '../../../services/sessao';
 import {
-  obterIncidentes,
   TIPOS_VIOLENCIA,
-} from '../../../data/incidentes';
+  TIPO_PADRAO,
+  formatarDataIncidente,
+  extrairEvidencias,
+  resumirTituloIncidente,
+} from '../../../services/incidentes';
 
 const FILTROS = ['Todos', 'Verbal', 'Física', 'Patrimonial', 'Virtual'];
-
-function formatarDataLinhaTempo(dataIso) {
-  if (!dataIso) return '';
-  const meses = [
-    'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-    'jul', 'ago', 'set', 'out', 'nov', 'dez',
-  ];
-
-  try {
-    const data = new Date(dataIso);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = meses[data.getMonth()];
-    const horas = String(data.getHours()).padStart(2, '0');
-    const minutos = String(data.getMinutes()).padStart(2, '0');
-    return `${dia} ${mes}, ${horas}:${minutos}`;
-  } catch (e) {
-    return dataIso;
-  }
-}
 
 export default function IncidentesListScreen({ navigation }) {
   const [listaIncidentes, setListaIncidentes] = useState([]);
   const [filtroAtivo, setFiltroAtivo] = useState('Todos');
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+
+  const carregarIncidentes = async () => {
+    try {
+      setCarregando(true);
+      setErro(null);
+      const dados = await listarIncidentes(await idUsuariaAtual());
+      setListaIncidentes(Array.isArray(dados) ? dados : []);
+    } catch (err) {
+      setErro(err.message || 'Não foi possível carregar os registros do cofre.');
+    } finally {
+      setCarregando(false);
+    }
+  };
 
   // Atualiza a lista sempre que a tela ganha foco (ao voltar de criação, edição ou exclusão)
   useFocusEffect(
     useCallback(() => {
-      setListaIncidentes(obterIncidentes());
+      carregarIncidentes();
     }, [])
   );
 
@@ -84,14 +87,8 @@ export default function IncidentesListScreen({ navigation }) {
   };
 
   const renderItem = ({ item, index }) => {
-    const tipoInfo = TIPOS_VIOLENCIA[item.tipo_violencia] || {
-      rotulo: 'Incidente',
-      filtro: 'Geral',
-      corBadgeBg: colors.pessegoClaro,
-      corBadgeTexto: colors.marromEscuro,
-      corPonto: colors.coral,
-    };
-
+    const tipoInfo = TIPOS_VIOLENCIA[item.tipo_violencia] || TIPO_PADRAO;
+    const evidenciasInfo = extrairEvidencias(item.anexo_evidencia_url);
     const isUltimo = index === incidentesFiltrados.length - 1;
 
     return (
@@ -113,12 +110,12 @@ export default function IncidentesListScreen({ navigation }) {
             estilos.card,
             pressed && estilos.cardPressionado,
           ]}
-          onPress={() => navigation.navigate('IncidenteDetalhe', { incidente: item })}
+          onPress={() => navigation.navigate('IncidenteDetalhe', { id: item.id })}
         >
           {/* Topo do Card: Data/Hora e Badge do Tipo */}
           <View style={estilos.cardCabecalho}>
             <Text style={estilos.cardData}>
-              {formatarDataLinhaTempo(item.data_ocorrencia)}
+              {formatarDataIncidente(item.data_ocorrencia)}
             </Text>
             <View
               style={[
@@ -139,7 +136,7 @@ export default function IncidentesListScreen({ navigation }) {
 
           {/* Título do Registro */}
           <Text style={estilos.cardTitulo}>
-            {item.titulo_curto || item.tipo_violencia}
+            {resumirTituloIncidente(item)}
           </Text>
 
           {/* Resumo do Relato */}
@@ -148,7 +145,7 @@ export default function IncidentesListScreen({ navigation }) {
           </Text>
 
           {/* Rodapé: Quantidade e Tipo de Evidências */}
-          {Boolean(item.evidencia_label) && (
+          {Boolean(evidenciasInfo.label) && (
             <View style={estilos.cardEvidenciaLinha}>
               <Ionicons
                 name="document-text-outline"
@@ -157,7 +154,7 @@ export default function IncidentesListScreen({ navigation }) {
                 style={estilos.iconeEvidencia}
               />
               <Text style={estilos.cardEvidenciaTexto}>
-                {item.evidencia_label}
+                {evidenciasInfo.label}
               </Text>
             </View>
           )}
@@ -204,28 +201,50 @@ export default function IncidentesListScreen({ navigation }) {
         </ScrollView>
       </View>
 
-      {/* Lista / Linha do tempo dos Incidentes */}
-      <FlatList
-        data={incidentesFiltrados}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={renderItem}
-        contentContainerStyle={estilos.listaConteudo}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={() => (
-          <View style={estilos.vazioContainer}>
-            <Ionicons
-              name="lock-closed-outline"
-              size={48}
-              color={colors.cinza}
-              style={estilos.vazioIcone}
-            />
-            <Text style={estilos.vazioTitulo}>Nenhum registro encontrado</Text>
-            <Text style={estilos.vazioTexto}>
-              Toque no botão + abaixo para guardar com segurança um novo episódio.
-            </Text>
+      {/* Estado de Erro */}
+      {erro && (
+        <View style={estilos.erroCard}>
+          <Ionicons name="alert-circle-outline" size={22} color={colors.coral} style={estilos.erroIcone} />
+          <View style={estilos.erroInfo}>
+            <Text style={estilos.erroTexto}>{erro}</Text>
+            <Pressable style={estilos.botaoTentarNovamente} onPress={carregarIncidentes}>
+              <Text style={estilos.botaoTentarTexto}>Tentar novamente</Text>
+            </Pressable>
           </View>
-        )}
-      />
+        </View>
+      )}
+
+      {/* Lista / Linha do tempo dos Incidentes */}
+      {carregando && listaIncidentes.length === 0 ? (
+        <View style={estilos.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.coral} />
+          <Text style={estilos.loadingTexto}>Carregando registros do cofre...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={incidentesFiltrados}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderItem}
+          contentContainerStyle={estilos.listaConteudo}
+          showsVerticalScrollIndicator={false}
+          refreshing={carregando}
+          onRefresh={carregarIncidentes}
+          ListEmptyComponent={() => (
+            <View style={estilos.vazioContainer}>
+              <Ionicons
+                name="lock-closed-outline"
+                size={48}
+                color={colors.cinza}
+                style={estilos.vazioIcone}
+              />
+              <Text style={estilos.vazioTitulo}>Nenhum registro encontrado</Text>
+              <Text style={estilos.vazioTexto}>
+                Toque no botão + abaixo para guardar com segurança um novo episódio.
+              </Text>
+            </View>
+          )}
+        />
+      )}
 
       {/* Botão Flutuante (+) para criar novo registro */}
       <Pressable
@@ -447,5 +466,58 @@ const estilos = StyleSheet.create({
 
   fabPressionado: {
     transform: [{ scale: 0.95 }],
+  },
+
+  erroCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: colors.pessegoClaro,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+  },
+
+  erroIcone: {
+    marginRight: 10,
+    marginTop: 2,
+  },
+
+  erroInfo: {
+    flex: 1,
+  },
+
+  erroTexto: {
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.coral,
+    marginBottom: 8,
+  },
+
+  botaoTentarNovamente: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.coral,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+
+  botaoTentarTexto: {
+    fontFamily: fonts.semibold,
+    fontSize: 12,
+    color: colors.branco,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 60,
+  },
+
+  loadingTexto: {
+    marginTop: 12,
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.cinza,
   },
 });

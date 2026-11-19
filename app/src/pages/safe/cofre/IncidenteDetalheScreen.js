@@ -3,8 +3,8 @@
 //
 // Componente: IncidenteDetalheScreen
 // Navegação: Stack (push ao abrir um item da lista)
-// Responsável: João Pedro (Issue #60)
-// Entrega: 2 (24/10)
+// Responsável: João Pedro
+// Entrega Final: Integrado à API REST (Issue #81)
 //
 // O que o protótipo (safe-08-incidente-detalhe.png / Seção 4, Página 8) mostra nesta tela:
 //   * Topo com botão Voltar, título "Incidente", botão de editar e botão de excluir
@@ -14,102 +14,126 @@
 //   * Seção "Notas adicionais"
 //   * Seção "Evidências" com cards estilizados (Áudio, Captura, Foto)
 //   * Botão em destaque verde "Exportar com segurança"
-//   * Botão de documento/apoio no rodapé
+//   * Carregamento por GET /incidentes/:id e exclusão via DELETE /incidentes/:id
 // ============================================================
 
-import React, { useLayoutEffect } from 'react';
+import React, { useState, useCallback, useLayoutEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Pressable,
   Alert,
+  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
+import { buscarIncidente, removerIncidente } from '../../../services/api';
 import {
-  excluirIncidente,
   TIPOS_VIOLENCIA,
-} from '../../../data/incidentes';
-
-function formatarDataDetalhe(dataIso) {
-  if (!dataIso) return '';
-  const meses = [
-    'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-    'jul', 'ago', 'set', 'out', 'nov', 'dez',
-  ];
-
-  try {
-    const data = new Date(dataIso);
-    if (isNaN(data.getTime())) return dataIso;
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = meses[data.getMonth()];
-    const ano = data.getFullYear();
-    const horas = String(data.getHours()).padStart(2, '0');
-    const minutos = String(data.getMinutes()).padStart(2, '0');
-    return `${dia} ${mes} ${ano}, ${horas}:${minutos}`;
-  } catch (e) {
-    return dataIso;
-  }
-}
+  TIPO_PADRAO,
+  formatarDataIncidente,
+  extrairEvidencias,
+} from '../../../services/incidentes';
 
 export default function IncidenteDetalheScreen({ navigation, route }) {
-  const incidente = route.params?.incidente;
+  const idIncidente = route.params?.id || route.params?.incidente?.id;
+  const [incidente, setIncidente] = useState(route.params?.incidente || null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+  const [confirmandoExcluir, setConfirmandoExcluir] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
 
   // Oculta o header nativo para exibir o cabeçalho customizado idêntico ao protótipo
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  if (!incidente) {
+  const carregarIncidente = async () => {
+    if (!idIncidente) {
+      setErro('Incidente não encontrado.');
+      setCarregando(false);
+      return;
+    }
+
+    try {
+      setCarregando(true);
+      setErro(null);
+      const dados = await buscarIncidente(idIncidente);
+      setIncidente(dados);
+    } catch (err) {
+      setErro(err.message || 'Não foi possível carregar o incidente.');
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarIncidente();
+    }, [idIncidente])
+  );
+
+  if (carregando && !incidente) {
     return (
       <SafeAreaView style={estilos.tela} edges={['top']}>
         <View style={estilos.erroContainer}>
-          <Text style={estilos.erroTexto}>Incidente não encontrado.</Text>
-          <Pressable
-            style={estilos.botaoVoltarSimples}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={estilos.botaoVoltarTexto}>Voltar</Text>
-          </Pressable>
+          <ActivityIndicator size="large" color={colors.coral} />
+          <Text style={estilos.loadingTexto}>Carregando incidente...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  const tipoInfo = TIPOS_VIOLENCIA[incidente.tipo_violencia] || {
-    rotulo: 'Incidente',
-    filtro: 'Geral',
-    corBadgeBg: colors.pessegoClaro,
-    corBadgeTexto: colors.marromEscuro,
-    corPonto: colors.coral,
-  };
+  if (!incidente) {
+    return (
+      <SafeAreaView style={estilos.tela} edges={['top']}>
+        <View style={estilos.erroContainer}>
+          <Text style={estilos.erroTexto}>{erro || 'Incidente não encontrado.'}</Text>
+          <View style={estilos.erroAcoes}>
+            {Boolean(idIncidente) && (
+              <Pressable
+                style={estilos.botaoVoltarSimples}
+                onPress={carregarIncidente}
+              >
+                <Text style={estilos.botaoVoltarTexto}>Tentar novamente</Text>
+              </Pressable>
+            )}
+            <Pressable
+              style={estilos.botaoVoltarSimples}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={estilos.botaoVoltarTexto}>Voltar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const tipoInfo = TIPOS_VIOLENCIA[incidente.tipo_violencia] || TIPO_PADRAO;
+  const evidenciasCards = extrairEvidencias(incidente.anexo_evidencia_url).cards;
 
   const handleEditar = () => {
     navigation.navigate('IncidenteForm', { incidente });
   };
 
-  const handleExcluir = () => {
-    Alert.alert(
-      'Excluir incidente',
-      'Tem certeza de que deseja remover este registro do seu cofre? Esta ação não pode ser desfeita.',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: () => {
-            excluirIncidente(incidente.id);
-            Alert.alert('Removido', 'Registro excluído do cofre com sucesso.', [
-              { text: 'OK', onPress: () => navigation.goBack() },
-            ]);
-          },
-        },
-      ]
-    );
+  const handleExcluir = async () => {
+    setErro(null);
+    try {
+      setExcluindo(true);
+      await removerIncidente(incidente.id);
+      navigation.goBack();
+    } catch (err) {
+      setErro(err.message || 'Falha ao excluir registro na API.');
+      setConfirmandoExcluir(false);
+    } finally {
+      setExcluindo(false);
+    }
   };
 
   const handleExportar = () => {
@@ -175,7 +199,11 @@ export default function IncidenteDetalheScreen({ navigation, route }) {
                 estilos.botaoAcao,
                 pressed && estilos.botaoAcaoPressionado,
               ]}
-              onPress={handleExcluir}
+              onPress={() => {
+                setErro(null);
+                setConfirmandoExcluir((atual) => !atual);
+              }}
+              disabled={excluindo}
               hitSlop={8}
               accessibilityLabel="Excluir registro"
             >
@@ -183,6 +211,43 @@ export default function IncidenteDetalheScreen({ navigation, route }) {
             </Pressable>
           </View>
         </View>
+
+        {/* Mensagem de erro da API */}
+        {erro && (
+          <View style={estilos.erroBanner}>
+            <Ionicons name="alert-circle" size={20} color={colors.coral} style={estilos.erroBannerIcone} />
+            <Text style={estilos.erroBannerTexto}>{erro}</Text>
+          </View>
+        )}
+
+        {/* Confirmação inline de exclusão */}
+        {confirmandoExcluir && (
+          <View style={estilos.confirmacao}>
+            <Text style={estilos.confirmacaoTexto}>
+              Remover este registro do seu cofre? Esta ação não pode ser desfeita.
+            </Text>
+            <View style={estilos.confirmacaoBotoes}>
+              <Pressable
+                style={estilos.botaoConfirmacao}
+                onPress={() => setConfirmandoExcluir(false)}
+                disabled={excluindo}
+              >
+                <Text style={estilos.textoCancelar}>Cancelar</Text>
+              </Pressable>
+              <Pressable
+                style={estilos.botaoConfirmacao}
+                onPress={handleExcluir}
+                disabled={excluindo}
+              >
+                {excluindo ? (
+                  <ActivityIndicator size="small" color={colors.coral} />
+                ) : (
+                  <Text style={estilos.textoExcluir}>Excluir</Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        )}
 
         {/* Linha 1: Badge de Tipo de Violência e Data/Hora */}
         <View style={estilos.linhaMeta}>
@@ -203,7 +268,7 @@ export default function IncidenteDetalheScreen({ navigation, route }) {
           </View>
 
           <Text style={estilos.dataTexto}>
-            {formatarDataDetalhe(incidente.data_ocorrencia)}
+            {formatarDataIncidente(incidente.data_ocorrencia, true)}
           </Text>
         </View>
 
@@ -239,9 +304,9 @@ export default function IncidenteDetalheScreen({ navigation, route }) {
         {/* Seção Evidências */}
         <View style={estilos.secao}>
           <Text style={estilos.secaoTitulo}>Evidências</Text>
-          <View style={estilos.evidenciasCardsContainer}>
-            {incidente.evidencias && incidente.evidencias.length > 0 ? (
-              incidente.evidencias.map((ev) => (
+          {evidenciasCards.length > 0 ? (
+            <View style={estilos.evidenciasCardsContainer}>
+              {evidenciasCards.map((ev) => (
                 <View
                   key={ev.id || ev.label}
                   style={[
@@ -263,46 +328,11 @@ export default function IncidenteDetalheScreen({ navigation, route }) {
                     {ev.label}
                   </Text>
                 </View>
-              ))
-            ) : (
-              // Evidências padrão caso não venha no array
-              <>
-                <View
-                  style={[
-                    estilos.cardEvidencia,
-                    { backgroundColor: colors.verdeClaro },
-                  ]}
-                >
-                  <Ionicons name="mic-outline" size={24} color={colors.verdeProfundo} />
-                  <Text
-                    style={[
-                      estilos.cardEvidenciaTexto,
-                      { color: colors.verdeProfundo },
-                    ]}
-                  >
-                    Áudio 0:42
-                  </Text>
-                </View>
-
-                <View
-                  style={[
-                    estilos.cardEvidencia,
-                    { backgroundColor: colors.pessegoClaro },
-                  ]}
-                >
-                  <Ionicons name="image-outline" size={24} color={colors.marromEscuro} />
-                  <Text
-                    style={[
-                      estilos.cardEvidenciaTexto,
-                      { color: colors.marromEscuro },
-                    ]}
-                  >
-                    Captura
-                  </Text>
-                </View>
-              </>
-            )}
-          </View>
+              ))}
+            </View>
+          ) : (
+            <Text style={estilos.notasTexto}>Nenhuma evidência anexada.</Text>
+          )}
         </View>
 
         {/* Botão Exportar com Segurança */}
@@ -522,5 +552,77 @@ const estilos = StyleSheet.create({
   botaoVoltarTexto: {
     fontFamily: fonts.semibold,
     color: colors.grafite,
+  },
+
+  loadingTexto: {
+    marginTop: 12,
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.cinza,
+  },
+
+  erroAcoes: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+
+  erroBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.pessegoClaro,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.coral,
+  },
+
+  erroBannerIcone: {
+    marginRight: 8,
+  },
+
+  erroBannerTexto: {
+    flex: 1,
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.coral,
+    lineHeight: 18,
+  },
+
+  confirmacao: {
+    backgroundColor: colors.coralClaro,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 18,
+  },
+
+  confirmacaoTexto: {
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.grafite,
+    textAlign: 'center',
+  },
+
+  confirmacaoBotoes: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 8,
+  },
+
+  botaoConfirmacao: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+
+  textoCancelar: {
+    fontFamily: fonts.medium,
+    fontSize: 15,
+    color: colors.grafite,
+  },
+
+  textoExcluir: {
+    fontFamily: fonts.bold,
+    fontSize: 15,
+    color: colors.coral,
   },
 });
