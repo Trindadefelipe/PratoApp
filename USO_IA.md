@@ -311,3 +311,29 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 * No desenvolvimento mobile para situações de risco, o botão "Cheguei segura" deve encerrar a viagem e persistir o carimbo de data/hora (`finalizado_em`) no back-end antes de resetar a navegação, assegurando que o status no painel da delegacia seja imediatamente atualizado.
 * A eliminação gradual de dados mockados em favor de um cliente unificado de API (`services/api.js`) centraliza o tratamento de falhas de rede (`try/catch`) e uniformiza a experiência da usuária em todo o ecossistema do app.
 
+
+## Entrega Final: João Pedro
+
+### Onde foram usadas
+
+| Parte do projeto | Ferramenta | Como foi usada | Revisado por |
+|---|---|---|---|
+| Rotas RESTful do Cofre de Incidentes (API) | Gemini / Antigravity | Criação de `api/src/rotas/incidentes.js` com os 5 endpoints (`GET`, `GET /:id`, `POST`, `PUT /:id`, `DELETE /:id`), validação dos campos do DER (`tipo_violencia`, `data_ocorrencia`, `relato_detalhado`), relacionamento real com `usuarias` via `garantirExiste()` e atualização de `api/README.md` | João Pedro |
+| Camada de Serviços e Helpers do Cofre | Gemini / Antigravity | Adição das funções `listarIncidentes`, `buscarIncidente`, `criarIncidente`, `atualizarIncidente` e `removerIncidente` em `app/src/services/api.js` e centralização de `TIPOS_VIOLENCIA`, datas e evidências em `app/src/services/incidentes.js` | João Pedro |
+| Integração Mobile das Telas 10, 11 e 12 | Gemini / Antigravity | Atualização de `IncidentesListScreen.js`, `IncidenteFormScreen.js` e `IncidenteDetalheScreen.js` para consumir a API real, tratar estados de carregamento/erro, confirmar exclusão inline e remover 100% dos imports de `app/src/data/incidentes.js` | João Pedro |
+
+### Prompts testados
+
+#### Rotas da API e Integração do Cofre de Incidentes (Gemini / Antigravity)
+
+**Prompt:** "investigue o repositório, veja as issues abertas atribuídas a mim (#80 e #81) e implemente/feche seguindo os padrões de código em docs/padroes-de-codigo.md"
+
+**Resultado:** Implementação de `api/src/rotas/incidentes.js` com consultas parametrizadas e validação de chave estrangeira `usuaria_id`, atualização de `api/README.md`, criação de `app/src/services/incidentes.js`, adição dos métodos em `app/src/services/api.js` e migração completa das Telas 10, 11 e 12 para a API real, fechando as issues #80 e #81 via commits na `main`.
+
+### O que eu aprendi e decidi
+
+* Centralizar constantes de domínio e formatações em `app/src/services/incidentes.js` evita duplicação entre as telas de lista, formulário e detalhe e permite remover completamente a dependência de `app/src/data/` sem perder a identidade visual do protótipo.
+* Substituir diálogos nativos `Alert.alert` com múltiplos botões por banners inline de erro e confirmação de exclusão garante o mesmo comportamento no celular e no navegador (Expo Web).
+* Validar `usuaria_id` com `garantirExiste()` antes de gravar em `cofre_incidentes` assegura integridade referencial e devolve mensagens claras (`400 Bad Request`) ao aplicativo em vez de erros genéricos de banco.
+
+
