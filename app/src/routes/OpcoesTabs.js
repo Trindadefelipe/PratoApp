@@ -7,13 +7,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { fonts } from '../theme/fonts';
 
+// Altura da barra de abas, sem a área segura do celular.
+// O BotaoSaidaRapida usa para ficar logo acima da barra.
+export const ALTURA_BARRA_ABAS = 68;
+
 export function criarOpcoesTabs(icones, insets) {
   return ({ route }) => ({
     headerShown: false,
     tabBarActiveTintColor: colors.verdeProfundo,
     tabBarInactiveTintColor: colors.cinza,
     tabBarStyle: {
-      height: 68 + insets.bottom,
+      height: ALTURA_BARRA_ABAS + insets.bottom,
       paddingTop: 8,
       paddingBottom: 8 + insets.bottom,
       backgroundColor: '#FFFFFF',

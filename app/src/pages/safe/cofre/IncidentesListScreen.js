@@ -227,18 +227,6 @@ export default function IncidentesListScreen({ navigation }) {
         )}
       />
 
-      {/* Botão de Documento/Apoio no canto inferior esquerdo (conforme protótipo) */}
-      <Pressable
-        style={({ pressed }) => [
-          estilos.botaoApoio,
-          pressed && estilos.botaoApoioPressionado,
-        ]}
-        onPress={handleAjudaCofre}
-        accessibilityLabel="Informações de segurança"
-      >
-        <Ionicons name="document-text-outline" size={22} color={colors.grafite} />
-      </Pressable>
-
       {/* Botão Flutuante (+) para criar novo registro */}
       <Pressable
         style={({ pressed }) => [
@@ -438,29 +426,6 @@ const estilos = StyleSheet.create({
     color: colors.cinza,
     textAlign: 'center',
     lineHeight: 19,
-  },
-
-  botaoApoio: {
-    position: 'absolute',
-    left: 20,
-    bottom: 24,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.branco,
-    borderWidth: 1,
-    borderColor: colors.begeDivisor,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 3,
-    shadowColor: colors.preto,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-
-  botaoApoioPressionado: {
-    opacity: 0.7,
   },
 
   fab: {

@@ -450,13 +450,6 @@ export default function IncidenteFormScreen({ navigation, route }) {
           />
         </View>
       </ScrollView>
-
-      {/* Botão de Documento/Apoio no rodapé (conforme protótipo) */}
-      <View style={estilos.rodapeApoio}>
-        <View style={estilos.botaoApoio}>
-          <Ionicons name="document-text-outline" size={20} color={colors.grafite} />
-        </View>
-      </View>
     </SafeAreaView>
   );
 }
@@ -618,27 +611,5 @@ const estilos = StyleSheet.create({
 
   botaoSalvar: {
     marginTop: 10,
-  },
-
-  rodapeApoio: {
-    position: 'absolute',
-    left: 20,
-    bottom: 24,
-  },
-
-  botaoApoio: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.branco,
-    borderWidth: 1,
-    borderColor: colors.begeDivisor,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-    shadowColor: colors.preto,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
   },
 });
