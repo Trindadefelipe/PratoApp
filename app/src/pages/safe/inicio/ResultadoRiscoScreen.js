@@ -53,6 +53,8 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
   const [indicadorAtual, setIndicadorAtual] = useState(null);
   const [carregandoIndicador, setCarregandoIndicador] = useState(true);
   const [erroIndicador, setErroIndicador] = useState(null);
+  const [mostrarCapitais, setMostrarCapitais] = useState(false);
+  const acimaDaMedia = indicadorAtual?.classe_risco === 'Alto';
 
   const carregarIndicadores = async () => {
     try {
@@ -70,7 +72,7 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
       }
     } catch (err) {
       setErroIndicador(
-        err.message || 'Não foi possível carregar o indicador da capital.'
+        'Não foi possível carregar os dados da capital agora.'
       );
     } finally {
       setCarregandoIndicador(false);
@@ -83,6 +85,7 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
 
   const selecionarCapital = async (capital) => {
     setCapitalSelecionada(capital);
+    setMostrarCapitais(false);
     try {
       setCarregandoIndicador(true);
       setErroIndicador(null);
@@ -90,7 +93,7 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
       setIndicadorAtual(dado);
     } catch (err) {
       setErroIndicador(
-        err.message || 'Não foi possível consultar a capital selecionada.'
+        'Não foi possível carregar os dados dessa capital agora.'
       );
     } finally {
       setCarregandoIndicador(false);
@@ -248,16 +251,28 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
           </Text>
         </View>
 
-        {/* Contexto Regional (Indicador DS vindo da API) */}
+        {/* Contexto Regional (Indicador DS vindo da API), escrito para a usuária */}
         <View style={estilos.cardIndicador}>
-          <Text style={estilos.tituloIndicador}>
-            Contexto da capital (Data Science)
-          </Text>
-          <Text style={estilos.subtituloIndicador}>
-            Informação complementar baseada no histórico público da capital:
-          </Text>
+          <View style={estilos.topoIndicador}>
+            <View style={estilos.iconeIndicador}>
+              <Ionicons name="location-outline" size={18} color={colors.verdeProfundo} />
+            </View>
+            <Text style={estilos.tituloIndicador}>Sobre a sua capital</Text>
+            {capitais.length > 0 && (
+              <Pressable
+                onPress={() => setMostrarCapitais((atual) => !atual)}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Trocar capital"
+              >
+                <Text style={estilos.trocarCapital}>
+                  {mostrarCapitais ? 'Fechar' : 'Trocar'}
+                </Text>
+              </Pressable>
+            )}
+          </View>
 
-          {capitais.length > 0 && (
+          {mostrarCapitais && (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -278,7 +293,7 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
             <View style={estilos.estadoIndicador}>
               <ActivityIndicator size="small" color={colors.verdeProfundo} />
               <Text style={estilos.textoEstadoIndicador}>
-                Carregando indicador da API...
+                Carregando os dados da capital...
               </Text>
             </View>
           )}
@@ -298,56 +313,52 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
           )}
 
           {indicadorAtual && !carregandoIndicador && !erroIndicador && (
-            <View style={estilos.detalheIndicador}>
-              <View style={estilos.linhaIndicadorTopo}>
-                <Text style={estilos.nomeCapital}>
-                  {indicadorAtual.capital} • {indicadorAtual.regiao}
-                </Text>
-                <View
+            <View>
+              <Text style={estilos.nomeCapital}>
+                {indicadorAtual.capital}
+                <Text style={estilos.regiaoCapital}> · {indicadorAtual.regiao}</Text>
+              </Text>
+
+              <View
+                style={[
+                  estilos.seloIndicador,
+                  acimaDaMedia ? estilos.seloAcima : estilos.seloAbaixo,
+                ]}
+              >
+                <Ionicons
+                  name={acimaDaMedia ? 'trending-up' : 'trending-down'}
+                  size={14}
+                  color={acimaDaMedia ? colors.coral : colors.verdeProfundo}
+                />
+                <Text
                   style={[
-                    estilos.badgeIndicador,
-                    {
-                      backgroundColor:
-                        indicadorAtual.classe_risco === 'Alto'
-                          ? colors.coralClaro
-                          : colors.verdeClaro,
-                    },
+                    estilos.seloIndicadorTexto,
+                    { color: acimaDaMedia ? colors.coral : colors.verdeProfundo },
                   ]}
                 >
-                  <Text
-                    style={[
-                      estilos.badgeIndicadorTexto,
-                      {
-                        color:
-                          indicadorAtual.classe_risco === 'Alto'
-                            ? colors.coral
-                            : colors.verdeProfundo,
-                      },
-                    ]}
-                  >
-                    Indicador {indicadorAtual.classe_risco} (
-                    {Math.round(Number(indicadorAtual.probabilidade_alto) * 100)}%)
-                  </Text>
-                </View>
+                  {acimaDaMedia ? 'Acima da média das capitais' : 'Abaixo da média das capitais'}
+                </Text>
               </View>
 
-              <Text style={estilos.metricaIndicador}>
-                Taxa em {indicadorAtual.ano_referencia}:{' '}
-                {Number(indicadorAtual.taxa_recente).toFixed(2)} por 100 mil
-                mulheres
+              <Text style={estilos.fraseIndicador}>
+                {acimaDaMedia
+                  ? `Pelos dados públicos, a violência contra a mulher em ${indicadorAtual.capital} tende a ficar acima da média das capitais. Vale manter seus contatos de apoio por perto.`
+                  : `Pelos dados públicos, a violência contra a mulher em ${indicadorAtual.capital} tende a ficar abaixo da média das capitais. Mesmo assim, o que você vive importa mais do que a média da cidade.`}
               </Text>
-              {Boolean(indicadorAtual.perfil_cluster) && (
-                <Text style={estilos.perfilIndicador}>
-                  {indicadorAtual.perfil_cluster}
-                </Text>
-              )}
+
+              <Text style={estilos.metricaIndicador}>
+                Em {indicadorAtual.ano_referencia}, foram{' '}
+                {Number(indicadorAtual.taxa_recente).toFixed(2).replace('.', ',')}{' '}
+                homicídios de mulheres a cada 100 mil.
+              </Text>
+
               <Text style={estilos.notaAcademicaIndicador}>
-                Estimativa acadêmica agregada por capital ({indicadorAtual.modelo_origem}) — não mede risco individual.
+                Estimativa acadêmica com dados do Atlas da Violência (IPEA). Fala da
+                cidade, não da sua situação.
               </Text>
             </View>
           )}
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -493,99 +504,120 @@ const estilos = StyleSheet.create({
     marginTop: 20,
     marginBottom: 24,
   },
+  topoIndicador: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  iconeIndicador: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.verdeClaro,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   tituloIndicador: {
+    flex: 1,
     fontFamily: fonts.semibold,
     fontSize: 16,
     color: colors.grafite,
-    marginBottom: 4,
   },
-  subtituloIndicador: {
-    fontFamily: fonts.regular,
+  trocarCapital: {
+    fontFamily: fonts.semibold,
     fontSize: 13,
-    color: colors.cinza,
-    marginBottom: 12,
+    color: colors.verdeProfundo,
   },
   listaCapitais: {
-    paddingBottom: 10,
+    gap: 8,
+    paddingBottom: 12,
   },
   estadoIndicador: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
+    gap: 8,
+    paddingVertical: 8,
   },
   textoEstadoIndicador: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.cinza,
   },
   erroIndicadorBox: {
-    backgroundColor: colors.pessegoClaro,
-    borderRadius: 12,
-    padding: 12,
+    gap: 8,
+    paddingVertical: 4,
   },
   erroIndicadorTexto: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.coral,
-    marginBottom: 8,
   },
   botaoTentarIndicador: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.coral,
-    paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.begeDivisor,
   },
   textoTentarIndicador: {
     fontFamily: fonts.semibold,
-    fontSize: 12,
-    color: colors.branco,
-  },
-  detalheIndicador: {
-    backgroundColor: colors.creme,
-    borderRadius: 14,
-    padding: 14,
-    marginTop: 4,
-  },
-  linhaIndicadorTopo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 8,
+    fontSize: 13,
+    color: colors.grafite,
   },
   nomeCapital: {
     fontFamily: fonts.bold,
-    fontSize: 15,
+    fontSize: 20,
     color: colors.grafite,
   },
-  badgeIndicador: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+  regiaoCapital: {
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    color: colors.cinza,
   },
-  badgeIndicadorTexto: {
+  seloIndicador: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  seloAcima: {
+    backgroundColor: colors.coralClaro,
+  },
+  seloAbaixo: {
+    backgroundColor: colors.verdeClaro,
+  },
+  seloIndicadorTexto: {
     fontFamily: fonts.semibold,
     fontSize: 12,
   },
-  metricaIndicador: {
-    fontFamily: fonts.medium,
-    fontSize: 13,
-    color: colors.grafite,
-    marginBottom: 4,
-  },
-  perfilIndicador: {
+  fraseIndicador: {
     fontFamily: fonts.regular,
-    fontSize: 12,
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.grafite,
+  },
+  metricaIndicador: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 19,
     color: colors.cinza,
-    marginBottom: 8,
+    marginTop: 8,
   },
   notaAcademicaIndicador: {
     fontFamily: fonts.regular,
     fontSize: 11,
-    color: colors.amareloProfundo,
     lineHeight: 16,
+    color: colors.cinza,
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: colors.begeDivisor,
   },
 });
