@@ -57,7 +57,7 @@ flowchart TD
         R_Viagens["/viagens & /checkins<br/>(Higor B.)"]
         R_Alertas["/alertas & /painel<br/>(Higor D.)"]
         R_Incidentes["/incidentes<br/>(João Pedro)"]
-        R_Indicadores["/indicadores<br/>(João Pedro / DS)"]
+        R_Indicadores["/indicadores<br/>(planejada, João Pedro #83)"]
         Server --> R_Usuarias
         Server --> R_Contatos
         Server --> R_Viagens
@@ -97,14 +97,14 @@ flowchart TD
 
 | Exigência da Entrega | Onde está implementado | Responsáveis | Situação |
 |---|---|---|:---:|
-| **Back-end (API RESTful)** em Node.js/Express, modular com rotas completas | `api/src/server.js` e `api/src/rotas/` | Alana, Felipe, Higor B., Higor D., João Pedro | ✅ |
+| **Back-end (API RESTful)** em Node.js/Express, modular com rotas completas | `api/src/server.js` e `api/src/rotas/` (usuárias, contatos, viagens, check-ins, alertas e painel) | Alana, Felipe, Higor B., Higor D., João Pedro | ⏳ falta `/incidentes` (#80) |
 | **Banco de Dados Relacional** com as tabelas do DER no PostgreSQL | `api/sql/schema.sql` e `api/sql/seed.sql` no Supabase | Alana (#63) e Equipe | ✅ |
 | **Validação de Relacionamentos Reais** pela API (ex: `usuaria_id` existente) | `garantirExiste()` em `api/src/erros.js` e checagem em `POST`/`PUT` | Equipe em suas rotas | ✅ |
-| **Consumo Real no App Mobile** (Create, Read, Update, Delete via API) | `app/src/services/api.js` e páginas de cada módulo | Cada aluno em seu CRUD | ✅ |
-| **Gatilho de Entrada e Saída Rápida (*Quick Exit*)** funcionando juntos | `PratoMetasScreen.js`, `BotaoSaidaRapida.js` e `SafeTabs.js` | Felipe Trindade (#77) | ✅ |
-| **Data Science Completo:** modelagem, avaliação e indicador integrado | `data-science/notebook.ipynb` e Tela 17 com aviso acadêmico | Higor D., João Pedro, Felipe, Higor B., Alana | ✅ |
-| **Governança & Rastreabilidade:** commits individuais e PRs com padrão | Histórico do Git (`Área: descrição (Nome) Closes #N`) | Todos os integrantes | ✅ |
-| **Quadro Kanban e Registro de IA:** avanço real e prompts documentados | [GitHub Projects](https://github.com/users/alanakaled10/projects/1) / [kanban-backlog.md](docs/kanban-backlog.md) e [USO_IA.md](USO_IA.md) | Todos os integrantes | ✅ |
+| **Consumo Real no App Mobile** (Create, Read, Update, Delete via API) | `app/src/services/api.js` e páginas de cada módulo | Cada aluno em seu CRUD | ⏳ usuárias, contatos, viagens e alertas pela API; Cofre ainda com dados simulados (#81) |
+| **Gatilho de Entrada e Saída Rápida (*Quick Exit*)** funcionando juntos | `PratoMetasScreen.js` (PINs vindos da API), `BotaoSaidaRapida.js` e `SafeTabs.js` | Alana (#68) e Felipe (#77) | ✅ |
+| **Data Science:** modelagem, avaliação e indicador integrado | `data-science/notebook.ipynb` (seção 6.3 e avaliação) e Tela 17 com aviso acadêmico | Higor D. (#79), Alana (#82), João Pedro (#83) | ⏳ modelagem escrita, falta executar; avaliação e indicador em andamento |
+| **Governança & Rastreabilidade:** commits individuais e PRs com padrão | Histórico do Git (`Área: descrição (Nome) Closes #N`) | Todos os integrantes | ⏳ depende das entregas de cada integrante |
+| **Quadro Kanban e Registro de IA:** avanço real e prompts documentados | [GitHub Projects](https://github.com/users/alanakaled10/projects/1) / [kanban-backlog.md](docs/kanban-backlog.md) e [USO_IA.md](USO_IA.md) | Todos os integrantes | ⏳ #84 |
 
 ---
 
@@ -112,11 +112,11 @@ flowchart TD
 
 | Integrante | Módulo / CRUD | Tabela (Supabase) | Rotas da API | Telas do App Integradas | Etapa de Data Science |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Alana Caled** | Perfil, Usuárias & Camuflagem | `usuarias` | `/usuarias` | Telas 13 e 14 (Ajustes e Apagar Dados), Primeiro Acesso (#87) | **Etapas 1 e 2:** Governança, LGPD e Aquisição de Dados |
+| **Alana Caled** | Perfil, Usuárias & Camuflagem | `usuarias` | `/usuarias` | Telas 13 e 14 (Ajustes e Apagar Dados), Primeiro Acesso (#87), gatilho do PIN (#68) | **Etapas 1 e 2:** Governança, LGPD e Aquisição de Dados; **Avaliação** (#82) |
 | **Felipe Trindade** | Círculo de Confiança & Saída Rápida | `contatos_confianca` | `/contatos` | Tela 06 (`ContatosList`), Tela 07 (`ContatoForm`), `BotaoSaidaRapida` | **Etapa 5:** Análise Exploratória de Dados (EDA) |
 | **Higor Bueno** | Viagem Segura & Check-ins | `viagens_seguras`, `checkins_viagem` | `/viagens`, `/checkins` | Tela 08 (`ViagemNova`), Tela 09 (`ViagemEmAndamento`) | **Etapas 3 e 4:** Qualidade, Tratamento e Execução Final |
-| **Higor Domingos** | Alertas SOS & Painel Delegacia | `alertas_sos` | `/alertas`, `/painel` | Tela 05 (`SafeHome`), Tela 15 (`AlertasHistorico`), Painel Web | **Etapa 6:** Modelagem e Treinamento de Modelos |
-| **João Pedro** | Cofre de Incidentes & Indicador DS | `cofre_incidentes`, `indicadores` | `/incidentes`, `/indicadores` | Tela 10 (`IncidentesList`), Tela 11 (`IncidenteForm`), Tela 12 (`Detalhe`), Tela 17 | **Etapas 6 e 7:** Avaliação de Métricas e Integração |
+| **Higor Domingos** | Alertas SOS & Painel Delegacia | `alertas_sos` | `/alertas`, `/painel` | Tela 05 (`SafeHome`), Tela 15 (`AlertasHistorico`), Painel Web | **Seção 6.3:** Modelagem e Treinamento de Modelos (#79) |
+| **João Pedro** | Cofre de Incidentes & Indicador DS | `cofre_incidentes` | `/incidentes`, `/indicadores` (planejada) | Tela 10 (`IncidentesList`), Tela 11 (`IncidenteForm`), Tela 12 (`Detalhe`), Tela 17 | **Integração** do indicador na Tela 17 (#83) |
 
 ---
 
@@ -133,8 +133,9 @@ O pipeline completo está implementado em [`data-science/notebook.ipynb`](data-s
 | **1 e 2. Governança, aquisição e dicionário** | Alana Caled | Ficha da base, conformidade com a LGPD, limitações, carga de dados e dicionário de tipos estatísticos |
 | **3 e 4. Qualidade e tratamento** | Higor Bueno | Diagnóstico nas 5 dimensões de qualidade, tratamento pedagógico, tabela de decisões e comparação antes × depois |
 | **5. Análise exploratória (EDA)** | Felipe Trindade | Medidas resumo, distribuição de frequências, série histórica, correlações e respostas às 3 perguntas de negócio |
-| **6. Modelagem de Machine Learning** | Higor Domingos | Definição de alvo, comparação e treino de algoritmos supervisionados para classificação de risco |
-| **7. Avaliação e Integração** | João Pedro | Métricas completas (Acurácia, F1, Recall, Matriz de Confusão), validação cruzada e endpoint para o indicador da Tela 17 |
+| **6. Plano e 6.3 Modelagem** | Higor Domingos | Alvo sem vazamento, validação cruzada temporal, Regressão Logística × Random Forest e K-Means |
+| **Avaliação** | Alana Caled (#82) | Métricas completas (acurácia, precisão, recall, F1, ROC-AUC), matriz de confusão, comparação com os pisos e decisão final |
+| **Integração** | João Pedro (#83) | Indicador da capital exibido na Tela 17 com aviso acadêmico |
 
 **Decisões de tratamento:** A base bruta permanece intacta em `data-science/dados/` (arquivos CSV originais). Na limpeza, os 6 zeros (Palmas nos primeiros anos e Natal em 2004) e os 16 outliers da taxa foram **mantidos e sinalizados** como anos reais de alta violência. Foram criadas as variáveis `regiao` e `faixa_risco`. A base unificada é `capitais_homicidios_mulheres.csv` e a tratada é `capitais_dados_processados.csv`.
 

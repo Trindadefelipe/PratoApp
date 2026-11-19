@@ -85,6 +85,7 @@ erDiagram
         TIMESTAMP criado_em
     }
 
+    %% Tabela planejada (Issue #83): ainda não existe no schema.sql nem no banco
     INDICADORES_CAPITAIS {
         UUID id PK
         VARCHAR_100 capital
@@ -166,10 +167,11 @@ erDiagram
 
 ---
 
-### 📊 Tabela 6: `indicadores_capitais` *(Responsável: João Pedro / Data Science — Issue #83)*
+### 📊 Tabela 6 (planejada): `indicadores_capitais` *(Responsável: João Pedro / Data Science — Issue #83)*
+> ⚠️ **Planejada:** esta tabela e a rota `GET /indicadores` ainda não existem no `api/sql/schema.sql` nem no banco. Ela só passa a valer quando a Issue #83 for entregue.
 Tabela de apoio que armazena os indicadores agregados do pipeline de Data Science (Atlas da Violência / IPEA) consumidos pela API na rota `GET /indicadores` e exibidos na Tela 17 do app mobile:
 * **`id`**: `UUID`, Chave Primária (PK), gerado automaticamente (`DEFAULT gen_random_uuid()`).
-* **`capital`**: `VARCHAR(100)`, NOT NULL (ex: "Curitiba", "Londrina", "São Paulo").
+* **`capital`**: `VARCHAR(100)`, NOT NULL (ex: "Curitiba", "Porto Alegre", "São Paulo").
 * **`uf`**: `VARCHAR(2)`, NOT NULL (ex: "PR", "SP").
 * **`taxa_homicidios`**: `FLOAT`, NOT NULL (taxa estimada por 100 mil mulheres calculada pelo modelo).
 * **`faixa_risco`**: `VARCHAR(20)`, NOT NULL (ex: "Baixo", "Médio", "Alto", "Crítico").
