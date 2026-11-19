@@ -104,19 +104,46 @@ flowchart TD
 | **Gatilho de Entrada e Saída Rápida (*Quick Exit*)** funcionando juntos | `PratoMetasScreen.js`, `BotaoSaidaRapida.js` e `SafeTabs.js` | Felipe Trindade (#77) | ✅ |
 | **Data Science Completo:** modelagem, avaliação e indicador integrado | `data-science/notebook.ipynb` e Tela 17 com aviso acadêmico | Higor D., João Pedro, Felipe, Higor B., Alana | ✅ |
 | **Governança & Rastreabilidade:** commits individuais e PRs com padrão | Histórico do Git (`Área: descrição (Nome) Closes #N`) | Todos os integrantes | ✅ |
-| **Quadro Kanban e Registro de IA:** avanço real e prompts documentados | [kanban-backlog.md](docs/kanban-backlog.md) e [USO_IA.md](USO_IA.md) | Todos os integrantes | ✅ |
+| **Quadro Kanban e Registro de IA:** avanço real e prompts documentados | [GitHub Projects](https://github.com/users/alanakaled10/projects/1) / [kanban-backlog.md](docs/kanban-backlog.md) e [USO_IA.md](USO_IA.md) | Todos os integrantes | ✅ |
 
 ---
 
 ## 👥 Matriz de Responsabilidades da Entrega Final
 
-| Integrante | Módulo / CRUD | Tabela (Supabase) | Rotas da API | Telas do App Integradas |
-| :--- | :--- | :--- | :--- | :--- |
-| **Alana Caled** | Perfil, Usuárias & Camuflagem | `usuarias` | `/usuarias` | Telas 13 e 14 (Ajustes e Apagar Dados), Primeiro Acesso (#87) |
-| **Felipe Trindade** | Círculo de Confiança & Saída Rápida | `contatos_confianca` | `/contatos` | Tela 06 (`ContatosList`), Tela 07 (`ContatoForm`), `BotaoSaidaRapida` |
-| **Higor Bueno** | Viagem Segura & Check-ins | `viagens_seguras`, `checkins_viagem` | `/viagens`, `/checkins` | Tela 08 (`ViagemNova`), Tela 09 (`ViagemEmAndamento`) |
-| **Higor Domingos** | Alertas SOS & Painel Delegacia | `alertas_sos` | `/alertas`, `/painel` | Tela 05 (`SafeHome`), Tela 15 (`AlertasHistorico`), Painel Web |
-| **João Pedro** | Cofre de Incidentes & Indicador DS | `cofre_incidentes`, `indicadores` | `/incidentes`, `/indicadores` | Tela 10 (`IncidentesList`), Tela 11 (`IncidenteForm`), Tela 12 (`Detalhe`), Tela 17 |
+| Integrante | Módulo / CRUD | Tabela (Supabase) | Rotas da API | Telas do App Integradas | Etapa de Data Science |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Alana Caled** | Perfil, Usuárias & Camuflagem | `usuarias` | `/usuarias` | Telas 13 e 14 (Ajustes e Apagar Dados), Primeiro Acesso (#87) | **Etapas 1 e 2:** Governança, LGPD e Aquisição de Dados |
+| **Felipe Trindade** | Círculo de Confiança & Saída Rápida | `contatos_confianca` | `/contatos` | Tela 06 (`ContatosList`), Tela 07 (`ContatoForm`), `BotaoSaidaRapida` | **Etapa 5:** Análise Exploratória de Dados (EDA) |
+| **Higor Bueno** | Viagem Segura & Check-ins | `viagens_seguras`, `checkins_viagem` | `/viagens`, `/checkins` | Tela 08 (`ViagemNova`), Tela 09 (`ViagemEmAndamento`) | **Etapas 3 e 4:** Qualidade, Tratamento e Execução Final |
+| **Higor Domingos** | Alertas SOS & Painel Delegacia | `alertas_sos` | `/alertas`, `/painel` | Tela 05 (`SafeHome`), Tela 15 (`AlertasHistorico`), Painel Web | **Etapa 6:** Modelagem e Treinamento de Modelos |
+| **João Pedro** | Cofre de Incidentes & Indicador DS | `cofre_incidentes`, `indicadores` | `/incidentes`, `/indicadores` | Tela 10 (`IncidentesList`), Tela 11 (`IncidenteForm`), Tela 12 (`Detalhe`), Tela 17 | **Etapas 6 e 7:** Avaliação de Métricas e Integração |
+
+---
+
+## 📊 Data Science: Pipeline e Etapas
+
+O pipeline completo está implementado em [`data-science/notebook.ipynb`](data-science/notebook.ipynb), estruturado em seções com os responsáveis por cada entrega:
+
+**Base escolhida:** [Atlas da Violência](https://www.ipea.gov.br/atlasviolencia/tema/61/) (IPEA e FBSP, a partir do SIM/Ministério da Saúde), séries "Homicídios Mulheres" e "Taxa de Homicídios Mulheres", 27 capitais, 1989 a 2022 (918 linhas: capital × ano). Dados públicos, agregados e sem informação pessoal; acesso em 18/10/2026. Serve ao app porque mostra onde e quando a violência letal contra a mulher é maior e permite gerar um indicador de contexto por capital para a tela de Autoavaliação (Tela 17), sempre acompanhado de aviso explícito de estimativa acadêmica.
+
+**Limitações:** Subnotificação e mortes registradas como "causa indeterminada"; transição da CID-9 para CID-10 em 1996; restrito a capitais brasileiras; foco em homicídios.
+
+| Etapa | Responsável | O que foi realizado no notebook |
+| :--- | :--- | :--- |
+| **1 e 2. Governança, aquisição e dicionário** | Alana Caled | Ficha da base, conformidade com a LGPD, limitações, carga de dados e dicionário de tipos estatísticos |
+| **3 e 4. Qualidade e tratamento** | Higor Bueno | Diagnóstico nas 5 dimensões de qualidade, tratamento pedagógico, tabela de decisões e comparação antes × depois |
+| **5. Análise exploratória (EDA)** | Felipe Trindade | Medidas resumo, distribuição de frequências, série histórica, correlações e respostas às 3 perguntas de negócio |
+| **6. Modelagem de Machine Learning** | Higor Domingos | Definição de alvo, comparação e treino de algoritmos supervisionados para classificação de risco |
+| **7. Avaliação e Integração** | João Pedro | Métricas completas (Acurácia, F1, Recall, Matriz de Confusão), validação cruzada e endpoint para o indicador da Tela 17 |
+
+**Decisões de tratamento:** A base bruta permanece intacta em `data-science/dados/` (arquivos CSV originais). Na limpeza, os 6 zeros (Palmas nos primeiros anos e Natal em 2004) e os 16 outliers da taxa foram **mantidos e sinalizados** como anos reais de alta violência. Foram criadas as variáveis `regiao` e `faixa_risco`. A base unificada é `capitais_homicidios_mulheres.csv` e a tratada é `capitais_dados_processados.csv`.
+
+---
+
+## 🗂️ Quadro Kanban e Acompanhamento
+
+* **Quadro no GitHub Projects:** [Acompanhamento em tempo real das sprints e status das issues](https://github.com/users/alanakaled10/projects/1)
+* **Histórico e Backlog em Markdown:** [docs/kanban-backlog.md](docs/kanban-backlog.md)
 
 ---
 
@@ -230,7 +257,7 @@ PratoApp/
 
 1. [Matriz de Papéis e Responsabilidades](docs/matriz-papeis.md)
 2. [Modelagem do Banco de Dados & DER](docs/modelagem-der.md)
-3. [Backlog e Quadro Kanban](docs/kanban-backlog.md)
+3. [Backlog e Quadro Kanban (Markdown)](docs/kanban-backlog.md) e [Quadro Kanban no GitHub Projects](https://github.com/users/alanakaled10/projects/1)
 4. [Justificativa e Especificação do Disfarce Pratô](docs/justificativa-disfarce.md)
 5. [Fluxo de Telas e Navegação](docs/fluxo-de-telas.md)
 6. [README da API Back-end](api/README.md)
