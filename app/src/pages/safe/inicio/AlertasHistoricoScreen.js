@@ -99,6 +99,9 @@ export default function AlertasHistoricoScreen() {
   const [carregando, setCarregando] = useState(true);
   const [recarregandoManual, setRecarregandoManual] = useState(false);
   const [erro, setErro] = useState(null);
+  // Confirmação de exclusão dentro do card (o Alert.alert não funciona no navegador)
+  const [idConfirmando, setIdConfirmando] = useState(null);
+  const [erroExclusao, setErroExclusao] = useState(null);
 
   const carregarAlertas = useCallback(async (mostrarCarregando = true) => {
     if (mostrarCarregando) setCarregando(true);
@@ -158,26 +161,15 @@ export default function AlertasHistoricoScreen() {
   };
 
   // Ação de excluir o alerta (DELETE /alertas/:id) para demonstrar Delete (Issue #76)
-  const handleConfirmarExclusao = (item) => {
-    Alert.alert(
-      'Apagar Alerta',
-      'Deseja realmente remover este registro de alerta do histórico?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Apagar',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await removerAlerta(item.id);
-              carregarAlertas(false);
-            } catch (err) {
-              Alert.alert('Erro ao apagar alerta', err.message);
-            }
-          },
-        },
-      ]
-    );
+  const handleExcluir = async (id) => {
+    try {
+      await removerAlerta(id);
+      setIdConfirmando(null);
+      setErroExclusao(null);
+      carregarAlertas(false);
+    } catch (err) {
+      setErroExclusao(err.message || 'Não foi possível apagar o alerta.');
+    }
   };
 
   const renderItem = ({ item }) => {
@@ -237,7 +229,7 @@ export default function AlertasHistoricoScreen() {
             <Text style={styles.gatilhoTexto}>{infoGatilho.label}</Text>
           </View>
           <Pressable
-            onPress={() => handleConfirmarExclusao(item)}
+            onPress={() => { setErroExclusao(null); setIdConfirmando(item.id); }}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel="Apagar alerta"
@@ -253,6 +245,22 @@ export default function AlertasHistoricoScreen() {
             {item.endereco_aproximado || 'Londrina/PR'} {lat && lng ? `· ${lat}, ${lng}` : ''}
           </Text>
         </View>
+
+        {/* Confirmação de exclusão dentro do card */}
+        {idConfirmando === item.id && (
+          <View style={styles.confirmacao}>
+            <Text style={styles.confirmacaoTexto}>Apagar este alerta do histórico?</Text>
+            {erroExclusao && <Text style={styles.confirmacaoErro}>{erroExclusao}</Text>}
+            <View style={styles.confirmacaoBotoes}>
+              <Pressable onPress={() => setIdConfirmando(null)} accessibilityRole="button" hitSlop={6}>
+                <Text style={styles.confirmacaoCancelar}>Cancelar</Text>
+              </Pressable>
+              <Pressable onPress={() => handleExcluir(item.id)} accessibilityRole="button" hitSlop={6}>
+                <Text style={styles.confirmacaoApagar}>Apagar</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
       </View>
     );
   };
@@ -260,7 +268,7 @@ export default function AlertasHistoricoScreen() {
   const renderFooter = () => (
     <View style={styles.footer}>
       <Text style={styles.footerTexto}>
-        ● Atualização em tempo real ativa (Supabase API)
+        ● Atualização em tempo real ativa
       </Text>
     </View>
   );
@@ -449,5 +457,37 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 14,
     color: colors.cinza,
+  },
+    confirmacao: {
+    marginTop: 12,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: colors.coralClaro,
+    gap: 8,
+  },
+  confirmacaoTexto: {
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.grafite,
+  },
+  confirmacaoErro: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.coral,
+  },
+  confirmacaoBotoes: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 24,
+  },
+  confirmacaoCancelar: {
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.grafite,
+  },
+  confirmacaoApagar: {
+    fontFamily: fonts.semibold,
+    fontSize: 13,
+    color: colors.coral,
   },
 });

@@ -19,7 +19,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import BotaoPrimario from '../../../components/BotaoPrimario';
 import Chip from '../../../components/Chip';
-import { criarViagem, listarContatos, USUARIA_TESTE_ID } from '../../../services/api';
+import { criarViagem, listarContatos } from '../../../services/api';
+import { idUsuariaAtual } from '../../../services/sessao';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 
@@ -43,7 +44,8 @@ export default function ViagemNovaScreen({ navigation }) {
     // Carrega contatos de confiança da API para listar quem será avisada
     useEffect(() => {
         let montado = true;
-        listarContatos(USUARIA_TESTE_ID)
+            idUsuariaAtual()
+            .then((id) => listarContatos(id))
             .then((dados) => {
                 if (montado && Array.isArray(dados)) {
                     setContatos(dados);
@@ -91,7 +93,7 @@ export default function ViagemNovaScreen({ navigation }) {
         try {
             const previsaoChegada = new Date(Date.now() + tempoSelecionado * 60000).toISOString();
             const novaViagem = await criarViagem({
-                usuaria_id: USUARIA_TESTE_ID,
+                usuaria_id: await idUsuariaAtual(),
                 origem_descricao: origem.trim(),
                 destino_descricao: destino.trim(),
                 previsao_chegada: previsaoChegada,

@@ -25,8 +25,8 @@ import {
     encerrarViagem,
     atualizarViagem,
     criarCheckin,
-    USUARIA_TESTE_ID,
 } from '../../../services/api';
+import { idUsuariaAtual } from '../../../services/sessao';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 
@@ -50,7 +50,7 @@ export default function ViagemEmAndamentoScreen({ navigation, route }) {
                 if (viagemIdParam) {
                     v = await buscarViagem(viagemIdParam);
                 } else {
-                    const viagens = await listarViagens(USUARIA_TESTE_ID);
+                    const viagens = await listarViagens(await idUsuariaAtual());
                     v = viagens.find((item) => item.status_viagem === 'EM_ANDAMENTO') || viagens[0];
                 }
 
