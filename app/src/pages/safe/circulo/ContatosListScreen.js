@@ -29,6 +29,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 import { listarContatos, PRIORIDADES } from '../../../services/api';
+import { idUsuariaAtual } from '../../../services/sessao';
 
 export default function ContatosListScreen({ navigation }) {
   const [busca, setBusca] = useState('');
@@ -40,7 +41,8 @@ export default function ContatosListScreen({ navigation }) {
     try {
       setCarregando(true);
       setErro(null);
-      const dados = await listarContatos();
+      // Contatos da usuária deste celular (ou da usuária de teste, sem primeiro acesso)
+      const dados = await listarContatos(await idUsuariaAtual());
       setListaContatos(dados || []);
     } catch (err) {
       setErro(err.message || 'Não foi possível carregar os contatos de confiança.');

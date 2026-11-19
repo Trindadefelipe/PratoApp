@@ -22,7 +22,6 @@ import {
   ScrollView,
   Pressable,
   Switch,
-  Alert,
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
@@ -35,9 +34,9 @@ import {
   criarContato,
   atualizarContato,
   removerContato,
-  USUARIA_TESTE_ID,
   PRIORIDADES,
 } from '../../../services/api';
+import { idUsuariaAtual } from '../../../services/sessao';
 
 export default function ContatoFormScreen({ navigation, route }) {
   const contatoExistente = route.params?.contato;
@@ -59,6 +58,7 @@ export default function ContatoFormScreen({ navigation, route }) {
   // Estados de feedback assíncrono
   const [salvando, setSalvando] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
+  const [confirmandoExcluir, setConfirmandoExcluir] = useState(false);
   const [erroFormulario, setErroFormulario] = useState(null);
 
   const inicial = nome.trim() ? nome.trim().charAt(0).toUpperCase() : 'M';
@@ -72,7 +72,8 @@ export default function ContatoFormScreen({ navigation, route }) {
     }
 
     const dados = {
-      usuaria_id: contatoExistente?.usuaria_id || USUARIA_TESTE_ID,
+      // Contato novo vai para a usuária deste celular; na edição, mantém a dona do contato
+      usuaria_id: contatoExistente?.usuaria_id || (await idUsuariaAtual()),
       nome: nome.trim(),
       telefone: telefone.trim(),
       parentesco_relacao: relacao.trim() || 'Contato de Confiança',
@@ -89,11 +90,9 @@ export default function ContatoFormScreen({ navigation, route }) {
         await criarContato(dados);
       }
 
-      Alert.alert(
-        'Sucesso',
-        modoEdicao ? 'Contato atualizado com sucesso!' : 'Contato adicionado ao Círculo!',
-        [{ text: 'OK', onPress: () => navigation.goBack() }]
-      );
+      // Volta direto: a lista recarrega ao ganhar foco e já mostra o resultado.
+      // (Alert com botões não aparece no navegador, então não dependemos dele.)
+      navigation.goBack();
     } catch (err) {
       setErroFormulario(err.message || 'Falha ao salvar contato na API.');
     } finally {
@@ -101,32 +100,19 @@ export default function ContatoFormScreen({ navigation, route }) {
     }
   };
 
-  const handleExcluir = () => {
+  // Confirmação na própria tela (Alert com botões não aparece no navegador)
+  const handleExcluir = async () => {
     setErroFormulario(null);
-    Alert.alert(
-      'Excluir contato',
-      `Tem certeza de que deseja remover ${nome || 'este contato'} do seu Círculo de Confiança?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setExcluindo(true);
-              await removerContato(contatoExistente.id);
-              Alert.alert('Removido', 'Contato removido com sucesso.', [
-                { text: 'OK', onPress: () => navigation.goBack() },
-              ]);
-            } catch (err) {
-              setErroFormulario(err.message || 'Falha ao excluir contato na API.');
-            } finally {
-              setExcluindo(false);
-            }
-          },
-        },
-      ]
-    );
+    try {
+      setExcluindo(true);
+      await removerContato(contatoExistente.id);
+      navigation.goBack();
+    } catch (err) {
+      setErroFormulario(err.message || 'Falha ao excluir contato na API.');
+      setConfirmandoExcluir(false);
+    } finally {
+      setExcluindo(false);
+    }
   };
 
   return (
@@ -309,21 +295,45 @@ export default function ContatoFormScreen({ navigation, route }) {
           />
 
           {/* Botão Excluir Contato (visível no modo edição) */}
-          {modoEdicao && (
+          {modoEdicao && !confirmandoExcluir && (
             <Pressable
               style={({ pressed }) => [
                 styles.botaoExcluir,
                 pressed && styles.botaoExcluirPressionado,
               ]}
-              onPress={handleExcluir}
+              onPress={() => { setErroFormulario(null); setConfirmandoExcluir(true); }}
               disabled={salvando || excluindo}
             >
-              {excluindo ? (
-                <ActivityIndicator size="small" color={colors.coral} />
-              ) : (
-                <Text style={styles.textoExcluir}>Excluir contato</Text>
-              )}
+              <Text style={styles.textoExcluir}>Excluir contato</Text>
             </Pressable>
+          )}
+
+          {modoEdicao && confirmandoExcluir && (
+            <View style={styles.confirmacao}>
+              <Text style={styles.confirmacaoTexto}>
+                Remover {nome.trim() || 'este contato'} do seu Círculo de Confiança?
+              </Text>
+              <View style={styles.confirmacaoBotoes}>
+                <Pressable
+                  style={styles.botaoExcluir}
+                  onPress={() => setConfirmandoExcluir(false)}
+                  disabled={excluindo}
+                >
+                  <Text style={styles.textoCancelar}>Cancelar</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.botaoExcluir}
+                  onPress={handleExcluir}
+                  disabled={excluindo}
+                >
+                  {excluindo ? (
+                    <ActivityIndicator size="small" color={colors.coral} />
+                  ) : (
+                    <Text style={styles.textoExcluir}>Excluir</Text>
+                  )}
+                </Pressable>
+              </View>
+            </View>
           )}
         </View>
       </ScrollView>
@@ -512,5 +522,26 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: 15,
     color: colors.coral,
+  },
+  confirmacao: {
+    backgroundColor: colors.coralClaro,
+    borderRadius: 14,
+    padding: 14,
+  },
+  confirmacaoTexto: {
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.grafite,
+    textAlign: 'center',
+  },
+  confirmacaoBotoes: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 4,
+  },
+  textoCancelar: {
+    fontFamily: fonts.medium,
+    fontSize: 15,
+    color: colors.grafite,
   },
 });
