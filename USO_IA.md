@@ -324,11 +324,17 @@ A Inteligência Artificial foi utilizada como ferramenta de apoio metodológico 
 
 ### Prompts testados
 
-#### Rotas da API e Integração do Cofre de Incidentes (Gemini / Antigravity)
+#### Rotas do Cofre de Incidentes na API (Gemini / Antigravity)
 
-**Prompt:** "Analise as issues abertas atribuídas a mim no repositório (#80 e #81) e implemente o módulo do Cofre de Incidentes seguindo docs/padroes-de-codigo.md: crie as rotas de cofre_incidentes em api/src/rotas/incidentes.js com validação do DER e de usuaria_id, e integre as Telas 10, 11 e 12 ao services/api.js removendo os dados simulados de data/incidentes.js."
+**Prompt:** "crie api/src/rotas/incidentes.js seguindo o padrão de _modelo.js com os 5 endpoints RESTful de cofre_incidentes, validando os campos e tipos de violência do DER, ordenação do mais novo para o mais antigo, relacionamento com usuarias via garantirExiste() e atualização do api/README.md"
 
-**Resultado:** Implementação de `api/src/rotas/incidentes.js` com consultas parametrizadas e validação de chave estrangeira `usuaria_id`, atualização de `api/README.md`, criação de `app/src/services/incidentes.js`, adição dos métodos em `app/src/services/api.js` e migração completa das Telas 10, 11 e 12 para a API real, fechando as issues #80 e #81 via commits na `main`.
+**Resultado:** Rotas completas com consultas parametrizadas (`$1, $2...`), tratamento padronizado `{ "erro": "..." }`, recusa de `usuaria_id` inexistente (`400`) e retorno `404` para IDs não encontrados, fechando a issue #80.
+
+#### Integração das Telas 10, 11 e 12 com a API (Gemini / Antigravity)
+
+**Prompt:** "adicione as funções de incidentes em app/src/services/api.js e conecte IncidentesListScreen, IncidenteFormScreen e IncidenteDetalheScreen à API, removendo os imports de data/incidentes.js, usando useFocusEffect para recarregar a lista e tratando estados de loading, erro da API e confirmação de exclusão"
+
+**Resultado:** Telas 10, 11 e 12 integradas à API real com helpers centralizados em `app/src/services/incidentes.js`, feedback de carregamento/erro, exclusão com confirmação inline e eliminação total de mocks locais, fechando a issue #81.
 
 ### O que eu aprendi e decidi
 
