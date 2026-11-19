@@ -21,12 +21,12 @@ import {
   Linking,
   Pressable,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import CabecalhoTela from '../../../components/safe/CabecalhoTela';
 import BotaoPrimario from '../../../components/BotaoPrimario';
-import Chip from '../../../components/Chip';
 import { colors } from '../../../theme/colors';
 import { fonts } from '../../../theme/fonts';
 import {
@@ -41,6 +41,15 @@ const NIVEIS = [
   { rotulo: 'Alto', cor: colors.coral },
 ];
 
+// "São Paulo", "sao paulo" e "SAO PAULO" viram o mesmo texto na busca.
+function normalizar(texto) {
+  return String(texto)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
 export default function ResultadoRiscoScreen({ route, navigation }) {
   const respostas = route.params?.respostas || [];
   const soma = respostas.reduce(
@@ -54,6 +63,10 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
   const [carregandoIndicador, setCarregandoIndicador] = useState(true);
   const [erroIndicador, setErroIndicador] = useState(null);
   const [mostrarCapitais, setMostrarCapitais] = useState(false);
+  const [busca, setBusca] = useState('');
+  const capitaisEncontradas = busca.trim()
+    ? capitais.filter((item) => normalizar(item.capital).includes(normalizar(busca))).slice(0, 6)
+    : [];
   const acimaDaMedia = indicadorAtual?.classe_risco === 'Alto';
 
   const carregarIndicadores = async () => {
@@ -86,6 +99,7 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
   const selecionarCapital = async (capital) => {
     setCapitalSelecionada(capital);
     setMostrarCapitais(false);
+    setBusca('');
     try {
       setCarregandoIndicador(true);
       setErroIndicador(null);
@@ -260,7 +274,10 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
             <Text style={estilos.tituloIndicador}>Sobre a sua capital</Text>
             {capitais.length > 0 && (
               <Pressable
-                onPress={() => setMostrarCapitais((atual) => !atual)}
+                onPress={() => {
+                  setMostrarCapitais((atual) => !atual);
+                  setBusca('');
+                }}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Trocar capital"
@@ -273,20 +290,47 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
           </View>
 
           {mostrarCapitais && (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={estilos.listaCapitais}
-            >
-              {capitais.map((item) => (
-                <Chip
-                  key={item.capital}
-                  titulo={item.capital}
-                  ativo={capitalSelecionada === item.capital}
-                  onPress={() => selecionarCapital(item.capital)}
+            <View style={estilos.areaBusca}>
+              <View style={estilos.buscaCapital}>
+                <Ionicons name="search-outline" size={18} color={colors.cinza} />
+                <TextInput
+                  style={estilos.buscaCapitalInput}
+                  value={busca}
+                  onChangeText={setBusca}
+                  placeholder="Buscar sua capital"
+                  placeholderTextColor={colors.cinza}
+                  autoFocus
+                  autoCorrect={false}
+                  accessibilityLabel="Buscar capital"
                 />
+              </View>
+
+              {!busca.trim() && (
+                <Text style={estilos.dicaBusca}>
+                  Digite o nome da capital, por exemplo "Curitiba".
+                </Text>
+              )}
+
+              {busca.trim() !== '' && capitaisEncontradas.length === 0 && (
+                <Text style={estilos.dicaBusca}>Nenhuma capital encontrada.</Text>
+              )}
+
+              {capitaisEncontradas.map((item) => (
+                <Pressable
+                  key={item.capital}
+                  style={({ pressed }) => [
+                    estilos.resultadoBusca,
+                    pressed && estilos.botaoPressionado,
+                  ]}
+                  onPress={() => selecionarCapital(item.capital)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Escolher ${item.capital}`}
+                >
+                  <Text style={estilos.resultadoBuscaNome}>{item.capital}</Text>
+                  <Text style={estilos.resultadoBuscaRegiao}>{item.regiao}</Text>
+                </Pressable>
               ))}
-            </ScrollView>
+            </View>
           )}
 
           {carregandoIndicador && (
@@ -529,9 +573,49 @@ const estilos = StyleSheet.create({
     fontSize: 13,
     color: colors.verdeProfundo,
   },
-  listaCapitais: {
+  areaBusca: {
+    marginBottom: 12,
+  },
+  buscaCapital: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
-    paddingBottom: 12,
+    height: 44,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.pessegoClaro,
+    backgroundColor: colors.creme,
+  },
+  buscaCapitalInput: {
+    flex: 1,
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    color: colors.grafite,
+  },
+  dicaBusca: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.cinza,
+    marginTop: 8,
+  },
+  resultadoBusca: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.begeDivisor,
+  },
+  resultadoBuscaNome: {
+    fontFamily: fonts.medium,
+    fontSize: 14,
+    color: colors.grafite,
+  },
+  resultadoBuscaRegiao: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    color: colors.cinza,
   },
   estadoIndicador: {
     flexDirection: 'row',
