@@ -47,7 +47,7 @@ export async function requisitar(caminho, opcoes = {}) {
 }
 
 
-// ---------- Usuárias (Alana, #65) ----------
+// ---------- Usuárias (Alana, #65 / #87) ----------
 export function buscarUsuaria(id) {
   return requisitar(`/usuarias/${id}`);
 }
@@ -62,6 +62,35 @@ export function criarUsuaria(dados) {
 
 export function removerUsuaria(id) {
   return requisitar(`/usuarias/${id}`, { metodo: 'DELETE' });
+}
+
+
+// ---------- Contatos de Confiança (Felipe, #70) ----------
+export const PRIORIDADES = {
+  1: 'Alta',
+  2: 'Média',
+  3: 'Baixa',
+};
+
+export function listarContatos(usuariaId = USUARIA_TESTE_ID) {
+  const query = usuariaId ? `?usuaria_id=${usuariaId}` : '';
+  return requisitar(`/contatos${query}`);
+}
+
+export function buscarContato(id) {
+  return requisitar(`/contatos/${id}`);
+}
+
+export function criarContato(dados) {
+  return requisitar('/contatos', { metodo: 'POST', corpo: dados });
+}
+
+export function atualizarContato(id, dados) {
+  return requisitar(`/contatos/${id}`, { metodo: 'PUT', corpo: dados });
+}
+
+export function removerContato(id) {
+  return requisitar(`/contatos/${id}`, { metodo: 'DELETE' });
 }
 
 
@@ -132,14 +161,3 @@ export function listarCheckins(viagemId) {
 export function criarCheckin(dados) {
   return requisitar('/checkins', { metodo: 'POST', corpo: dados });
 }
-
-
-// ---------- Contatos de Confiança (Felipe, #69 / #70) ----------
-export function listarContatos(usuariaId) {
-  const query = usuariaId ? `?usuaria_id=${usuariaId}` : '';
-  return requisitar(`/contatos${query}`);
-}
-
-
-
-
