@@ -384,6 +384,13 @@ export default function ResultadoRiscoScreen({ route, navigation }) {
                 </Text>
               </View>
 
+              <Text style={estilos.chanceIndicador}>
+                Chance estimada de ficar acima da média:{' '}
+                <Text style={estilos.chanceValor}>
+                  {Math.round(Number(indicadorAtual.probabilidade_alto) * 100)}%
+                </Text>
+              </Text>
+
               <Text style={estilos.fraseIndicador}>
                 {acimaDaMedia
                   ? `Pelos dados públicos, a violência contra a mulher em ${indicadorAtual.capital} tende a ficar acima da média das capitais. Vale manter seus contatos de apoio por perto.`
@@ -669,7 +676,7 @@ const estilos = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 999,
     marginTop: 8,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   seloAcima: {
     backgroundColor: colors.coralClaro,
@@ -680,6 +687,15 @@ const estilos = StyleSheet.create({
   seloIndicadorTexto: {
     fontFamily: fonts.semibold,
     fontSize: 12,
+  },
+  chanceIndicador: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    color: colors.grafite,
+    marginBottom: 8,
+  },
+  chanceValor: {
+    fontFamily: fonts.bold,
   },
   fraseIndicador: {
     fontFamily: fonts.regular,
