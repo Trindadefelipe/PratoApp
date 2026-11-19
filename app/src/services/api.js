@@ -60,6 +60,10 @@ export function criarUsuaria(dados) {
   return requisitar('/usuarias', { metodo: 'POST', corpo: dados });
 }
 
+export function removerUsuaria(id) {
+  return requisitar(`/usuarias/${id}`, { metodo: 'DELETE' });
+}
+
 
 // ---------- Alertas SOS (Higor Domingos, #75 / #76 / #78) ----------
 export function listarAlertas(usuariaId) {
