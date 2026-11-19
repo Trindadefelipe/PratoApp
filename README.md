@@ -164,11 +164,11 @@ O modelo selecionado para gerar o indicador contextual de violência na capital 
 
 ### 📱 Onde Aparece no App Mobile
 
-O indicador contextual de Data Science é consumido na **Tela 17 (Resultado da Autoavaliação)** (`app/src/pages/ResultadoAutoavaliacaoScreen.js`).
+O indicador contextual de Data Science é consumido na **Tela 17 (Resultado da Autoavaliação)** (`app/src/pages/safe/inicio/ResultadoRiscoScreen.js`).
 
 1. **Contexto Urbano Complementar:** Ao concluir o questionário ou selecionar sua capital, a usuária recebe uma informação contextual objetiva informando se a sua localidade apresenta historicamente taxa de homicídios femininos acima ou abaixo da mediana nacional.
 2. **Salvaguarda Ética e Anti-Falácia Ecológica:** O modelo descreve **a localidade**, e **nunca** calcula nem atribui risco individual à pessoa (evitando rotulação estigmatizante ou complacência em capitais abaixo da média).
-3. **Aviso Acadêmico e Emergência:** A informação é acompanhada de legenda educativa explícita e botões de discagem rápida para a **Central de Atendimento à Mulher (Ligue 180)** e **Polícia Militar (Ligue 190)**.
+3. **Aviso Acadêmico e Emergência:** A informação é acompanhada de legenda educativa explícita, botão de discagem rápida para a **Central de Atendimento à Mulher (Ligue 180)** e orientação para ligar **190 (Polícia Militar)** em emergência.
 
 ### 🧪 Como Reproduzir o Notebook
 
